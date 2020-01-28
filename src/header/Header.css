@@ -1,0 +1,56 @@
+.Header-container {
+    display: grid;
+    grid-template-areas: 
+      ". Header-logo . Header-about Header-contact Header-signOut";
+    grid-template-columns: 100px 200px auto 80px 80px 150px;
+    /* Make sure the row height is okay with what set in App.css for the header container */
+    grid-template-rows: 80px; 
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.Header-logo {
+    grid-area: Header-logo;
+    justify-self: center;
+    align-self: center;
+}
+
+.Header-about {
+    grid-area: Header-about;
+    justify-self: center;
+    align-self: center;
+}
+
+.Header-about > a {
+    text-decoration: none;
+    color: black;
+}
+
+.Header-about > a:hover {
+    text-decoration: none;    
+}
+
+.Header-contact {
+    grid-area: Header-contact;
+
+    justify-self: center;
+    align-self: center;
+    text-decoration: none;
+}
+
+.Header-contact > a {
+    text-decoration: none;
+    color: black;
+}
+
+.Header-contact > a:hover {
+    text-decoration: none;    
+}
+
+.Header-signOut {
+    grid-area: Header-signOut;
+
+    justify-self: center;
+    align-self: center;
+    text-decoration: none;
+}

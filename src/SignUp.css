@@ -1,0 +1,61 @@
+.SignUp-gradient-background {
+    background: linear-gradient(to right top, #d1d16b, #f2ba63, #ffa172, #ff8c8f, #ff81b4, #fd7eba, #f97bc0, #f579c7, #ff73ad, #ff7192, #ff7378, #fb7a5f);
+}
+
+.SignUp-container {
+    display: grid;
+    grid-template-columns: auto 400px auto;
+    grid-template-rows: 1fr;
+    grid-template-areas: 
+      ". SignUp-form .";
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+}
+
+.SignUp-form {
+    grid-area: SignUp-form;
+    
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    grid-template-areas: 
+      "Form-title"
+      "Form-email"
+      "Form-password"
+      "Form-submit";
+    row-gap: 10px;
+    justify-items: center;
+    box-shadow: 0 4px 16px 0 rgba(0,0,0,0.2);
+    background-color: white;
+    padding: 50px 0 50px 0;
+}
+
+.Form-title {
+    grid-area: Form-title;
+}
+
+.Form-email {
+    grid-area: Form-email;
+}
+
+/* .Form-email > input {
+    font-size: 18px;
+    line-height: 1.2;
+    color:black;
+    height: 60px;
+    border-radius: 3px;
+    padding: 0 30px 0 30px;
+} */
+
+.input
+
+.Form-password {
+    grid-area: Form-password;
+}
+
+
+
+.Form-submit {
+    grid-area: Form-submit;
+}
