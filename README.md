@@ -166,15 +166,13 @@ Provide links to other relevant documentation here
 
 # License
 
-Copyright (c) 2017 Embedded Artistry LLC
-
 This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) file for details.
 
 **[Back to top](#table-of-contents)**
 
 # Authors
 
-* **[Phillip Johnston](https://github.com/phillipjohnston)** - *Initial work* - [Embedded Artistry](https://github.com/embeddedartistry)
+* **[Nitin Saroha](https://github.com/phillipjohnston)** - *Initial work* - [nitinsaroha](https://github.com/nitinsaroha)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
@@ -185,5 +183,7 @@ See also the list of [contributors](https://github.com/your/project/contributors
 Provide proper credits, shoutouts, and honorable mentions here. Also provide links to relevant repositories, blog posts, or contributors worth mentioning.
 
 Give proper credits. This could be a link to any repo which inspired you to build this project, any blogposts or links to people who contributed in this project. If you used external code, link to the original source.
+
+README Template Source - [Embedded Artistry](https://github.com/embeddedartistry/embedded-resources)
 
 **[Back to top](#table-of-contents)**
