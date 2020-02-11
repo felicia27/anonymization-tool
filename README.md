@@ -92,6 +92,19 @@ git clone https://github.com/nitinsaroha/anonymization-tool.git
 
 Put your firebase credentials to `.env`.
 
+.env file should look like this
+
+```
+REACT_APP_FIREBASE_KEY=""
+REACT_APP_FIREBASE_DOMAIN=""
+REACT_APP_FIREBASE_DATABASE=""
+REACT_APP_FIREBASE_PROJECT_ID=""
+REACT_APP_FIREBASE_STORAGE_BUCKET=""
+REACT_APP_FIREBASE_SENDER_ID=<>
+```
+
+Next steps
+
 ```bash
 cd anonymization-tool
 # Install the dependencies
