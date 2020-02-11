@@ -109,13 +109,25 @@ Next steps
 cd anonymization-tool
 # Install the dependencies
 npm install
-# Initialize the firebase project using your own credentials
-firebase init
 
 # Install Firebae functions dependecies
 cd functions/
 npm install
+
+# Initialize the firebase project using your own credentials
+firebase init
+# Choose no if it asks to overwrite everything
 ```
+
+To deploy Firebase functions
+
+Inside functions directory, Open index.js and edit **projectId** and **bucketName** from .env
+
+```bash
+# From root directory
+firebase deploy --only functions
+```
+
 
 ## Usage
 
