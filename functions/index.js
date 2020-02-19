@@ -11,12 +11,12 @@ admin.initializeApp(functions.config().firebase);
 
 // Creates a Google Cloud Storage client
 const gcs = new Storage({
-  projectId: "capstone-project-uci",
+  projectId: "capstone-project-uci-c87c8",
 });
 
 // Creates a Speech Client
 const client = new speech.SpeechClient();
-const bucketName = "capstone-project-uci.appspot.com";
+const bucketName = "capstone-project-uci-c87c8.appspot.com";
 
 let db = admin.firestore();
 

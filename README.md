@@ -90,7 +90,8 @@ git clone https://github.com/nitinsaroha/anonymization-tool.git
 
 ## Installation
 
-Put your firebase credentials to `.env`.
+Create a text file named `.env`, if you do not already have one.
+Put your firebase credentials in the `.env`.
 
 .env file should look like this
 
@@ -106,6 +107,9 @@ REACT_APP_FIREBASE_SENDER_ID=<>
 Next steps
 
 ```bash
+# Install Firebase CLI globally if you have not done so before
+npm install -g firebase-tools
+
 cd anonymization-tool
 # Install the dependencies
 npm install
@@ -116,7 +120,10 @@ npm install
 
 # Initialize the firebase project using your own credentials
 firebase init
+# Select all when asked which Firebase CLI features you would like set up
+# During feature set up, use the default files when asked which file should be used
 # Choose no if it asks to overwrite everything
+# During emulator set up, use the default ports when asked which port should be used
 ```
 
 To deploy Firebase functions
