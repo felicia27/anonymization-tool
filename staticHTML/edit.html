@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Transcript</title>
+    <link rel="stylesheet" href="edit.css">
+</head>
+
+<body>
+    <nav><a href="#"><img src="image/back.png"></a> Audio File Title</nav>
+    <div class="audio_container clear">
+        <div class="playback_container">
+            <div class="playback_controls clear">
+                <a href="#"><img class="small" src="image/rewind.png"></a>
+                <a href="#"><img src="image/play-button.png"></a>
+                <a href="#"><img class="small" src="image/fast-forward.png"></a>
+            </div>
+            <div class="timecode_current">00:01:03/00:10:35</div>
+        </div>
+        <div class="track_container">
+            <canvas id="trackCanvas" width="800" height="100" >
+                Your browser does not support the HTML5 canvas tag.</canvas>
+        </div>
+    </div>
+    <div class="transcript_container clear">
+        <div class="edit_container">
+            <div class="edit_control">
+                <a href="#">
+                    <img src="image/search.png">
+                    <div>Search</div>
+                </a>
+            </div>
+            <div class="edit_control"><a href="#">
+                    <img src="image/strikethrough.png">
+                    <div>Strike</div>
+                </a>
+            </div>
+            <div class="edit_control"><a href="#">
+                    <img src="image/undo.png">
+                    <div>Undo</div>
+                </a>
+            </div>
+            <div class="edit_control"><a href="#">
+                    <img src="image/redo.png">
+                    <div>Redo</div>
+                </a>
+            </div>
+            <div class="edit_control"><a href="#">
+                    <div class="txt_completed">1/4</div>
+                    <div>Sections Completed</div>
+                </a>
+            </div>
+        </div>
+        <div class="transcript">
+            <section class="clear utterance_container">
+                <div class="content_container clear">
+                    <div class="speaker">Speaker 1</div>
+                    <div class="content">
+                        <div class="timecode">00:00:03</div>
+                        <div class="utterance">
+                            Our challenges may be new. <span class="coded">The instruments with which we meet them may
+                                be new. But those values upon which our success depends -- honesty and hard work,
+                                courage and fair play, tolerance and curiosity, loyalty and patriotism -- these things
+                                are old.</span> These things are true. They have been the quiet force of progress
+                            throughout our history.
+                        </div>
+                    </div>
+                </div>
+                <div class="label_container">
+                    <span class="label sensitive">Privacy: Sensitive</span>
+                    <span class="label private">Privacy: Private</span>
+                </div>
+            </section>
+
+            <section class="clear utterance_container">
+                <div class="content_container clear">
+                    <div class="speaker">Speaker 1</div>
+                    <div class="content">
+                        <div class="timecode">00:00:03</div>
+                        <div class="utterance">
+                            What is demanded, then, is a return to these truths. What is required of us now is a new era
+                            of responsibility -- a recognition on the part of every American that we have duties to
+                            ourselves, our nation and the world; duties that we do not grudgingly accept, but rather
+                            seize gladly, firm in the knowledge that there is nothing so satisfying to the spirit, so
+                            defining of our character than giving our all to a difficult task.
+                        </div>
+                    </div>
+                </div>
+                <div class="label_container">
+                    <span class="label sensitive">Privacy: Culturally sensitive, not offensive</span>
+                    <span class="label private">Privacy: Private</span>
+                </div>
+            </section>
+
+            <section class="clear utterance_container">
+                <div class="content_container clear">
+                    <div class="speaker">Speaker 1</div>
+                    <div class="content">
+                        <div class="timecode">00:00:03</div>
+                        <div class="utterance">
+                            This is the price and the promise of citizenship. This is the source of our confidence --
+                            the knowledge that God calls on us to shape an uncertain destiny. This is the meaning of our
+                            liberty and our creed, why men and women and children of every race and every faith can join
+                            in celebration across this magnificent mall; and why a man whose father less than 60 years
+                            ago might not have been served in a local restaurant can now stand before you to take a most
+                            sacred oath.
+                        </div>
+                    </div>
+                </div>
+                <div class="label_container">
+
+                </div>
+            </section>
+            <section class="clear utterance_container">
+                <div class="content_container clear">
+                    <div class="speaker">Speaker 1</div>
+                    <div class="content">
+                        <div class="timecode">00:00:03</div>
+                        <div class="utterance">
+                            So let us mark this day with remembrance of who we are and how far we have traveled. In the
+                            year of America's birth, in the coldest of months, a small band of patriots huddled by dying
+                            campfires on the shores of an icy river. The capital was abandoned. The enemy was advancing.
+                            The snow was stained with blood. At the moment when the outcome of our revolution was most
+                            in doubt, the father of our nation ordered these words to be read to the people:
+
+                            "Let it be told to the future world...that in the depth of winter, <span class="coded">when
+                                nothing but hope and virtue could survive... that the city and the country,</span>
+                            alarmed at one common danger, came forth to meet [it]." </div>
+                    </div>
+                </div>
+                <div class="label_container">
+
+                </div>
+            </section>
+            <section class="clear utterance_container">
+                <div class="content_container clear">
+                    <div class="speaker">Speaker 1</div>
+                    <div class="content">
+                        <div class="timecode">00:00:03</div>
+                        <div class="utterance">
+                            America: In the face of our common dangers, in this winter of our hardship, let us remember
+                            these timeless words. With hope and virtue, let us brave once more the icy currents, and
+                            endure what storms may come. Let it be said by our children's children that when we were
+                            tested we refused to let this journey end, that we did not turn back nor did we falter; and
+                            with eyes fixed on the horizon and God's grace upon us, we carried forth that great gift of
+                            freedom and delivered it safely to future generations.
+                        </div>
+                    </div>
+                </div>
+                <div class="label_container">
+
+                </div>
+            </section>
+        </div>
+    </div>
+    <script>
+        var c = document.getElementById("trackCanvas");
+        var ctx = c.getContext("2d");
+        ctx.beginPath();
+        ctx.fillStyle = "cornflowerblue";
+
+        var height = 50;
+        for (i = 0; i < 80; i++) {
+            height = Math.random() * 50;
+            ctx.fillRect(i * 10, (50 - height), 8, height);
+        }
+
+        function createDot(x, y, v, c) {
+            ctx.beginPath();
+            ctx.fillStyle = c;
+            ctx.arc(x, y, 8, 0, 2 * Math.PI);
+            ctx.fill();
+
+
+            ctx.font = '9pt';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText(v, x, y+2);
+        }
+
+        createDot(10, 65, 1, "cornflowerblue");
+        createDot(50, 65, 5, "cornflowerblue");
+        createDot(50, 85, 4, "red");
+
+
+
+        
+
+
+    </script>
+</body>
+
+</html>

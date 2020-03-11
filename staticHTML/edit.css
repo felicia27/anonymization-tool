@@ -1,0 +1,143 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    background-color: #F5F5F5;
+    margin: 0;
+    padding: 0;
+}
+nav{
+    padding: 10px 20px;
+    background-color: white;
+}
+nav img{
+    width: 15px;
+    margin: 0 30px;
+}
+.audio_container{
+    text-align: center;
+    background-color: white;
+    border-bottom: solid 1px #B8B9B8;
+    padding: 0 10px;
+}
+.playback_container{
+    width: 10%;
+    height: 50px;
+    float: left;
+    padding: 20px 0;
+}
+.playback_controls{
+    width: 110px;
+    margin: auto;
+}
+.playback_container img{
+    width: 40px;
+    float: left;
+    margin-right: 10px;
+}
+.playback_container img.small{
+    width: 20px;
+    top: 15px;
+    position: relative;
+}
+.timecode_current{
+    font-weight: bold;
+    font-size: 0.8em;
+    margin: 5px;
+}
+.track_container{
+    width: 85%;
+    height: 100px;
+    float: left;
+    text-align: left;
+    padding-left: 50px;
+}
+.transcript_container{
+
+}
+.edit_container{
+    width: 10%;
+    float: left;
+    text-align: center;
+    padding-top: 100px;
+}
+.edit_control{
+    border: solid 1px #B8B9B8;
+    color: #8a8a8a;
+    background-color: white;
+    width: 80px;
+    height: 60px;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 0.6em;
+    font-weight: bold;
+    margin: auto;
+}
+.edit_control a{
+    text-decoration: none;
+    color: #8a8a8a;
+}
+.edit_control img{
+    width: 20px;
+}
+.txt_completed{
+    color: #19BE18;
+    font-size: 1.5em;
+}
+.transcript{
+    width: 85%;
+    float: left;
+    font-size: 0.8em;
+    
+}
+.utterance_container{
+}
+.content_container{
+    background-color: white;
+    width: 60%;
+    float: left;
+    border-left: solid 1px #B8B9B8;
+    border-right: solid 1px #B8B9B8;
+    padding: 30px;
+}
+.speaker{
+    float: left;
+    width: 20%;
+
+}
+.content{
+    float: left;
+    width: 75%;
+}
+.label_container{
+    float: left;
+    width: 30%;
+    margin: 30px 0 0 20px;
+    padding-left: 10px;
+    border-left: solid 4px green;
+}
+.label{
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 5px 2px;
+    color: white;
+    font-weight: bold;
+    float: left;
+}
+.sensitive{
+    background-color: cornflowerblue;
+}
+.private{
+    background-color: red;
+}
+.timecode{
+    padding: 0 0 10px 0;
+    font-weight: bold;
+}
+.coded{
+    background-color: #B8B9B8;
+}
+.clear::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
