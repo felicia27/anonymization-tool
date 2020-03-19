@@ -17,6 +17,7 @@ class Transcript extends Component {
     }
     
     componentDidMount() {
+        console.log("here");
         this.processTranscript();
     }
     
@@ -30,24 +31,26 @@ class Transcript extends Component {
     }
 
     processTranscript = () => {
+        console.log(this);
+        console.log(this.props);
         let audioTranscript = JSON.parse(this.props.audioTranscript);
+        
         // const transcription = audioTranscript.results
         //         .map(result => result.alternatives[0].transcript)
         //         .join('\n');
 
         let wordArray = [];
         let transcriptArray = [];
-
         audioTranscript.results.forEach(result => {
             // console.log(`Transcription: ${result.alternatives[0].transcript}`);
             let transcript = result.alternatives[0].transcript
             result.alternatives[0].words.forEach(wordInfo => {
                 // NOTE: If you have a time offset exceeding 2^32 seconds, use the
                 // wordInfo.{x}Time.seconds.high to calculate seconds.
-                const startSecs =
-                `${wordInfo.startTime.seconds}` +
-                `.` +
-                wordInfo.startTime.nanos / 100000000;
+                let startSecs = '0' + `.` + wordInfo.startTime.nanos / 100000000;
+                if(wordInfo.startTime.seconds != undefined){
+                    startSecs = `${wordInfo.startTime.seconds}` + `.` + wordInfo.startTime.nanos / 100000000;
+                }
                 const endSecs =
                 `${wordInfo.endTime.seconds}` +
                 `.` +
