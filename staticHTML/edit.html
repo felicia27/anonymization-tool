@@ -4,12 +4,21 @@
 <head>
     <title>Transcript</title>
     <link rel="stylesheet" href="edit.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body>
     <nav><a href="#"><img src="image/back.png"></a> Audio File Title</nav>
     <div class="audio_container clear">
-        <div class="playback_container">
+        <div id="waveform" style="position:relative">
+        </div>
+        <div class="controls">
+            <button class="btn btn-primary" data-action="back">Backward</button>
+            <button class="btn btn-primary" data-action="play">Play / Pause</button>
+            <button class="btn btn-primary" data-action="forward">Forward</button>
+            <button class="btn btn-primary" data-action="mute">Toggle Mute</button>
+          </div>
+        <!-- <div class="playback_container">
             <div class="playback_controls clear">
                 <a href="#"><img class="small" src="image/rewind.png"></a>
                 <a href="#"><img src="image/play-button.png"></a>
@@ -20,7 +29,7 @@
         <div class="track_container">
             <canvas id="trackCanvas" width="800" height="100" >
                 Your browser does not support the HTML5 canvas tag.</canvas>
-        </div>
+        </div> -->
     </div>
     <div class="transcript_container clear">
         <div class="edit_container">
@@ -153,7 +162,12 @@
             </section>
         </div>
     </div>
-    <script>
+
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.cursor.min.js"></script>
+    <script src="edit.js"></script>
+
+    <!-- <script>
         var c = document.getElementById("trackCanvas");
         var ctx = c.getContext("2d");
         ctx.beginPath();
@@ -187,7 +201,7 @@
         
 
 
-    </script>
+    </script> -->
 </body>
 
 </html>
