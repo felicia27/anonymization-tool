@@ -1,7 +1,7 @@
 var wavesurfer = WaveSurfer.create({
     container: document.querySelector('#waveform'),
     waveColor: '#D9DCFF',
-    progressColor: '#4353FF',
+    progressColor: '#0A74EC',
     cursorColor: '#4353FF',
     barWidth: 3,
     barRadius: 3,
