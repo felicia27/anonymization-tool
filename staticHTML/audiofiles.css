@@ -1,0 +1,77 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    background-color: #F5F5F5;
+    margin: 0;
+    padding: 0;
+}
+nav{
+    padding: 10px 20px;
+    background-color: white;
+}
+nav img{
+    width: 15px;
+    margin: 0 30px;
+}
+.audio_container{
+    text-align: right;
+    background-color: white;
+    border-bottom: solid 1px #B8B9B8;
+    padding: 0 10px;
+}
+
+.label{
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 5px 2px;
+    color: white;
+    font-size: 14px;
+    float: right;
+}
+.upload{
+    background-color: cornflowerblue;
+}
+
+
+.transcript_container{
+
+}
+.edit_container{
+    width: 10%;
+    /*float: left;*/
+    text-align: center;
+    padding-top: 70px; 
+}
+.edit_control{
+    /*position: absolute;*/
+    width: 289px;
+    height: 66px;
+    margin-left: 63px;
+    top: 138px;
+
+    background: #FFFFFF;
+    border: 1px solid #949494;
+    box-sizing: border-box;
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+}
+.edit_control a{
+    position: absolute;
+    /*width: 98px;
+    height: 28px;*/
+    margin-left: -76px;
+    top: 138px;
+
+    font-style: normal;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 15px;
+
+    text-decoration: none;
+    color: #000000;
+}
+
+.edit_control img{
+    width: 20px;
+}
