@@ -141,3 +141,8 @@ nav img{
     clear: both;
     display: table;
   }
+
+button{
+    outline: none;
+    border: none;
+}
