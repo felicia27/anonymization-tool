@@ -4,7 +4,13 @@ import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 import "./Upload.css";
 import { Icon } from "antd";
+//import {isFinished} from '../functions/index.js'
 
+//var ffmpeg = require("ffmpeg");
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 class Upload extends Component {
     state = {
         audio: "",
@@ -12,7 +18,7 @@ class Upload extends Component {
         progress: 0,
         audioURL: ""
     };
-    
+
     db = firebase.firestore();
 
     create_UUID = () => {
@@ -23,21 +29,21 @@ class Upload extends Component {
             return (c=='x' ? r :(r&0x3|0x8)).toString(16);
         });
         return uuid;
-    }     
+    }
 
     getUsername = () => app.auth().currentUser.email;
-      
+
     handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
-      
+
     handleProgress = progress => this.setState({ progress });
-      
+
     handleUploadError = error => {
         this.setState({ isUploading: false });
         console.error(error);
     };
-    
+
     handleUploadSuccess = filename => {
-        this.setState({ audio: filename, progress: 100, isUploading: false });
+
         // console.log(filename);
         firebase
             .storage()
@@ -60,6 +66,7 @@ class Upload extends Component {
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     fileName: filename.slice(37), //small hack to save duplicate files in gcs and also keep the original file name in Firestore
                     transcript: "",
+                    finished: false,
                     // transcriptObjectUri: "transcripts/" + this.getUsername() + "/" + filename.slice(0, -4) + "_transcript.json" // slicing to remove .wav and add transcript literal
                 }, { merge: true })
                 .then(function() {
@@ -69,9 +76,41 @@ class Upload extends Component {
                     console.error("Error adding document: ", error);
                 });
                 this.setState({audioURL: url});
+                var good = false;
+
+                while (good != false)
+                {
+                    sleep(100).then(() => {
+
+                        this.db.collection("transcripts").doc(this.getUsername()).collection("audios").doc(filename.slice(0,36)).get()
+                        .then(doc => {
+                          console.log(doc.data().finished)
+                          if (doc.data().finished != false)
+                          {
+                            this.setState({ audio: filename, progress: 100, isUploading: false });
+                            good = true;
+                          }
+                        })
+                        .catch(function(error) {
+                            console.error("Error adding document: ", error);
+                        });
+                    })
+                }
+
+                /*
+                this.db.collection("transcripts").doc(this.getUsername()).collection("audios").doc(filename.slice(0,36)).get()
+                .then(doc => {
+                  console.log("-------------------");
+                  console.log(doc.data().finished)
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                });
+                */
+
           });
     };
-    
+
     render() {
         return (
             <div className="Upload-container">
