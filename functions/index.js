@@ -31,7 +31,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   console.log("Content Type: ", contentType);
   const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
   // [END eventAttributes]
-  
+
   // [START stopConditions]
   // Exit if this is triggered on a file that is not an image.
   if (!contentType.startsWith('audio/')) {
@@ -67,14 +67,15 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   };
 
   const [operation] = await client.longRunningRecognize(request);
-  
+
   // Get a Promise representation of the final result of the job
   const [response] = await operation.promise();
   const jsonResponse = JSON.stringify(response);
 
 
   db.collection("transcripts").doc(filePathUserEmail).collection("audios").doc(uuidFirestoreDocId).set({
-    transcript: jsonResponse
+    transcript: jsonResponse,
+    finished: true
   }, { merge: true });
 
   return null;
