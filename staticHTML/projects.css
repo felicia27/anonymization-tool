@@ -33,17 +33,135 @@ nav img{
 }
 
 
-.transcript_container{
+
+.project_container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.column{
+    width: 289px;
+    height: 223px;
+    margin: 35px;
+    
+    background: #FFFFFF;
+    border: 1px solid #949494;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.column a{
+    position: relative;
+    left: 40px;
+    top: 10px;
+
+    font-style: normal;
+    font-weight: bold;
+    font-size: 23px;
+    line-height: 0px;
+
+    text-decoration: none;
+    color: #000000;
+}
+
+.column p{
+    position: relative;
+    left: 0px;
+    top: 25px;
+
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 0px;
+    color: #000000;
+}
+
+.green_border{
+    position: relative;
+    width: 223px;
+    height: 19px;
+    left: -143px;
+    top: 91px;
+
+    background: #6FD171;
+    border-radius: 10px;
+    transform: rotate(90deg);
+}
+
+.green_completed{
+    position: relative;
+    width: 223px;
+    height: 9px;
+    left: -138px;
+    top: 77px;
+
+    background: #6FD171;
+    transform: matrix(0, 1, 1, 0, 0, 0);
+}
+
+.red_border{
+    position: relative;
+    width: 223px;
+    height: 19px;
+    left: -143px;
+    top: 91px;
+
+    background: #FF5E5E;
+    border-radius: 10px;
+    transform: rotate(90deg);
+}
+
+.red_completed{
+    position: relative;
+    width: 223px;
+    height: 9px;
+    left: -138px;
+    top: 77px;
+
+    background: #FF5E5E;
+    transform: matrix(0, 1, 1, 0, 0, 0);
+}
+
+.blue_border{
+    position: relative;
+    width: 223px;
+    height: 19px;
+    left: -143px;
+    top: 91px;
+
+    background: #5D94FF;
+    border-radius: 10px;
+    transform: rotate(90deg);
+}
+
+.blue_completed{
+    position: relative;
+    width: 223px;
+    height: 9px;
+    left: -138px;
+    top: 77px;
+
+    background: #5D94FF;
+    transform: matrix(0, 1, 1, 0, 0, 0);
+}
+
+
+
+
+/*
+.project_container{
 
 }
-.edit_container{
-    width: 10%;
-    /*float: left;*/
+.folder_container{
+    width: 25%;
+    /float: left;/
     text-align: center;
     padding-top: 65px; 
 }
-.edit_control{
-    /*position: absolute;*/
+.folder_control{
+    /position: absolute;/
     width: 289px;
     height: 223px;
     margin-left: 63px;
@@ -56,7 +174,7 @@ nav img{
 
     margin-bottom: 20px;
 
-    /*border: solid 1px #B8B9B8;
+    /border: solid 1px #B8B9B8;
     color: #8a8a8a;
     background-color: white;
     text-align: center;
@@ -65,9 +183,9 @@ nav img{
     padding-top: 20px;
     font-size: 0.6em;
     font-weight: bold;
-    margin: auto;*/
+    margin: auto;/
 }
-.edit_control a{
+.folder_control a{
     position: fixed;
     width: 98px;
     height: 28px;
@@ -82,7 +200,7 @@ nav img{
     text-decoration: none;
     color: #000000;
 }
-.edit_control p{
+.folder_control p{
     position: fixed;
     width: 151px;
     height: 21px;
@@ -95,7 +213,7 @@ nav img{
     line-height: 0px;
     color: #000000;
 }
-.edit_control img{
+.folder_control img{
     width: 20px;
 }
 .green_border{
@@ -149,6 +267,7 @@ nav img{
     padding: 0 0 10px 0;
     font-weight: bold;
 }
+*/
 
 /*
 .label_container{
