@@ -58,8 +58,10 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     config: {
       enableWordTimeOffsets: true, // get word times
       encoding: "LINEAR16", // Encoding of audio file
-      sampleRateHertz: 16000, // Sample rate
       languageCode: "en-US", // BCP-47 language code
+      audioChannelCount: 2,
+      useEnhanced: true,
+      model: "video",
     },
     audio: {
       uri: audioFilename // gcs Uri
