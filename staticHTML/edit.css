@@ -90,7 +90,13 @@ nav img{
     
 }
 .utterance_container{
+   
 }
+
+[contenteditable="true"]:focus {
+    outline: none;
+}
+
 .content_container{
     background-color: white;
     width: 60%;
@@ -146,3 +152,56 @@ button{
     outline: none;
     border: none;
 }
+
+.select-editable {
+    position:relative;
+    background-color:white;
+    border:solid grey 1px;
+    width:120px;
+    height:18px;
+}
+.select-editable select {
+    position:absolute;
+    top:0px;
+    left:0px;
+    font-size:14px;
+    border:none;
+    width:120px;
+    margin:0;
+}
+.select-editable input {
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100px;
+    padding:1px;
+    font-size:12px;
+    border:none;
+}
+.select-editable select:focus, .select-editable input:focus {
+    outline:none;
+}
+
+.speaker {
+    overflow: hidden;
+  }
+  
+  .speaker select {
+    text-indent: 1px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 2px 2px 2px 2px;
+    border: none;
+    background: transparent url("image/down.png") padding-box;
+    font-size: 14px;
+  }
+ 
+
+
+ input {
+	border-radius: 4px;
+    font-size: 14px;
+    padding: 2px 2px 2px 2px;
+    outline: none;
+} 
