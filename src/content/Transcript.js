@@ -17,7 +17,6 @@ class Transcript extends Component {
     }
     
     componentDidMount() {
-        console.log("here");
         this.processTranscript();
     }
     
@@ -31,8 +30,6 @@ class Transcript extends Component {
     }
 
     processTranscript = () => {
-        console.log(this);
-        console.log(this.props);
         let audioTranscript = JSON.parse(this.props.audioTranscript);
         
         // const transcription = audioTranscript.results
@@ -47,14 +44,28 @@ class Transcript extends Component {
             result.alternatives[0].words.forEach(wordInfo => {
                 // NOTE: If you have a time offset exceeding 2^32 seconds, use the
                 // wordInfo.{x}Time.seconds.high to calculate seconds.
-                let startSecs = '0' + `.` + wordInfo.startTime.nanos / 100000000;
-                if(wordInfo.startTime.seconds != undefined){
-                    startSecs = `${wordInfo.startTime.seconds}` + `.` + wordInfo.startTime.nanos / 100000000;
+                let startSecs = `${wordInfo.startTime.seconds}` + `.` + wordInfo.startTime.nanos / 100000000;
+                if(wordInfo.startTime.seconds == undefined || isNaN(wordInfo.startTime.seconds)){
+                    startSecs = `0` + `.` + wordInfo.startTime.nanos / 100000000;
+                    if(wordInfo.startTime.nanos / 100000000 == undefined || isNaN(wordInfo.startTime.nanos / 100000000)){
+                        startSecs = `0` + `.` + '0';
+                    }
                 }
-                const endSecs =
-                `${wordInfo.endTime.seconds}` +
-                `.` +
-                wordInfo.endTime.nanos / 100000000;
+                if(wordInfo.startTime.nanos / 100000000 == undefined || isNaN(wordInfo.startTime.nanos / 100000000)){
+                    startSecs = `${wordInfo.startTime.seconds}` + `.` + '0';
+                }
+                
+                let endSecs = `${wordInfo.endTime.seconds}` + `.` + wordInfo.endTime.nanos / 100000000; 
+                if(wordInfo.endTime.seconds == undefined || isNaN(wordInfo.endTime.seconds)){
+                    endSecs = `0` + `.` + wordInfo.endTime.nanos / 100000000;
+                    if(wordInfo.endTime.nanos / 100000000 == undefined || isNaN(wordInfo.endTime.nanos / 100000000)){
+                        endSecs = `0` + `.` + '0';
+                    }
+                }
+                if(wordInfo.endTime.nanos / 100000000 == undefined || isNaN(wordInfo.endTime.nanos / 100000000)){
+                    endSecs = `${wordInfo.endTime.seconds}` + `.` + '0';
+                }
+
                 let key = `${wordInfo.word}`;
                 let value = `${startSecs} secs - ${endSecs} secs`;
                 wordArray.push({
