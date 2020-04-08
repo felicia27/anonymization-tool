@@ -20,6 +20,7 @@ nav img{
     padding: 0 10px;
 }
 
+/*
 .label{
     border-radius: 5px;
     padding: 5px 10px;
@@ -31,7 +32,21 @@ nav img{
 .create{
     background-color: cornflowerblue;
 }
+*/
 
+.button{
+    background-color: #5D94FF;
+    border-radius: 5px;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 5px 2px;
+    cursor: pointer;
+    float: right;
+}
 
 
 .project_container{
@@ -41,10 +56,11 @@ nav img{
     justify-content: flex-start;
 }
 
-.column{
+.folder{
     width: 289px;
     height: 223px;
     margin: 35px;
+    float: left;
     
     background: #FFFFFF;
     border: 1px solid #949494;
@@ -52,7 +68,7 @@ nav img{
     border-radius: 10px;
 }
 
-.column a{
+.folder a{
     position: relative;
     left: 40px;
     top: 10px;
@@ -66,7 +82,7 @@ nav img{
     color: #000000;
 }
 
-.column p{
+.folder p{
     position: relative;
     left: 0px;
     top: 25px;
