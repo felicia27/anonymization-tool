@@ -19,21 +19,6 @@ nav img{
     border-bottom: solid 1px #B8B9B8;
     padding: 0 10px;
 }
-
-/*
-.label{
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin: 5px 2px;
-    color: white;
-    font-size: 16px;
-    float: right;
-}
-.create{
-    background-color: cornflowerblue;
-}
-*/
-
 .button{
     background-color: #5D94FF;
     border-radius: 5px;
@@ -67,7 +52,11 @@ nav img{
     box-sizing: border-box;
     border-radius: 10px;
 }
-
+.folder img{
+    width: 20px;
+    margin: -10px 50px;
+    float: right;
+}
 .folder a{
     position: relative;
     left: 40px;
@@ -81,7 +70,6 @@ nav img{
     text-decoration: none;
     color: #000000;
 }
-
 .folder p{
     position: relative;
     left: 0px;
@@ -92,6 +80,20 @@ nav img{
     font-size: 18px;
     line-height: 0px;
     color: #000000;
+}
+
+
+
+.folder select{
+   
+    margin: -10px 50px;
+    float: right;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 2px 2px 2px 2px;
+    border: none;
+    background: url("image/edit.png") padding-box;
 }
 
 .green_border{
@@ -105,7 +107,6 @@ nav img{
     border-radius: 10px;
     transform: rotate(90deg);
 }
-
 .green_completed{
     position: relative;
     width: 223px;
@@ -128,7 +129,6 @@ nav img{
     border-radius: 10px;
     transform: rotate(90deg);
 }
-
 .red_completed{
     position: relative;
     width: 223px;
@@ -151,7 +151,6 @@ nav img{
     border-radius: 10px;
     transform: rotate(90deg);
 }
-
 .blue_completed{
     position: relative;
     width: 223px;
