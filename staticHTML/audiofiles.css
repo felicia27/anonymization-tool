@@ -20,16 +20,18 @@ nav img{
     padding: 0 10px;
 }
 
-.label{
+.button{
+    background-color: #5D94FF;
     border-radius: 5px;
-    padding: 5px 10px;
-    margin: 5px 2px;
     color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
     font-size: 14px;
+    margin: 5px 2px;
+    cursor: pointer;
     float: right;
-}
-.upload{
-    background-color: cornflowerblue;
 }
 
 
