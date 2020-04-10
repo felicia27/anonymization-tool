@@ -45,24 +45,24 @@ class Transcript extends Component {
                 // NOTE: If you have a time offset exceeding 2^32 seconds, use the
                 // wordInfo.{x}Time.seconds.high to calculate seconds.
                 let startSecs = `${wordInfo.startTime.seconds}` + `.` + wordInfo.startTime.nanos / 100000000;
-                if(wordInfo.startTime.seconds == undefined || isNaN(wordInfo.startTime.seconds)){
+                if(wordInfo.startTime.seconds === undefined || isNaN(wordInfo.startTime.seconds)){
                     startSecs = `0` + `.` + wordInfo.startTime.nanos / 100000000;
-                    if(wordInfo.startTime.nanos / 100000000 == undefined || isNaN(wordInfo.startTime.nanos / 100000000)){
+                    if(wordInfo.startTime.nanos / 100000000 === undefined || isNaN(wordInfo.startTime.nanos / 100000000)){
                         startSecs = `0` + `.` + '0';
                     }
                 }
-                if(wordInfo.startTime.nanos / 100000000 == undefined || isNaN(wordInfo.startTime.nanos / 100000000)){
+                if(wordInfo.startTime.nanos / 100000000 === undefined || isNaN(wordInfo.startTime.nanos / 100000000)){
                     startSecs = `${wordInfo.startTime.seconds}` + `.` + '0';
                 }
                 
                 let endSecs = `${wordInfo.endTime.seconds}` + `.` + wordInfo.endTime.nanos / 100000000; 
-                if(wordInfo.endTime.seconds == undefined || isNaN(wordInfo.endTime.seconds)){
+                if(wordInfo.endTime.seconds === undefined || isNaN(wordInfo.endTime.seconds)){
                     endSecs = `0` + `.` + wordInfo.endTime.nanos / 100000000;
-                    if(wordInfo.endTime.nanos / 100000000 == undefined || isNaN(wordInfo.endTime.nanos / 100000000)){
+                    if(wordInfo.endTime.nanos / 100000000 === undefined || isNaN(wordInfo.endTime.nanos / 100000000)){
                         endSecs = `0` + `.` + '0';
                     }
                 }
-                if(wordInfo.endTime.nanos / 100000000 == undefined || isNaN(wordInfo.endTime.nanos / 100000000)){
+                if(wordInfo.endTime.nanos / 100000000 === undefined || isNaN(wordInfo.endTime.nanos / 100000000)){
                     endSecs = `${wordInfo.endTime.seconds}` + `.` + '0';
                 }
 
