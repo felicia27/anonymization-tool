@@ -4,6 +4,28 @@
     <head>
         <title>Projects</title>
         <link rel="stylesheet" href="projects.css">
+
+        <script>
+            function changeFunc(c){
+                if (c == "green")
+                {
+                    document.getElementById("border").style.backgroundColor = "#6FD171";
+                    document.getElementById("border_completed").style.backgroundColor = "#6FD171";
+                }
+                if (c == "red")
+                {
+                    document.getElementById("border").style.backgroundColor = "#FF5E5E";
+                    document.getElementById("border_completed").style.backgroundColor = "#FF5E5E";
+                }
+                if (c == "blue")
+                {
+                    document.getElementById("border").style.backgroundColor = "#5D94FF";
+                    document.getElementById("border_completed").style.backgroundColor = "#5D94FF";
+                }
+            }
+        </script>
+
+        
     </head>
 
     <body>
@@ -31,6 +53,37 @@
             -->
         </div>
         
+        <div id="myDIV" class="project_container">
+            <!--<div id="myDIV" style="display:none" class="project_container">-->
+            <div class="folder">
+                <div id="border" class="green_border"></div>
+                <div id="border_completed" class="green_completed"></div>
+                    
+                    <!--<img src="image/edit.png">-->
+                  
+                
+                <select id="selectBox" onchange="changeFunc(this.options[this.selectedIndex].value);">
+                    <option style="display: none"></option>
+                    <option value="1">Rename</option>
+                    <option value="2">Edit description</option>
+                    <option value="3">Delete</option>
+                    <option value="green">Green</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                </select>
+
+
+            
+     
+                <div><a href="audiofiles.html">Project Title</a></div>
+                <p>Project description</p>
+                
+            </div>
+        </div>
+
+
+
+        <!--
         <div id="myDIV" style="display:none" class="project_container">
             <div class="folder">
                 <a href="audiofiles.html">
@@ -38,12 +91,20 @@
                     <div class="green_completed"></div>
                     
                     <img src="image/edit.png">
+                    
+                    <select id="selectBox" onchange="changeFunc();">
+                        <option value="1">Delete</option>
+                    </select>
      
                     <div>Project Title</div>
                     <p>Project description</p>
                 </a>
             </div>
         </div>
+        -->
+
+
+
 
         <!--
         <div class="project_container clear"> 

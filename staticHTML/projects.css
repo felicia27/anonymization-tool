@@ -72,7 +72,7 @@ nav img{
 }
 .folder p{
     position: relative;
-    left: 0px;
+    left: 40px;
     top: 25px;
 
     font-style: normal;
@@ -83,7 +83,18 @@ nav img{
 }
 
 
+.folder select{
+    line-height: 20px;
+    float: right;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: transparent url("image/edit.png") no-repeat right;
+    background-size: 20px;
+}
 
+/*
 .folder select{
    
     margin: -10px 50px;
@@ -94,14 +105,14 @@ nav img{
     padding: 2px 2px 2px 2px;
     border: none;
     background: url("image/edit.png") padding-box;
-}
+}*/
 
 .green_border{
     position: relative;
     width: 223px;
     height: 19px;
-    left: -143px;
-    top: 91px;
+    left: -103px;
+    top: 101px;
 
     background: #6FD171;
     border-radius: 10px;
@@ -111,8 +122,8 @@ nav img{
     position: relative;
     width: 223px;
     height: 9px;
-    left: -138px;
-    top: 77px;
+    left: -98px;
+    top: 87px;
 
     background: #6FD171;
     transform: matrix(0, 1, 1, 0, 0, 0);
