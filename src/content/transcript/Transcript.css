@@ -1,0 +1,25 @@
+.Transcript-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 
+      "Transcript-transcription"
+      "Transcript-words";
+    margin: 20px;
+    row-gap: 20px;
+}
+
+.Transcript-transcription {
+    grid-area: Transcript-transcription;
+}
+
+.Transcript-words {
+    grid-area: Transcript-words;
+    
+}
+
+.Transcript-transcription-text {
+    margin-bottom: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}

@@ -79,3 +79,11 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
 
   return null;
 });
+
+exports.editAudio = functions.pubsub.topic('editAudioTopic').onPublish((message, context) => {
+  console.log('The function was triggered at ', context.timestamp);
+  console.log('The unique ID for the event is ', context.eventId);
+  // Code for editing audio
+
+  return 0;
+});
