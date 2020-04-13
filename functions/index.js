@@ -58,19 +58,44 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     config: {
       enableWordTimeOffsets: true, // get word times
       encoding: "LINEAR16", // Encoding of audio file
-      sampleRateHertz: 16000, // Sample rate
       languageCode: "en-US", // BCP-47 language code
+      audioChannelCount: 2,
+      useEnhanced: true,
+      model: "video",
     },
     audio: {
       uri: audioFilename // gcs Uri
     }
   };
 
-  const [operation] = await client.longRunningRecognize(request);
+  const monoRequest = {
+    config: {
+      enableWordTimeOffsets: true, // get word times
+      encoding: "LINEAR16", // Encoding of audio file
+      languageCode: "en-US", // BCP-47 language code
+      useEnhanced: true,
+      model: "video",
+    },
+    audio: {
+      uri: audioFilename // gcs Uri
+    }
+  };
+
+  
+  try{
+    [operation] = await client.longRunningRecognize(request);
+  }
+  catch(e){
+    [operation] = await client.longRunningRecognize(monoRequest);
+  }
+  finally{
+    const [response] = await operation.promise();
+    jsonResponse = JSON.stringify(response);
+  }
+  
   
   // Get a Promise representation of the final result of the job
-  const [response] = await operation.promise();
-  const jsonResponse = JSON.stringify(response);
+  
 
 
   db.collection("transcripts").doc(filePathUserEmail).collection("audios").doc(uuidFirestoreDocId).set({
