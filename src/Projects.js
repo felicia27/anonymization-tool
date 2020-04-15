@@ -2,12 +2,9 @@ import "./projects.css";
 import app from "./base";
 import 'antd/dist/antd.css';
 import moment from "moment";
-import firebase from "firebase";
 import Upload from "./upload/Upload";
-import Header from "./header/Header";
-import Player from "./content/Player";
+import firebase from "firebase";
 import React, { Component } from "react";
-import Transcript from "./content/Transcript";
 import { List, Typography, Icon } from "antd";
 
 const { Title } = Typography;
@@ -62,15 +59,7 @@ class Projects extends Component {
         });
     }
     */
-    render() {/*
-        let allAudioList = this.state.allAudioFiles.map(audio => {
-            return (
-                <a href="/#" onClick={() => this.handleClick(audio)} key={ audio.audioId } className="ListAudioFiles-a">
-                    <p className="ListAudioFiles-title">{audio.audioFileName}</p>
-                </a>
-            );
-        });*/
-
+    render() {
         return (
             <div>
                 <nav><a href="#"><img src="./staticHTML/image/menu.png"></img></a>Audio Transcription Tool
