@@ -64,4 +64,31 @@ wavesurfer.on('ready', function () {
     }
   });
 
+  function getSelectionText() {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    console.log(text);
+    return text;
+}
+
+
+function highlightText() {
+  range = window.getSelection().getRangeAt(0);
+  var selectionContents = range.extractContents();
+  var span = document.createElement("span");
+  span.appendChild(selectionContents);
+  span.style.backgroundColor = "lightgray";
+  range.insertNode(span);
+}
+
+document.onmouseup = function () {
+    getSelectionText();
+    highlightText();
+};
+
+
  
