@@ -170,6 +170,14 @@ nav img{
     color: transparent;
 }
 
+#addFile{
+    position: relative;
+    left: 36px;
+    top: 45px;
+    width: 15px;
+    height: 15px;
+}
+
 
 
 /*
