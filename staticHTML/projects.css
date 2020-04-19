@@ -57,10 +57,10 @@ nav img{
     margin: -10px 50px;
     float: right;
 }
-.folder a{
+.folder h1{
     position: relative;
-    left: 40px;
-    top: 10px;
+    left: 35px;
+    top: 5px;
 
     font-style: normal;
     font-weight: bold;
@@ -72,8 +72,20 @@ nav img{
 }
 .folder p{
     position: relative;
-    left: 40px;
-    top: 25px;
+    left: 35px;
+    top: 20px;
+
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 0px;
+    color: #000000;
+}
+
+#myFiles{
+    position: relative;
+    left: 35px;
+    top: 60px;
 
     font-style: normal;
     font-weight: normal;
@@ -82,17 +94,83 @@ nav img{
     color: #000000;
 }
 
+#divider{
+    position: relative;
+    left: 35px;
+    top: 60px;
 
-.folder select{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 0px;
+    color: #000000;
+}
+
+.folder a{
+    position: relative;
+    left: 35px;
+    top: 50px;
+
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 0px;
+    color: #000000;
+}
+
+
+#deleteBox{
+    position: relative;
+    left: -60px;
+    top: -24px;
+    width:20px;
+    height: 20px;
     line-height: 20px;
     float: right;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     border: none;
-    background: transparent url("image/edit.png") no-repeat right;
+    background: transparent url("image/trash.png") no-repeat right;
     background-size: 20px;
+    color: transparent;
 }
+
+#editBox{
+    position: relative;
+    left: -10px;
+    top: -23px;
+    width:20px;
+    height: 20px;
+    line-height: 20px;
+    float: right;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: transparent url("image/pencil-edit.png") no-repeat right;
+    background-size: 20px;
+    color: transparent;
+}
+
+#colorBox{
+    position: relative;
+    left: 37px;
+    top: -23px;
+    width:20px;
+    height: 20px;
+    line-height: 20px;
+    float: right;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: transparent url("image/brush.png") no-repeat right;
+    background-size: 20px;
+    color: transparent;
+}
+
+
 
 /*
 .folder select{
@@ -128,51 +206,6 @@ nav img{
     background: #6FD171;
     transform: matrix(0, 1, 1, 0, 0, 0);
 }
-
-.red_border{
-    position: relative;
-    width: 223px;
-    height: 19px;
-    left: -143px;
-    top: 91px;
-
-    background: #FF5E5E;
-    border-radius: 10px;
-    transform: rotate(90deg);
-}
-.red_completed{
-    position: relative;
-    width: 223px;
-    height: 9px;
-    left: -138px;
-    top: 77px;
-
-    background: #FF5E5E;
-    transform: matrix(0, 1, 1, 0, 0, 0);
-}
-
-.blue_border{
-    position: relative;
-    width: 223px;
-    height: 19px;
-    left: -143px;
-    top: 91px;
-
-    background: #5D94FF;
-    border-radius: 10px;
-    transform: rotate(90deg);
-}
-.blue_completed{
-    position: relative;
-    width: 223px;
-    height: 9px;
-    left: -138px;
-    top: 77px;
-
-    background: #5D94FF;
-    transform: matrix(0, 1, 1, 0, 0, 0);
-}
-
 
 
 

@@ -4,45 +4,65 @@
     <head>
         <title>Projects</title>
         <link rel="stylesheet" href="projects.css">
-
         <script>
-            function changeFunc(c){
+            var counter = 0;
+            function newProject(){
+                counter++;
+
+                var para = document.createElement("div");
+                para.innerHTML = document.getElementById("myDIV").innerHTML;
+                para.setAttribute("id", "myDIV"+counter);
+
+                para.querySelector(".green_border").setAttribute("id", "border"+counter);
+                para.querySelector(".green_completed").setAttribute("id", "border_completed"+counter);
+                
+                para.querySelector("p").setAttribute("id", "myP"+counter);
+                para.querySelector("h1").setAttribute("id", "title"+counter);
+
+                document.body.appendChild(para);
+            }
+
+            function editFunc(current, c){
+                console.log(document.getElementById("border"+counter));
+                
+                if (c == "rename")
+                {
+                    document.getElementById("title"+counter).contentEditable = true;
+                }
+                if (c == "edit")
+                {
+                    document.getElementById("myP"+counter).contentEditable = true;
+                }
+            }
+
+            function colorFunc(current, c){
+                console.log(document.getElementById("border"+counter));
+
                 if (c == "green")
                 {
-                    document.getElementById("border").style.backgroundColor = "#6FD171";
-                    document.getElementById("border_completed").style.backgroundColor = "#6FD171";
+                    document.getElementById("border"+counter).style.backgroundColor = "#6FD171";
+                    document.getElementById("border_completed"+counter).style.backgroundColor = "#6FD171";
                 }
                 if (c == "red")
                 {
-                    document.getElementById("border").style.backgroundColor = "#FF5E5E";
-                    document.getElementById("border_completed").style.backgroundColor = "#FF5E5E";
+
+                    document.getElementById("border"+counter).style.backgroundColor = "#FF5E5E";
+                    document.getElementById("border_completed"+counter).style.backgroundColor = "#FF5E5E";
                 }
                 if (c == "blue")
                 {
-                    document.getElementById("border").style.backgroundColor = "#5D94FF";
-                    document.getElementById("border_completed").style.backgroundColor = "#5D94FF";
+                    document.getElementById("border"+counter).style.backgroundColor = "#5D94FF";
+                    document.getElementById("border_completed"+counter).style.backgroundColor = "#5D94FF";
                 }
             }
         </script>
-
-        
     </head>
 
     <body>
         <nav><a href="#"><img src="image/menu.png"></a>Audio Transcription Tool
             <button class="button" onclick="newProject()">+ Create new project</button>
-            <script>
-                function newProject(){
-                    var para = document.createElement("div");
-                    para.innerHTML = document.getElementById("myDIV").innerHTML;
-                    document.getElementById("myDIV").style.display="none";
-                    document.body.appendChild(para);
-                }
-            </script>
         </nav>
-            <!--
-            <a href="#"><span class="label create">+ Create new project</span></a></nav>
-            -->
+
         <div class="audio_container clear">
             <div id="waveform" style="position:relative">
             </div>
@@ -53,83 +73,36 @@
             -->
         </div>
         
-        <div id="myDIV" class="project_container">
-            <!--<div id="myDIV" style="display:none" class="project_container">-->
+        <div id="myDIV" style="display:none" class="project_container">
             <div class="folder">
                 <div id="border" class="green_border"></div>
                 <div id="border_completed" class="green_completed"></div>
-                    
-                    <!--<img src="image/edit.png">-->
-                  
                 
-                <select id="selectBox" onchange="changeFunc(this.options[this.selectedIndex].value);">
+                <select id="deleteBox" onchange="deleteFunc(this, this.options[this.selectedIndex].value);">
                     <option style="display: none"></option>
-                    <option value="1">Rename</option>
-                    <option value="2">Edit description</option>
-                    <option value="3">Delete</option>
+                    <option value="delete">Delete</option>
+                </select>
+
+                <select id="editBox" onchange="editFunc(this, this.options[this.selectedIndex].value);">
+                    <option style="display: none"></option>
+                    <option value="rename">Rename</option>
+                    <option value="edit">Edit description</option>
+                </select>
+
+                <select id="colorBox" onchange="colorFunc(this, this.options[this.selectedIndex].value);">
+                    <option style="display: none"></option>
                     <option value="green">Green</option>
                     <option value="red">Red</option>
                     <option value="blue">Blue</option>
                 </select>
-
-
-            
      
-                <div><a href="audiofiles.html">Project Title</a></div>
-                <p contenteditable="true">Project description</p>
-                
+                <!--<div class="title"><a href="audiofiles.html">Project Title</a></div>-->
+                <h1>Project Title</h1>
+                <p id="myP">Project description</p>
+                <p id="myFiles">Files</p>
+                <p id="divider">--------------------------------------------</p>
+                <div><a href="edit.html">audiofile1.wav</a></div>
             </div>
         </div>
-
-
-
-        <!--
-        <div id="myDIV" style="display:none" class="project_container">
-            <div class="folder">
-                <a href="audiofiles.html">
-                    <div class="green_border"></div>
-                    <div class="green_completed"></div>
-                    
-                    <img src="image/edit.png">
-                    
-                    <select id="selectBox" onchange="changeFunc();">
-                        <option value="1">Delete</option>
-                    </select>
-     
-                    <div>Project Title</div>
-                    <p>Project description</p>
-                </a>
-            </div>
-        </div>
-        -->
-
-
-
-
-        <!--
-        <div class="project_container clear"> 
-            <div class="folder_container"> 
-               
-                <div class="folder_control"><a href="audiofiles.html">
-                        <div class="green_border"></div>
-                        <div class="green_completed"></div> 
-                        <div>Project 1</div>
-                        <p>Project description</p>
-                    </a>
-                </div>
-                
-                <div class="folder_control"><a href="#">
-                        <div class="green_border"></div>
-                        <div class="green_completed"></div> 
-                        <div>Project 2</div>
-                        <p>Project description</p>
-                    </a>
-                </div> 
-                
-
-            </div>
-        </div> 
-        -->
-
     </body>
 </html>
