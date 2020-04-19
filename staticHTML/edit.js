@@ -64,4 +64,64 @@ wavesurfer.on('ready', function () {
     }
   });
 
+
+  function getSelectionText() {
+    var text;
+
+    if (window.getSelection) {
+      text = window.getSelection();
+        //text = window.getSelection().toString();
+        if (!text.isCollapsed) {
+          var range = document.createRange();
+          range.setStart(text.anchorNode, text.anchorOffset);
+          range.setEnd(text.focusNode, text.focusOffset);
+          var backwards = range.collapsed;
+          range.detach;
+
+          var endNode = text.focusNode, endOffset = text.focusOffset;
+          text.collapse(text.anchorNode, text.anchorOffset);
+
+          var direction = [];
+          if (backwards) {
+            direction = ['backward', 'forward']; 
+          } else {
+            direction = ['forward', 'backward'];
+          }
+          text.modify("move", direction[0], "character");
+          text.modify("move", direction[1], "word");
+          text.extend(endNode, endOffset);
+          text.modify("extend", direction[1], "character");
+          text.modify("extend", direction[0], "word");
+
+        }
+    } else if (document.selection && document.selection.type != "Control") {
+        var textRange = text.createRange();
+        if (textRange.text) {
+          textRange.expand("word");
+          while (/\s$/.test(textRange.text)) {
+            textRange.moveEnd("character", -1);
+        
+          }
+          textRange.select()
+        }
+    }
+    console.log(text.toString());
+    return text.toString();
+}
+
+function highlightText() {
+  range = window.getSelection().getRangeAt(0);
+  var selectionContents = range.extractContents();
+  var span = document.createElement("span");
+  span.appendChild(selectionContents);
+  span.style.backgroundColor = "lightgray";
+  range.insertNode(span);
+}
+
+document.onmouseup = function () {
+    getSelectionText();
+    highlightText();
+};
+
+
  
