@@ -17,53 +17,72 @@ class Projects extends Component {
         this.db = firebase.firestore();
 
         this.state = {
-            //activeListItem: null,
-            //allAudioFiles: [],
+            projectCount: null
         };
     }
-/*
+
     componentDidMount() {
-        this.getAudioTranscript();
+        this.getProjects();
     }
 
-    getAudioTranscript = () => {
+
+    getProjects = () => {
         let currentComponent = this;
         const currentUserEmail = app.auth().currentUser.email;
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
         
-        let audioObjects = [];
+        let projectObjects = [];
 
-        docUser.collection("audios").get().then(function(querySnapshot) {
+        docUser.collection("projects").get().then(function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
                 // console.log(doc.id, " => ", doc.data());
-                let audioObject = {
-                    audioId: doc.id,
-                    audioFileName: doc.data().fileName,
-                    audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
-                    audioUrl: doc.data().audioUrl,
-                    audioTranscript: doc.data().transcript,
+                let projectObject = {
+                    projectId: doc.id,
+                    projectFileName: doc.data().fileName,
+                    projectCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY")
                 }
-                audioObjects.push(audioObject);
+                projectObjects.push(projectObject);
             });
             currentComponent.setState({ 
-                allAudioFiles: [...currentComponent.state.allAudioFiles, ...audioObjects ] 
+                projectCount: projectObjects.length 
             });
         });
     }
 
-    // This syntax ensures `this` is bound within handleClick.
-    // Warning: this is *experimental* syntax.
-    handleClick = (audioId) => {
+   create_UUID = () => {
+        var dt = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    }
+
+    getUsername = () => app.auth().currentUser.email;
+
+    createProject() {
+        var currentCount = this.state.projectCount;
+        currentCount++;
+        const filename = this.create_UUID() + '_project' + currentCount;
+
+        console.log('create ' + filename.slice(37));
+        
+        this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(filename.slice(0,36)).set({
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            projectName: filename.slice(37)
+        }, {merge: true});
+
         this.setState({
-            activeListItem: audioId
+            projectCount: currentCount
         });
     }
-    */
+
     render() {
         return (
             <div>
                 <nav><a href="#"><img src="./staticHTML/image/menu.png"></img></a>Audio Transcription Tool
-                    <a href="#"><span className="projects_label create">+ Create new project</span></a></nav>
+                    <a href="#"><span className="projects_label create" onClick={() => this.createProject()}>+ Create new project</span></a></nav>
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
