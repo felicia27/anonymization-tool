@@ -27,19 +27,6 @@
                 <img id= "muteImage" src="image/unmute.png" width="40px" height="40px"/>
             </button>
           </div>
-
-        <!-- <div class="playback_container">
-            <div class="playback_controls clear">
-                <a href="#"><img class="small" src="image/rewind.png"></a>
-                <a href="#"><img src="image/play-button.png"></a>
-                <a href="#"><img class="small" src="image/fast-forward.png"></a>
-            </div>
-            <div class="timecode_current">00:01:03/00:10:35</div>
-        </div>
-        <div class="track_container">
-            <canvas id="trackCanvas" width="800" height="100" >
-                Your browser does not support the HTML5 canvas tag.</canvas>
-        </div> -->
     </div>
     <div class="transcript_container clear">
         <div class="edit_container">
@@ -71,6 +58,13 @@
             </div>
         </div>
         <div class="transcript">
+            <div class="labels">
+                <!-- <button onclick="myFunction()" class="dropbtn">Dropdown</button> -->
+                <div id="labelSelect" class="labelSelect-content">
+                  <a>Delete</a>
+                  <a>Mask</a>
+                </div>
+              </div>
             <section class="clear utterance_container">
                 <div class="content_container clear">
                     <div class="speaker">
@@ -202,6 +196,7 @@
             </section>
         </div>
     </div>
+
 
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.cursor.min.js"></script>

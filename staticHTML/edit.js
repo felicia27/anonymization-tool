@@ -70,7 +70,6 @@ wavesurfer.on('ready', function () {
 
     if (window.getSelection) {
       text = window.getSelection();
-        //text = window.getSelection().toString();
         if (!text.isCollapsed) {
           var range = document.createRange();
           range.setStart(text.anchorNode, text.anchorOffset);
@@ -105,6 +104,7 @@ wavesurfer.on('ready', function () {
           textRange.select()
         }
     }
+    document.getElementById("labelSelect").classList.toggle("show");
     console.log(text.toString());
     return text.toString();
 }
@@ -118,9 +118,21 @@ function highlightText() {
   range.insertNode(span);
 }
 
+function getMousePosition(event){
+  var x = event.pageX;
+  var y = event.pageY;
+  var menu = $("#labelSelect");
+  menu.css('position', 'absolute');
+  menu.css("left", x);
+  menu.css("top", y);
+}
+
+
 document.onmouseup = function () {
     getSelectionText();
     highlightText();
+    getMousePosition(event);
+
 };
 
 
