@@ -1,3 +1,11 @@
+var userSelectText = "";
+var  labelDict = {
+  "Delete": [],
+  "Mask": []
+};
+
+var punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+
 var wavesurfer = WaveSurfer.create({
     container: document.querySelector('#waveform'),
     waveColor: '#D9DCFF',
@@ -64,6 +72,14 @@ wavesurfer.on('ready', function () {
     }
   });
 
+  function removePunctuation(string) {
+    return string
+      .split('')
+      .filter(function(letter) {
+        return punctuation.indexOf(letter) === -1;
+      })
+      .join('');
+  }
 
   function getSelectionText() {
     var text;
@@ -105,9 +121,17 @@ wavesurfer.on('ready', function () {
         }
     }
     document.getElementById("labelSelect").classList.toggle("show");
-    console.log(text.toString());
-    return text.toString();
+    
+    if (text.toString() === "") {
+      console.log("empty selection")
+    }
+    else {
+      userSelectText = removePunctuation(text.toString());
+      // console.log(userSelectText);
+    }
+ 
 }
+
 
 function highlightText() {
   range = window.getSelection().getRangeAt(0);
@@ -127,11 +151,35 @@ function getMousePosition(event){
   menu.css("top", y);
 }
 
+function getLabelSelection(event){
+  label = event.target.id
+  // console.log(label.toString());
+  return label.toString()
+}
+
+function returnDatatoBackend(event) {
+  if (getLabelSelection(event) === "Delete" && userSelectText !== "") {
+    labelDict["Delete"].push(userSelectText.split(" "));
+    userSelectText = "";
+  } 
+  else if (getLabelSelection(event) === "Mask" && userSelectText !== "") {
+    labelDict["Mask"].push(userSelectText.split(" "));
+    userSelectText = "";
+  }
+  console.log(labelDict);
+  return labelDict;
+
+}
+
+
 
 document.onmouseup = function () {
     getSelectionText();
     highlightText();
     getMousePosition(event);
+    returnDatatoBackend(event);
+    // getLabelSelection(event);
+
 
 };
 
