@@ -13,7 +13,7 @@ nav img{
     width: 15px;
     margin: 0 30px;
 }
-.audio_container{
+.projects_audio_container{
     text-align: right;
     background-color: white;
     border-bottom: solid 1px #B8B9B8;
@@ -283,10 +283,10 @@ nav img{
 .folder_control img{
     width: 20px;
 }
-.green_border{
+.projects_green_border{
     position: absolute;
     width: 223px;
-    height: 19px;
+    height: 30px;
     left: -141px;
     top: 50px;
 
@@ -294,10 +294,10 @@ nav img{
     border-radius: 10px;
     transform: rotate(90deg);
 }
-.green_completed{
+.projects_green_completed{
     position: absolute;
     width: 222px;
-    height: 8px;
+    height: 20px;
     left: -135px;
     top: 55px;
 
@@ -305,15 +305,15 @@ nav img{
     transform: matrix(0, 1, 1, 0, 0, 0);
 }
 
-.transcript{
+.projects_transcript{
     width: 85%;
     float: left;
     font-size: 0.8em;
     
 }
-.utterance_container{
+.projects_utterance_container{
 }
-.content_container{
+.projects_content_container{
     background-color: white;
     width: 60%;
     float: left;
@@ -321,16 +321,16 @@ nav img{
     border-right: solid 1px #B8B9B8;
     padding: 30px;
 }
-.speaker{
+.projects_speaker{
     float: left;
     width: 20%;
 
 }
-.content{
+.projects_content{
     float: left;
     width: 75%;
 }
-.timecode{
+.projects_timecode{
     padding: 0 0 10px 0;
     font-weight: bold;
 }
