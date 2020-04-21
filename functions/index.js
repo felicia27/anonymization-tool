@@ -75,10 +75,8 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
 
   const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
   var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
-  //console.log(wordTimeArray);
   var res = rawTranscript.split(" ");
 
-  //var label_dic = {};
   var word_dic = {};
   wordTimeArray.forEach(function (item, index) {
   	start = item["startTime"]

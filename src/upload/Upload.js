@@ -4,8 +4,6 @@ import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 import "./Upload.css";
 import { Icon } from "antd";
-//var ffmpeg = require('ffmpeg');
-//var command = ffmpeg();
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
