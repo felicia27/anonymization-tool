@@ -40,17 +40,12 @@ class Upload extends Component {
     };
 
     handleUploadSuccess = filename => {
-
-
         firebase
             .storage()
             .ref("audios/" + this.getUsername())
             .child(filename)
             .getDownloadURL()
             .then(url => {
-              console.log("url");
-
-              console.log(url);
                 this.db.collection("transcripts").doc(this.getUsername()).set({
                     userEmail: this.getUsername()
                 }).then(function() {
@@ -78,14 +73,13 @@ class Upload extends Component {
                 });
                 this.setState({audioURL: url});
                 var good = false;
-
                 while (good != false)
                 {
                     sleep(100).then(() => {
 
                         this.db.collection("transcripts").doc(this.getUsername()).collection("audios").doc(filename.slice(0,36)).get()
                         .then(doc => {
-                          console.log(doc.data().finished)
+
                           if (doc.data().finished != false)
                           {
                             this.setState({ audio: filename, progress: 100, isUploading: false });
