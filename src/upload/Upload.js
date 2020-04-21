@@ -4,9 +4,8 @@ import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 import "./Upload.css";
 import { Icon } from "antd";
-//import {isFinished} from '../functions/index.js'
-
-//var ffmpeg = require("ffmpeg");
+//var ffmpeg = require('ffmpeg');
+//var command = ffmpeg();
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -44,13 +43,16 @@ class Upload extends Component {
 
     handleUploadSuccess = filename => {
 
-        // console.log(filename);
+
         firebase
             .storage()
             .ref("audios/" + this.getUsername())
             .child(filename)
             .getDownloadURL()
             .then(url => {
+              console.log("url");
+
+              console.log(url);
                 this.db.collection("transcripts").doc(this.getUsername()).set({
                     userEmail: this.getUsername()
                 }).then(function() {
@@ -67,6 +69,7 @@ class Upload extends Component {
                     fileName: filename.slice(37), //small hack to save duplicate files in gcs and also keep the original file name in Firestore
                     transcript: "",
                     finished: false,
+                    labeledTranscript: ""
                     // transcriptObjectUri: "transcripts/" + this.getUsername() + "/" + filename.slice(0, -4) + "_transcript.json" // slicing to remove .wav and add transcript literal
                 }, { merge: true })
                 .then(function() {
@@ -90,23 +93,15 @@ class Upload extends Component {
                             this.setState({ audio: filename, progress: 100, isUploading: false });
                             good = true;
                           }
+                          else {
+                            this.setState({ audio: filename, isUploading: true });
+                          }
                         })
                         .catch(function(error) {
                             console.error("Error adding document: ", error);
                         });
                     })
                 }
-
-                /*
-                this.db.collection("transcripts").doc(this.getUsername()).collection("audios").doc(filename.slice(0,36)).get()
-                .then(doc => {
-                  console.log("-------------------");
-                  console.log(doc.data().finished)
-                })
-                .catch(function(error) {
-                    console.error("Error adding document: ", error);
-                });
-                */
 
           });
     };

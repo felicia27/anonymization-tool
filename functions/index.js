@@ -71,11 +71,35 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   // Get a Promise representation of the final result of the job
   const [response] = await operation.promise();
   const jsonResponse = JSON.stringify(response);
+  const objectValue = JSON.parse(jsonResponse);
 
+  const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
+  var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
+  //console.log(wordTimeArray);
+  var res = rawTranscript.split(" ");
+
+  //var label_dic = {};
+  var word_dic = {};
+  wordTimeArray.forEach(function (item, index) {
+  	start = item["startTime"]
+    end = item["endTime"]
+  	if (!("seconds" in start)){
+  		word_dic[index] = {"word": item["word"], "start Time": start["nanos"].toString(),"end Time": end["seconds"]+ end["nanos"].toString()};
+	  }
+    else{
+    	 word_dic[index] = {"word": item["word"], "start Time": start["seconds"] + start["nanos"].toString(),"end Time": end["seconds"]+ end["nanos"].toString()};
+    }
+  });
+  const finaledTranscript = JSON.stringify(word_dic);
 
   db.collection("transcripts").doc(filePathUserEmail).collection("audios").doc(uuidFirestoreDocId).set({
     transcript: jsonResponse,
-    finished: true
+    finished: true,
+    labeledTranscript: finaledTranscript,
+    test: objectValue['results'],
+    baseTranscript: rawTranscript
+
+
   }, { merge: true });
 
   return null;
