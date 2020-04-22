@@ -131,7 +131,7 @@ nav img{
     -moz-appearance: none;
     appearance: none;
     border: none;
-    background: transparent url("image/trash.png") no-repeat right;
+    background: transparent url("./staticHTML/image/trash.png") no-repeat right;
     background-size: 20px;
     color: transparent;
 }
@@ -148,7 +148,7 @@ nav img{
     -moz-appearance: none;
     appearance: none;
     border: none;
-    background: transparent url("image/pencil-edit.png") no-repeat right;
+    background: transparent url("./staticHTML/image/pencil-edit.png") no-repeat right;
     background-size: 20px;
     color: transparent;
 }
@@ -165,7 +165,7 @@ nav img{
     -moz-appearance: none;
     appearance: none;
     border: none;
-    background: transparent url("image/brush.png") no-repeat right;
+    background: transparent url("./staticHTML/image/brush.png") no-repeat right;
     background-size: 20px;
     color: transparent;
 }
