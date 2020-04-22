@@ -38,13 +38,18 @@ class Projects extends Component {
                 // console.log(doc.id, " => ", doc.data());
                 let projectObject = {
                     projectId: doc.id,
-                    projectFileName: doc.data().fileName,
+                    projectFileName: doc.data().projectName,
                     projectCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY")
                 }
                 projectObjects.push(projectObject);
             });
+            
             currentComponent.setState({ 
                 projectCount: projectObjects.length 
+            });
+            
+            projectObjects.forEach((f) => {
+                currentComponent.createFolder(f.projectFileName);
             });
         });
     }
@@ -64,40 +69,113 @@ class Projects extends Component {
     createProject() {
         var currentCount = this.state.projectCount;
         currentCount++;
-        const filename = this.create_UUID() + '_project' + currentCount;
+        const projectName = this.create_UUID() + '_Project ' + currentCount;
 
-        console.log('create ' + filename.slice(37));
+        console.log('create ' + projectName.slice(37));
         
-        this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(filename.slice(0,36)).set({
+        this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(projectName.slice(0,36)).set({
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            projectName: filename.slice(37)
+            projectName: projectName.slice(37)
         }, {merge: true});
 
         this.setState({
             projectCount: currentCount
         });
+        
+        this.createFolder(projectName.slice(37));
+    }
+
+    createFolder(folderName) {
+        console.log(folderName);
+        var para = document.createElement("div");
+        para.innerHTML = document.getElementById("myDIV").innerHTML;
+        para.setAttribute("id", "myDIV"+ this.state.projectCount);
+
+        para.querySelector(".green_border").setAttribute("id", "border"+ this.state.projectCount);
+        para.querySelector(".green_completed").setAttribute("id", "border_completed"+ this.state.projectCount);
+        
+        para.querySelector("p").setAttribute("id", "myP"+ this.state.projectCount);
+        para.querySelector("h1").setAttribute("id", "title"+ this.state.projectCount);
+
+        para.querySelector("h1").innerHTML = folderName;
+
+        document.body.appendChild(para);
+    }
+
+    editFolder(current, c){
+        console.log(document.getElementById("border"+ this.state.projectCount));
+        
+        if (c == "rename")
+        {
+            document.getElementById("title"+ this.state.projectCount).contentEditable = true;
+        }
+        if (c == "edit")
+        {
+            document.getElementById("myP"+ this.state.projectCount).contentEditable = true;
+        }
+    }
+
+    colorFolder(current, c){
+        console.log(document.getElementById("border"+ this.state.projectCount));
+
+        if (c == "green")
+        {
+            document.getElementById("border"+ this.state.projectCount).style.backgroundColor = "#6FD171";
+            document.getElementById("border_completed"+ this.state.projectCount).style.backgroundColor = "#6FD171";
+        }
+        if (c == "red")
+        {
+
+            document.getElementById("border"+ this.state.projectCount).style.backgroundColor = "#FF5E5E";
+            document.getElementById("border_completed"+ this.state.projectCount).style.backgroundColor = "#FF5E5E";
+        }
+        if (c == "blue")
+        {
+            document.getElementById("border"+ this.state.projectCount).style.backgroundColor = "#5D94FF";
+            document.getElementById("border_completed"+ this.state.projectCount).style.backgroundColor = "#5D94FF";
+        }
     }
 
     render() {
         return (
             <div>
                 <nav><a href="#"><img src="./staticHTML/image/menu.png"></img></a>Audio Transcription Tool
-                    <a href="#"><span className="projects_label create" onClick={() => this.createProject()}>+ Create new project</span></a></nav>
+                    <a href="#"><span className="button" onClick={() => this.createProject()}>+ Create new project</span></a></nav>
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
         
-                <div className="projects_transcript_container clear"> 
-                    <div className="projects_edit_container"> 
-                        <div className="projects_edit_control"><a href="audiofiles.html">
-                            <div className="projects_green_border"></div>
-                            <div className="projects_green_completed"></div> 
-                            <div>Project 1</div>
-                            <p>Project description</p>
-                        </a>
-                        </div>
+                <div id="myDIV" style={{display:"none"}} className="project_container">
+                    <div className="folder">
+                        <div id="border" className="green_border"></div>
+                        <div id="border_completed" className="green_completed"></div>
+                
+                        <select id="deleteBox" onChange={() => this.deleteFolder(this, this.options[this.selectedIndex].value)}>
+                            <option style={{display: "none"}}></option>
+                            <option value="delete">Delete</option>
+                        </select>
+
+                        <select id="editBox" onChange={() => this.editFolder(this, this.options[this.selectedIndex].value)}>
+                            <option style={{display: "none"}}></option>
+                            <option value="rename">Rename</option>
+                            <option value="edit">Edit description</option>
+                        </select>
+
+                        <select id="colorBox" onChange={() => this.colorFolder(this, this.options[this.selectedIndex].value)}>
+                            <option style={{display: "none"}}></option>
+                            <option value="green">Green</option>
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                        </select>
+
+                    <h1>Project Title</h1>
+                    <p id="myP">Project description</p>
+                    <p id="myFiles">Files</p>
+                    <img id="addFile" src=".staticHTML/image/plus.png"></img>
+                    <p id="divider">---------------------------------------------</p>
+                    <div><a href="edit.html">audiofile1.wav</a></div>
                     </div>
-                </div> 
+                </div>
             </div>
         );
     }
