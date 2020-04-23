@@ -6,6 +6,7 @@ import Upload from "./upload/Upload";
 import firebase from "firebase";
 import React, { Component } from "react";
 import { List, Typography, Icon } from "antd";
+import uploadLogo from "./staticHTML/image/plus.png";
 
 const { Title } = Typography;
 
@@ -171,7 +172,7 @@ class Projects extends Component {
                     <h1>Project Title</h1>
                     <p id="myP">Project description</p>
                     <p id="myFiles">Files</p>
-                    <img id="addFile" src=".staticHTML/image/plus.png"></img>
+                    <img id="addFile" src={uploadLogo}></img>
                     <p id="divider">---------------------------------------------</p>
                     <div><a href="edit.html">audiofile1.wav</a></div>
                     </div>
