@@ -17,7 +17,7 @@ var wavesurfer = WaveSurfer.create({
     height: 100,
     barGap: 3,
     skipLength: 5,
-    plugins: [ 
+    plugins: [
         WaveSurfer.cursor.create({
             showTime: true,
             opacity: 1,
@@ -98,7 +98,7 @@ wavesurfer.on('ready', function () {
 
           var direction = [];
           if (backwards) {
-            direction = ['backward', 'forward']; 
+            direction = ['backward', 'forward'];
           } else {
             direction = ['forward', 'backward'];
           }
@@ -115,13 +115,13 @@ wavesurfer.on('ready', function () {
           textRange.expand("word");
           while (/\s$/.test(textRange.text)) {
             textRange.moveEnd("character", -1);
-        
+
           }
           textRange.select()
         }
     }
     document.getElementById("labelSelect").classList.toggle("show");
-    
+
     if (text.toString() === "") {
       console.log("empty selection")
     }
@@ -129,9 +129,8 @@ wavesurfer.on('ready', function () {
       userSelectText = removePunctuation(text.toString());
       // console.log(userSelectText);
     }
- 
-}
 
+}
 
 function highlightText() {
   range = window.getSelection().getRangeAt(0);
@@ -161,7 +160,7 @@ function returnDatatoBackend(event) {
   if (getLabelSelection(event) === "Delete" && userSelectText !== "") {
     labelDict["Delete"].push(userSelectText.split(" "));
     userSelectText = "";
-  } 
+  }
   else if (getLabelSelection(event) === "Mask" && userSelectText !== "") {
     labelDict["Mask"].push(userSelectText.split(" "));
     userSelectText = "";
@@ -182,6 +181,3 @@ document.onmouseup = function () {
 
 
 };
-
-
- 

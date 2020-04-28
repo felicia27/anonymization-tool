@@ -2,9 +2,15 @@
 import { Typography } from "antd";
 import React, { Component } from 'react';
 import './Transcript.css'
+import "./edit.css"
 
 const { Text, Title } = Typography;
-
+const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+var userSelectText = "";
+var  labelDict = {
+  "Delete": [],
+  "Mask": []
+};
 
 class Transcript extends Component {
     constructor(props) {
@@ -12,14 +18,15 @@ class Transcript extends Component {
         this.state = {
             transcriptArray: [],
             wordArray: [],
+            IDArray: [],
             update:0
         }
     }
-    
+
     componentDidMount() {
         this.processTranscript();
     }
-    
+
     componentDidUpdate(prevProps) {
         if(prevProps.audioId !== this.props.audioId) {
             this.processTranscript();
@@ -31,15 +38,26 @@ class Transcript extends Component {
 
     processTranscript = () => {
         let audioTranscript = JSON.parse(this.props.audioTranscript);
+        let idTranscript = JSON.parse(this.props.idTranscript);
         // const transcription = audioTranscript.results
         //         .map(result => result.alternatives[0].transcript)
         //         .join('\n');
 
         let wordArray = [];
         let transcriptArray = [];
+        let IDArray = []
+        for (const [key, value] of Object.entries(idTranscript)) {
+            console.log(key);
+            console.log(value.word)
+            IDArray.push({
+                key: key,
+                value: value.word
+            });
+
+        }
 
         audioTranscript.results.forEach(result => {
-            // console.log(`Transcription: ${result.alternatives[0].transcript}`);
+            
             let transcript = result.alternatives[0].transcript
             result.alternatives[0].words.forEach(wordInfo => {
                 // NOTE: If you have a time offset exceeding 2^32 seconds, use the
@@ -63,39 +81,182 @@ class Transcript extends Component {
         });
         this.setState({
             transcriptArray:transcriptArray ,
+            IDArray: IDArray,
             wordArray: wordArray
         })
+        console.log(IDArray);
+        console.log(wordArray);
+        console.log(transcriptArray);
     }
-    
+     onMouseUpHandler(){
+       var event = window.event;
+       getSelectionText();
+
+       highlightText();
+
+       getMousePosition(event);
+
+       returnDatatoBackend(event);
+
+     function removePunctuation(string) {
+        return string
+          .split('')
+          .filter(function(letter) {
+            return punctuation.indexOf(letter) === -1;
+          })
+          .join('');
+      }
+        function getSelectionText() {
+          var text;
+
+          if (window.getSelection) {
+            text = window.getSelection();
+              if (!text.isCollapsed) {
+                var range = document.createRange();
+                range.setStart(text.anchorNode, text.anchorOffset);
+                range.setEnd(text.focusNode, text.focusOffset);
+                var backwards = range.collapsed;
+                range.detach();
+
+                var endNode = text.focusNode, endOffset = text.focusOffset;
+                text.collapse(text.anchorNode, text.anchorOffset);
+
+                var direction = [];
+                if (backwards) {
+                  direction = ['backward', 'forward'];
+                } else {
+                  direction = ['forward', 'backward'];
+                }
+                text.modify("move", direction[0], "character");
+                text.modify("move", direction[1], "word");
+                text.extend(endNode, endOffset);
+                text.modify("extend", direction[1], "character");
+                text.modify("extend", direction[0], "word");
+
+              }
+          } else if (document.selection && document.selection.type != "Control") {
+              var textRange = text.createRange();
+              if (textRange.text) {
+                textRange.expand("word");
+                while (/\s$/.test(textRange.text)) {
+                  textRange.moveEnd("character", -1);
+
+                }
+                textRange.select()
+              }
+          }
+          document.getElementById("labelSelect").classList.toggle("show");
+
+          if (text.toString() === "") {
+            console.log("empty selection")
+          }
+          else {
+            userSelectText = removePunctuation(text.toString());
+             console.log(userSelectText);
+          }
+      }
+      function highlightText() {
+        var range = window.getSelection().getRangeAt(0);
+        var selectionContents = range.extractContents();
+        var span = document.createElement("span");
+        span.appendChild(selectionContents);
+        span.style.backgroundColor = "lightgreen";
+        range.insertNode(span);
+      }
+
+      function getMousePosition(event){
+
+        var x = event.pageX;
+        var y = event.pageY;
+
+        var menu = document.getElementById("labelSelect");
+        menu.style.position = 'absolute';
+        menu.style.left =  x;
+        menu.style.top = y;
+
+      }
+
+      function getLabelSelection(event){
+
+        var label = event.target.id;
+        console.log(label.toString());
+        return label.toString()
+      }
+
+      function returnDatatoBackend(event) {
+
+        if (getLabelSelection(event) === "Delete" && userSelectText !== "") {
+          labelDict["Delete"].push(userSelectText.split(" "));
+          userSelectText = "";
+        }
+        else if (getLabelSelection(event) === "Mask" && userSelectText !== "") {
+          labelDict["Mask"].push(userSelectText.split(" "));
+          userSelectText = "";
+        }
+        console.log(labelDict);
+        return labelDict;
+      }
+    }
+
     render() {
 
-        let transcriptSnippets = this.state.transcriptArray.map((transcript, index) => {
+        let transcriptSnippets = this.state.IDArray.map((word, index) => {
             return (
+
                 <div key={index} className="Transcript-transcription-text">
-                    <Text>{transcript}</Text>
+
+                    <span onMouseUp={this.onMouseUpHandler}>{word.value} <span className="test"> s</span> </span>
+
                 </div>
             );
         });
 
-        let wordSnippets = this.state.wordArray.map((word, index) => {
-            return (
-                <div key={index} className="Transcript-transcription-text">
-                    <Text ><strong>{word.key}</strong>: {word.value}</Text>
-                </div>
-            );
-        });
+        // let wordSnippets = this.state.IDArray.map((word, index) => {
+        //     return (
+        //         <div key={index} className="Transcript-transcription-text">
+        //             <span >{word.value}</span>
+        //         </div>
+        //     );
+        // });
 
         return (
-            <div className="Transcript-container">
-                <div className="Transcript-transcription">
-                    <Title level={2}>Transcription</Title>
-                    {transcriptSnippets}
+
+          <div className="transcript_container clear">
+
+              <div className="transcript">
+                <div className="labels">
+                  <div onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
+                    <a id="Delete">Delete</a>
+                    <a id="Mask">Mask</a>
+                  </div>
                 </div>
-                <div className="Transcript-words">
-                    <Title level={2}>Word offset</Title>
-                    {wordSnippets}
-                </div>
+                <section className="clear utterance_container">
+                  <div className="content_container clear">
+                  <div className="speaker">
+                      <select style={{width: '80px', position: 'absolute'}} onChange="this.nextElementSibling.value=this.value">
+                        <option>Speaker 1</option>
+                        <option> Speaker 2</option>
+                      </select>
+                      <input style={{width: '0px', marginTop: '1px', border: 'none', position: 'relative', left: '0px', marginRight: '25px'}} defaultValue="Speaker 1" />
+                    </div>
+                    <div className="content">
+                      <div className="timecode">00:00:03</div>
+                      <div>
+                      {transcriptSnippets}
+
+                      </div>
+                    </div>
+                  </div>
+                  <div className="label_container">
+                    <span className="label sensitive">Privacy: Sensitive</span>
+                    <span className="label private">Privacy: Private</span>
+                  </div>
+                </section>
+
+              </div>
             </div>
+
+
         );
     }
 }
