@@ -52,7 +52,13 @@ nav img{
     padding-left: 50px;
 }
 .transcript_container{
+    width: 80%;
+    float: left;
+}
 
+.column {
+    float: right;
+    width: 20%;
 }
 .edit_container{
     width: 10%;
@@ -84,13 +90,13 @@ nav img{
     font-size: 1.5em;
 }
 .transcript{
-    width: 85%;
+    width: 80%;
     float: left;
     font-size: 0.8em;
     
 }
 .utterance_container{
-   
+   width: 100%;
 }
 
 [contenteditable="true"]:focus {
@@ -99,7 +105,7 @@ nav img{
 
 .content_container{
     background-color: white;
-    width: 60%;
+    width: 100%;
     float: left;
     border-left: solid 1px #B8B9B8;
     border-right: solid 1px #B8B9B8;
@@ -129,10 +135,10 @@ nav img{
     font-weight: bold;
     float: left;
 }
-.sensitive{
+.mask{
     background-color: cornflowerblue;
 }
-.private{
+.delete{
     background-color: red;
 }
 .timecode{

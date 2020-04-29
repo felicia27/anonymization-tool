@@ -8,10 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
+<body id= "body">
     <nav><a href="projects.html"><img src="image/back.png"></a> Audio File Title</nav>
     <div class="audio_container clear">
         <div id="waveform" style="position:relative;">
+        </div>
+        <div class="audio_labels">
+            <span class="dot"></span>
         </div>
         <div class="controls">
             <button class="btn btn-primary" data-action="back" style="background-color: transparent; border-color: transparent">
@@ -28,6 +31,12 @@
             </button>
           </div>
     </div>
+
+
+        <div class="column">
+        </div>
+  
+
     <div class="transcript_container clear">
         <div class="edit_container">
             <div class="edit_control">
@@ -76,17 +85,16 @@
                     <div class="content">
                         <div class="timecode">00:00:03</div>
                         <div class="utterance" contenteditable="true">
-                            Our challenges may be new. <span class="coded">The instruments with which we meet them may
+                            Our challenges may be new. The instruments with which we meet them may
                                 be new. But those values upon which our success depends -- honesty and hard work,
                                 courage and fair play, tolerance and curiosity, loyalty and patriotism -- these things
-                                are old.</span> These things are true. They have been the quiet force of progress
+                                are old. These things are true. They have been the quiet force of progress
                             throughout our history.
                         </div>
                     </div>
                 </div>
                 <div class="label_container">
-                    <span class="label sensitive">Privacy: Sensitive</span>
-                    <span class="label private">Privacy: Private</span>
+  
                 </div>
             </section>
 
@@ -111,8 +119,7 @@
                     </div>
                 </div>
                 <div class="label_container">
-                    <span class="label sensitive">Privacy: Culturally sensitive, not offensive</span>
-                    <span class="label private">Privacy: Private</span>
+
                 </div>
             </section>
 
@@ -159,8 +166,8 @@
                             The snow was stained with blood. At the moment when the outcome of our revolution was most
                             in doubt, the father of our nation ordered these words to be read to the people:
 
-                            "Let it be told to the future world...that in the depth of winter, <span class="coded">when
-                                nothing but hope and virtue could survive... that the city and the country,</span>
+                            "Let it be told to the future world...that in the depth of winter, when
+                                nothing but hope and virtue could survive... that the city and the country,
                             alarmed at one common danger, came forth to meet [it]." </div>
                     </div>
                 </div>
@@ -195,10 +202,12 @@
             </section>
         </div>
     </div>
+
+
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.cursor.min.js"></script>
-    <script src="StaticEdit.js"></script>
-
+    <script src="edit.js"></script>
+ 
 
     <!-- <script>
         var c = document.getElementById("trackCanvas");
@@ -231,7 +240,7 @@
 
 
 
-
+        
 
 
     </script> -->

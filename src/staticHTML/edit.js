@@ -1,4 +1,6 @@
+
 var userSelectText = "";
+// let moved
 var  labelDict = {
   "Delete": [],
   "Mask": []
@@ -17,7 +19,7 @@ var wavesurfer = WaveSurfer.create({
     height: 100,
     barGap: 3,
     skipLength: 5,
-    plugins: [
+    plugins: [ 
         WaveSurfer.cursor.create({
             showTime: true,
             opacity: 1,
@@ -98,7 +100,7 @@ wavesurfer.on('ready', function () {
 
           var direction = [];
           if (backwards) {
-            direction = ['backward', 'forward'];
+            direction = ['backward', 'forward']; 
           } else {
             direction = ['forward', 'backward'];
           }
@@ -115,33 +117,36 @@ wavesurfer.on('ready', function () {
           textRange.expand("word");
           while (/\s$/.test(textRange.text)) {
             textRange.moveEnd("character", -1);
-
+        
           }
           textRange.select()
         }
     }
     document.getElementById("labelSelect").classList.toggle("show");
-
+    
     if (text.toString() === "") {
       console.log("empty selection")
     }
     else {
       userSelectText = removePunctuation(text.toString());
-      // console.log(userSelectText);
     }
 
+ 
 }
+
 
 function highlightText() {
   range = window.getSelection().getRangeAt(0);
   var selectionContents = range.extractContents();
   var span = document.createElement("span");
   span.appendChild(selectionContents);
+
   span.style.backgroundColor = "lightgray";
   range.insertNode(span);
 }
 
-function getMousePosition(event){
+
+function displayMenu(event){
   var x = event.pageX;
   var y = event.pageY;
   var menu = $("#labelSelect");
@@ -150,20 +155,58 @@ function getMousePosition(event){
   menu.css("top", y);
 }
 
+function hideMenu(){
+  var menu = $("#labelSelect");
+  menu.css("display", "none")
+}
+
 function getLabelSelection(event){
   label = event.target.id
-  // console.log(label.toString());
   return label.toString()
+}
+
+function displayDeleteLabel(event){
+  var x = event.pageX;
+  var y = event.pageY;
+  var label_container = document.createElement('div');
+  label_container.className = 'label_container';
+  label_container.style.float = 'left';
+  label_container.style.position = 'absolute';
+  label_container.style.top = (y-65).toString() + 'px'
+
+  label_container.innerHTML = `<span class="label delete">Delete</span>`;
+
+  document.getElementsByClassName('column')[0].appendChild(label_container);
+
+}
+
+function displayMaskLabel(event){
+  var x = event.pageX;
+  var y = event.pageY;
+  var label_container = document.createElement('div');
+  label_container.className = 'label_container';
+  label_container.style.float = 'left';
+  label_container.style.position = 'absolute';
+  label_container.style.top = (y-105).toString() + 'px'
+
+  label_container.innerHTML = `<span class="label mask">Mask</span>`;
+
+  document.getElementsByClassName('column')[0].appendChild(label_container);
 }
 
 function returnDatatoBackend(event) {
   if (getLabelSelection(event) === "Delete" && userSelectText !== "") {
+
     labelDict["Delete"].push(userSelectText.split(" "));
     userSelectText = "";
-  }
+    displayDeleteLabel(event);
+  } 
   else if (getLabelSelection(event) === "Mask" && userSelectText !== "") {
+  //  highlightText();
     labelDict["Mask"].push(userSelectText.split(" "));
     userSelectText = "";
+ //   highlightText();
+    displayMaskLabel(event);
   }
   console.log(labelDict);
   return labelDict;
@@ -173,11 +216,63 @@ function returnDatatoBackend(event) {
 
 
 document.onmouseup = function () {
+  // var selection = window.getSelection();
+  // if(selection.type != "Range") {
+  //   console.log("hi");
+  //   hideMenu();
     getSelectionText();
-    highlightText();
-    getMousePosition(event);
+    highlightText()
+    displayMenu(event);
     returnDatatoBackend(event);
-    // getLabelSelection(event);
+//   }
+//   else {
+//     getSelectionText();
+//     highlightText();
+//     displayMenu(event);
+//     returnDatatoBackend(event);
+//   }
+ };
 
+// $(document).ready(function(){
+//   $('#body').click(function(event) {
+//     var sel = getSelection().toString();
+//     if(sel){
+//       getSelectionText();
+//       displayMenu(event);
+//       returnDatatoBackend(event);
+//     }
+//     else {
+//       console.log("click");
+//       hideMenu(event);
+//     }
+//   });
+// });
 
-};
+// var element = document.body;
+
+// let downListener = () => {
+//   moved = false
+// }
+// element.addEventListener('mousedown', downListener)
+// let moveListener = () => {
+//   moved = true
+// }
+// element.addEventListener('mousemove', moveListener)
+
+// let upListener = () => {
+//   if (moved) {
+//     getSelectionText();
+//       console.log('moved')
+//       displayMenu(event);
+//       returnDatatoBackend(event);
+//   } else {
+
+//       console.log('not moved')
+//   }
+// }
+// element.addEventListener('mouseup', upListener)
+
+// // release memory
+// element.removeEventListener('mousedown', downListener)
+// element.removeEventListener('mousemove', moveListener)
+// element.removeEventListener('mouseup', upListener)
