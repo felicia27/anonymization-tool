@@ -129,6 +129,7 @@ wavesurfer.on('ready', function () {
     }
     else {
       userSelectText = removePunctuation(text.toString());
+
     }
 
  
@@ -143,6 +144,8 @@ function highlightText() {
 
   span.style.backgroundColor = "lightgray";
   range.insertNode(span);
+
+
 }
 
 
@@ -208,6 +211,7 @@ function returnDatatoBackend(event) {
  //   highlightText();
     displayMaskLabel(event);
   }
+ 
   console.log(labelDict);
   return labelDict;
 
@@ -216,63 +220,11 @@ function returnDatatoBackend(event) {
 
 
 document.onmouseup = function () {
-  // var selection = window.getSelection();
-  // if(selection.type != "Range") {
-  //   console.log("hi");
-  //   hideMenu();
+  console.log(userSelectText)
+    // hideMenu();
     getSelectionText();
     highlightText()
     displayMenu(event);
     returnDatatoBackend(event);
-//   }
-//   else {
-//     getSelectionText();
-//     highlightText();
-//     displayMenu(event);
-//     returnDatatoBackend(event);
-//   }
  };
 
-// $(document).ready(function(){
-//   $('#body').click(function(event) {
-//     var sel = getSelection().toString();
-//     if(sel){
-//       getSelectionText();
-//       displayMenu(event);
-//       returnDatatoBackend(event);
-//     }
-//     else {
-//       console.log("click");
-//       hideMenu(event);
-//     }
-//   });
-// });
-
-// var element = document.body;
-
-// let downListener = () => {
-//   moved = false
-// }
-// element.addEventListener('mousedown', downListener)
-// let moveListener = () => {
-//   moved = true
-// }
-// element.addEventListener('mousemove', moveListener)
-
-// let upListener = () => {
-//   if (moved) {
-//     getSelectionText();
-//       console.log('moved')
-//       displayMenu(event);
-//       returnDatatoBackend(event);
-//   } else {
-
-//       console.log('not moved')
-//   }
-// }
-// element.addEventListener('mouseup', upListener)
-
-// // release memory
-// element.removeEventListener('mousedown', downListener)
-// element.removeEventListener('mousemove', moveListener)
-// element.removeEventListener('mouseup', upListener)

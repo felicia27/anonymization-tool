@@ -44,6 +44,19 @@ nav img{
     font-size: 0.8em;
     margin: 5px;
 }
+
+.controls {
+    padding: 20px;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    background-color: cornflowerblue;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
 .track_container{
     width: 85%;
     height: 100px;
@@ -55,6 +68,7 @@ nav img{
     width: 80%;
     float: left;
 }
+
 
 .column {
     float: right;
