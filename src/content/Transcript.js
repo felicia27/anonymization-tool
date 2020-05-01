@@ -94,7 +94,7 @@ class Transcript extends Component {
 
        highlightText();
 
-       getMousePosition(event);
+       displayMenu(event);
 
        returnDatatoBackend(event);
 
@@ -160,18 +160,18 @@ class Transcript extends Component {
         var selectionContents = range.extractContents();
         var span = document.createElement("span");
         span.appendChild(selectionContents);
-        span.style.backgroundColor = "lightgreen";
+        span.style.backgroundColor = "lightgray";
         range.insertNode(span);
       }
 
-      function getMousePosition(event){
+      function displayMenu(event){
 
         var x = event.pageX;
         var y = event.pageY;
 
         var menu = document.getElementById("labelSelect");
         menu.style.position = 'absolute';
-        menu.style.left =  x;
+        menu.style.left = x+1000;
         menu.style.top = y;
 
       }
@@ -183,20 +183,59 @@ class Transcript extends Component {
         return label.toString()
       }
 
-      function returnDatatoBackend(event) {
+      function displayDeleteLabel(event){
+        var x = event.pageX;
+        var y = event.pageY;
+        var label_container = document.createElement('div');
+        label_container.className = 'label_container';
+        label_container.style.float = 'left';
+        label_container.style.position = 'absolute';
+        label_container.style.top = (y).toString() + 'px'
+      
+        label_container.innerHTML = `<span class="label delete">Delete</span>`;
+      
+        document.getElementsByClassName('column')[0].appendChild(label_container);
+      
+      }
+      
+      function displayMaskLabel(event){
+        var x = event.pageX;
+        var y = event.pageY;
+        var label_container = document.createElement('div');
+        label_container.className = 'label_container';
+        label_container.style.float = 'left';
+        label_container.style.position = 'absolute';
+        label_container.style.top = (y).toString() + 'px'
+      
+        label_container.innerHTML = `<span class="label mask">Mask</span>`;
+      
+        document.getElementsByClassName('column')[0].appendChild(label_container);
+      }
 
+      function returnDatatoBackend(event) {
+        
+        // var splitText = userSelectText.split(" ");
+        var wordIDs = userSelectText.match(/\d+/g).map(Number);
+        
         if (getLabelSelection(event) === "Delete" && userSelectText !== "") {
-          labelDict["Delete"].push(userSelectText.split(" "));
-          userSelectText = "";
+          for (var word of wordIDs) {
+            labelDict["Delete"].push(word);
+            displayDeleteLabel(event);
+            userSelectText = "";
+          }
         }
+
         else if (getLabelSelection(event) === "Mask" && userSelectText !== "") {
-          labelDict["Mask"].push(userSelectText.split(" "));
-          userSelectText = "";
+          for (var word of wordIDs) {
+            labelDict["Mask"].push(word);
+            displayMaskLabel(event);
+            userSelectText = "";
+          }
         }
         console.log(labelDict);
         return labelDict;
-      }
     }
+  }
 
     render() {
 
@@ -205,7 +244,7 @@ class Transcript extends Component {
 
                 <div key={index} className="Transcript-transcription-text">
 
-                    <span onMouseUp={this.onMouseUpHandler}>{word.value} <span className="test"> s</span> </span>
+                    <span onMouseUp={this.onMouseUpHandler}>{word.value}<span className="test">{index} + " "</span></span>
 
                 </div>
             );
@@ -220,6 +259,11 @@ class Transcript extends Component {
         // });
 
         return (
+
+          <div>
+
+          <div class="column"></div>
+    
 
           <div className="transcript_container clear">
 
@@ -243,19 +287,14 @@ class Transcript extends Component {
                       <div className="timecode">00:00:03</div>
                       <div>
                       {transcriptSnippets}
-
                       </div>
                     </div>
-                  </div>
-                  <div className="label_container">
-                    <span className="label sensitive">Privacy: Sensitive</span>
-                    <span className="label private">Privacy: Private</span>
                   </div>
                 </section>
 
               </div>
             </div>
-
+            </div>
 
         );
     }

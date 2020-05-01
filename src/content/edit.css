@@ -44,6 +44,19 @@ nav img{
     font-size: 0.8em;
     margin: 5px;
 }
+
+.controls {
+    padding: 20px;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    background-color: cornflowerblue;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
 .track_container{
     width: 85%;
     height: 100px;
@@ -51,8 +64,14 @@ nav img{
     text-align: left;
     padding-left: 50px;
 }
-.transcript_container{
 
+.transcript_container{
+    width: 100%;
+    float: left;
+}
+.column {
+    float: right;
+    width: 20%;
 }
 .edit_container{
     width: 10%;
@@ -84,14 +103,14 @@ nav img{
     font-size: 1.5em;
 }
 .transcript{
-    width: 85%;
+    width: 80%;
     float: left;
     font-size: 0.8em;
-
+    
 }
 .utterance_container{
-
-}
+    width: 100%;
+ }
 
 [contenteditable="true"]:focus {
     outline: none;
@@ -99,7 +118,7 @@ nav img{
 
 .content_container{
     background-color: white;
-    width: 60%;
+    width: 100%;
     float: left;
     border-left: solid 1px #B8B9B8;
     border-right: solid 1px #B8B9B8;
@@ -108,7 +127,6 @@ nav img{
 .speaker{
     float: left;
     width: 20%;
-
 }
 .content{
     float: left;
@@ -119,7 +137,7 @@ nav img{
     width: 30%;
     margin: 30px 0 0 20px;
     padding-left: 10px;
-    border-left: solid 4px green;
+    border-left: solid 4px gray;
 }
 .label{
     border-radius: 5px;
@@ -129,10 +147,10 @@ nav img{
     font-weight: bold;
     float: left;
 }
-.sensitive{
+.mask{
     background-color: cornflowerblue;
 }
-.private{
+.delete{
     background-color: red;
 }
 .timecode{
@@ -210,7 +228,7 @@ button{
     position: relative;
     /* display: inline-block; */
   }
-
+  
   /* Dropdown Content (Hidden by Default) */
   .labelSelect-content {
     display: none;
@@ -220,7 +238,7 @@ button{
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
-
+  
   /* Links inside the dropdown */
   .labelSelect-content a {
     color: black;
@@ -228,9 +246,9 @@ button{
     text-decoration: none;
     display: block;
   }
-
+  
   /* Change color of dropdown links on hover */
   .labelSelect-content a:hover {background-color: #ddd}
-
+  
   /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
   .show {display:block;}
