@@ -1,0 +1,97 @@
+.Home-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "Home-header Home-header Home-header Home-header"
+      "Home-sidebar Home-content Home-content Home-content";
+    /* row-gap: 30px; */
+  }
+
+.Home-header {
+    grid-area: Home-header;
+}
+
+.Home-content {
+    grid-area: Home-content;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "Home-content-audioPlayer"
+      "Home-content-transcriptView";
+    row-gap: 10px;
+
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+.Home-listAudioFiles {
+  grid-area: Home-listAudioFiles;
+}
+
+
+.ListAudioFiles-container {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.ListAudioFiles-header {
+  color: black;
+  /* font-size: 1.5em; */
+  padding-left: 25px;
+}
+
+.ListAudioFiles-footer {
+  color: rgb(24, 144, 255);
+  padding-left: 25px;
+}
+
+.ListAudioFiles-title {
+  margin: 0;
+  padding: 10px 10px 10px 25px;
+}
+
+.ListAudioFiles-item:hover {
+  box-shadow: 0 0 15px rgba(53, 68, 58, 0.438);
+}
+
+.ListAudioFiles-a {
+  text-decoration: none;
+  color: black;
+}
+
+.ListAudioFiles-a:hover {
+  text-decoration: none;
+  color: black;
+}
+
+.ListAudioFiles-scrollStyle {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.Home-content-audioPlayer {
+  grid-area: Home-content-audioPlayer;
+  margin: 20px;
+}
+
+.Home-content-transcriptView {
+  grid-area: Home-content-transcriptView;
+}
+
+.Home-content-noSelection {
+    grid-area: Home-content;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+    "Home-content-noSelection-label";
+    /* align-items: center; */
+}
+
+.Home-content-noSelection-label {
+  grid-area: Home-content-noSelection-label;
+  align-self: start;
+  justify-self: center;
+  margin-top: 100px;
+}

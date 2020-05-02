@@ -64,12 +64,11 @@ nav img{
     text-align: left;
     padding-left: 50px;
 }
+
 .transcript_container{
-    width: 80%;
+    width: 100%;
     float: left;
 }
-
-
 .column {
     float: right;
     width: 20%;
@@ -110,8 +109,8 @@ nav img{
     
 }
 .utterance_container{
-   width: 100%;
-}
+    width: 100%;
+ }
 
 [contenteditable="true"]:focus {
     outline: none;
@@ -128,7 +127,6 @@ nav img{
 .speaker{
     float: left;
     width: 20%;
-
 }
 .content{
     float: left;
@@ -139,7 +137,7 @@ nav img{
     width: 30%;
     margin: 30px 0 0 20px;
     padding-left: 10px;
-    border-left: solid 4px green;
+    border-left: solid 4px gray;
 }
 .label{
     border-radius: 5px;
@@ -205,7 +203,7 @@ button{
 .speaker {
     overflow: hidden;
   }
-  
+
   .speaker select {
     text-indent: 1px;
     -webkit-appearance: none;
@@ -213,10 +211,9 @@ button{
     appearance: none;
     padding: 2px 2px 2px 2px;
     border: none;
-    background: transparent url("image/down.png") padding-box;
     font-size: 14px;
   }
- 
+
 
 
  input {
@@ -224,7 +221,7 @@ button{
     font-size: 14px;
     padding: 2px 2px 2px 2px;
     outline: none;
-} 
+}
 
 
 .labelSelect {

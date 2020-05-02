@@ -1,4 +1,4 @@
-import "./Home.css";
+import "./StaticHome.css";
 import app from "./base";
 import 'antd/dist/antd.css';
 import moment from "moment";
@@ -12,7 +12,7 @@ import { List, Typography, Icon } from "antd";
 
 const { Title } = Typography;
 
-class Home extends Component {
+class Test extends Component {
 
     constructor(props) {
         super(props);
@@ -58,7 +58,9 @@ class Home extends Component {
     // This syntax ensures `this` is bound within handleClick.
     // Warning: this is *experimental* syntax.
     handleClick = (audioId) => {
+      console.log(audioId);
         this.setState({
+
             activeListItem: audioId
         });
     }
@@ -73,9 +75,12 @@ class Home extends Component {
         });
 
         return (
+
+
             <div className="Home-container">
                 <div className="Home-header">
                     <Header />
+
                 </div>
 
                 <div className="Home-sidebar">
@@ -116,4 +121,4 @@ class Home extends Component {
     }
 }
 
-export default Home;
+export default Test;

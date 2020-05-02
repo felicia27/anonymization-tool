@@ -6,6 +6,7 @@ import Audios from "./Audios";
 import Home from "./Home";
 import Login from "./Login";
 import SignUp from "./SignUp";
+import Test from "./StaticHome"
 import { AuthProvider } from "./Auth";
 import PrivateRoute from "./PrivateRoute";
 
@@ -14,8 +15,9 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div className="App">
-          <PrivateRoute exact path="/" component={Home} />
-          <PrivateRoute exact path = "/projects" component={Projects} />
+          <PrivateRoute exact path="/home" component={Home} />
+          <PrivateRoute exact path = "/" component={Test} />
+          
           <PrivateRoute exact path="/audios" component={Audios} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
