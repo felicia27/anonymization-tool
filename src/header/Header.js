@@ -3,23 +3,21 @@ import './Header.css';
 import { Button, Icon } from "antd";
 import app from "../base";
 
-
-
 class Header extends Component {
-    constructor(props) {
-        super(props);
-        this.handleClick = this.handleClick.bind(this);
-      }
-
-      handleClick() {
-        console.log('Click happened');
-      }
-
     render() {
         return (
             <div className="Header-container">
                 <div className="Header-logo">
                     <span>Data Anonymization Tool</span>
+                </div>
+
+                <div className="Header-about">
+                    {/* This is not the right way to use anchor <a>, add value to href later and remove onClick*/}
+                    <a href="#/" onClick={() => {return false}}>About</a>
+                </div>
+
+                <div className="Header-contact">
+                    <a href="#/" onClick={() => {return false}}>Contact</a>
                 </div>
 
                 <div className="Header-signOut">
@@ -28,15 +26,7 @@ class Header extends Component {
                         Sign out
                     </Button>
                 </div>
-
-                <div className="Header-export">
-                    <Button type="primary" onClick= {() => this.handleClick()}>
-                        <Icon style={{paddingRight: "10px"}} type="upload" />
-                        Export Audio
-                    </Button>
-                </div>
             </div>
-
         );
     }
 }
