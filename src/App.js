@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 import Projects from "./Projects";
 import Audios from "./Audios";
 import Home from "./Home";
@@ -16,9 +16,9 @@ const App = () => {
       <Router>
         <div className="App">
           <PrivateRoute exact path="/home" component={Home} />
-          <PrivateRoute exact path = "/" component={Test} />
+          <PrivateRoute exact path = "/test/:projectId/:audioId" component={Test} />
+          <PrivateRoute exact path="/" component={Projects} />
           
-          <PrivateRoute exact path="/audios" component={Audios} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
         </div>

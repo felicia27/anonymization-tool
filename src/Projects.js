@@ -7,6 +7,7 @@ import firebase from "firebase";
 import React, { Component } from "react";
 import { List, Typography, Icon } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -18,7 +19,8 @@ class Projects extends Component {
         this.db = firebase.firestore();
 
         this.state = {
-            projectCount: null
+            projectCount: null,
+            allProjects: []
         };
     }
 
@@ -37,21 +39,38 @@ class Projects extends Component {
         docUser.collection("projects").get().then(function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
                 // console.log(doc.id, " => ", doc.data());
-                let projectObject = {
-                    projectId: doc.id,
-                    projectFileName: doc.data().projectName,
-                    projectCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY")
-                }
-                projectObjects.push(projectObject);
+                let audioObjects = [];
+                docUser.collection("projects").doc(doc.id).collection("audios").get().then(function(audioSnapShot) {
+                    audioSnapShot.forEach(function(audio) {
+                        let audioObject = {
+                            audioId: audio.id,
+                            audioFileName: audio.data().fileName,
+                            audioCreatedAt: moment(audio.data().createdAt.toDate()).format("MMM Do YYYY"),
+                            audioUrl: audio.data().audioUrl,
+                            audioTranscript: audio.data().transcript,
+                            idTranscript: audio.data().idTranscript,
+                        }
+                        audioObjects.push(audioObject);
+                    });
+                    let projectObject = {
+                        projectId: doc.id,
+                        projectName: doc.data().projectName,
+                        projectDescription: doc.data().projectDescription,
+                        projectCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
+                        projectAudios: audioObjects,
+                    }
+                    projectObjects.push(projectObject);
+                    
+                    currentComponent.setState({ 
+                    projectCount: projectObjects.length,
+                    allProjects: [...projectObjects]
+                    });
+                });
             });
-            
-            currentComponent.setState({ 
-                projectCount: projectObjects.length 
-            });
-            
+            /*
             projectObjects.forEach((f) => {
                 currentComponent.createFolder(f.projectFileName);
-            });
+            });*/
         });
     }
 
@@ -68,22 +87,57 @@ class Projects extends Component {
     getUsername = () => app.auth().currentUser.email;
 
     createProject() {
+        let currentComponent = this;
+        const currentUserEmail = app.auth().currentUser.email;
+        let docUser = this.db.collection("transcripts").doc(currentUserEmail);
+
         var currentCount = this.state.projectCount;
         currentCount++;
         const projectName = this.create_UUID() + '_Project ' + currentCount;
 
         console.log('create ' + projectName.slice(37));
         
-        this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(projectName.slice(0,36)).set({
+        docUser.collection("projects").doc(projectName.slice(0,36)).set({
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            projectName: projectName.slice(37)
-        }, {merge: true});
-
-        this.setState({
-            projectCount: currentCount
+            projectName: projectName.slice(37),
+            projectDescription: ""
+        }, {merge: true}).then(() => {
+            let projectObjects = [];
+        docUser.collection("projects").doc(projectName.slice(0,36)).get().then(function(querySnapshot) {
+                // console.log(doc.id, " => ", doc.data());
+                let audioObjects = [];
+                docUser.collection("projects").doc(querySnapshot.id).collection("audios").get().then(function(audioSnapShot) {
+                    audioSnapShot.forEach(function(audio) {
+                        let audioObject = {
+                            audioId: audio.id,
+                            audioFileName: audio.data().fileName,
+                            audioCreatedAt: moment(audio.data().createdAt.toDate()).format("MMM Do YYYY"),
+                            audioUrl: audio.data().audioUrl,
+                            audioTranscript: audio.data().transcript,
+                            idTranscript: audio.data().idTranscript,
+                        }
+                        audioObjects.push(audioObject);
+                    });
+                    let projectObject = {
+                        projectId: querySnapshot.id,
+                        projectName: querySnapshot.data().projectName,
+                        projectDescription: querySnapshot.data().projectDescription,
+                        projectCreatedAt: moment(querySnapshot.data().createdAt.toDate()).format("MMM Do YYYY"),
+                        projectAudios: audioObjects,
+                    }
+                    projectObjects.push(projectObject);
+                    
+                    currentComponent.setState({ 
+                    projectCount: currentComponent.state.projectCount + projectObjects.length,
+                    allProjects: [...currentComponent.state.allProjects,...projectObjects]
+                    });
+                });
+            });
         });
+
         
-        this.createFolder(projectName.slice(37));
+        
+        //this.createFolder(projectName.slice(37));
     }
 
     createFolder(folderName) {
@@ -138,6 +192,8 @@ class Projects extends Component {
     }
 
     render() {
+        
+
         return (
             <div>
                 <nav><a href="#"><img src="./staticHTML/image/menu.png"></img></a>Audio Transcription Tool
@@ -146,36 +202,52 @@ class Projects extends Component {
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
         
-                <div id="myDIV" style={{display:"none"}} className="project_container">
-                    <div className="folder">
-                        <div id="border" className="green_border"></div>
-                        <div id="border_completed" className="green_completed"></div>
-                
-                        <select id="deleteBox" onChange={() => this.deleteFolder(this, this.options[this.selectedIndex].value)}>
-                            <option style={{display: "none"}}></option>
-                            <option value="delete">Delete</option>
-                        </select>
+                <div id="myDIV"  className="project_container">
+                    {this.state.allProjects.map(project => {
 
-                        <select id="editBox" onChange={() => this.editFolder(this, this.options[this.selectedIndex].value)}>
-                            <option style={{display: "none"}}></option>
-                            <option value="rename">Rename</option>
-                            <option value="edit">Edit description</option>
-                        </select>
+                        let projectAudioList = project.projectAudios.map(audio => {
+                            return(
+                                <Link to={"/test/" + project.projectId + "/" + audio.audioId}>{audio.audioFileName}</Link>
+                                //<a key={audio.audioId}>
+                                //    <p>{audio.audioFileName}</p>
+                                //</a>
+                            );
+                        });
 
-                        <select id="colorBox" onChange={() => this.colorFolder(this, this.options[this.selectedIndex].value)}>
-                            <option style={{display: "none"}}></option>
-                            <option value="green">Green</option>
-                            <option value="red">Red</option>
-                            <option value="blue">Blue</option>
-                        </select>
+                        return(
+                            <div className="folder" key={project.projectId}>
+                                <div id="border" className="green_border"></div>
+                                <div id="border_completed" className="green_completed"></div>
+                        
+                                <select id="deleteBox" onChange={() => this.deleteFolder(this, this.options[this.selectedIndex].value)}>
+                                    <option style={{display: "none"}}></option>
+                                    <option value="delete">Delete</option>
+                                </select>
 
-                    <h1>Project Title</h1>
-                    <p id="myP">Project description</p>
-                    <p id="myFiles">Files</p>
-                    <img id="addFile" src={uploadLogo}></img>
-                    <p id="divider">---------------------------------------------</p>
-                    <div><a href="edit.html">audiofile1.wav</a></div>
-                    </div>
+                                <select id="editBox" onChange={() => this.editFolder(this, this.options[this.selectedIndex].value)}>
+                                    <option style={{display: "none"}}></option>
+                                    <option value="rename">Rename</option>
+                                    <option value="edit">Edit description</option>
+                                </select>
+
+                                <select id="colorBox" onChange={() => this.colorFolder(this, this.options[this.selectedIndex].value)}>
+                                    <option style={{display: "none"}}></option>
+                                    <option value="green">Green</option>
+                                    <option value="red">Red</option>
+                                    <option value="blue">Blue</option>
+                                </select>
+                                
+                                <h1>{project.projectName}</h1>
+                                <p id="myP">{project.projectDescription}</p>
+                                <p id="myFiles">Files</p>
+                                <img id="addFile" src={uploadLogo}></img>
+                                <p id="divider">---------------------------------------------</p>
+                                <div><List
+                                    dataSource={projectAudioList}
+                                    renderItem={item => <List.Item>{item}</List.Item>}/></div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         );

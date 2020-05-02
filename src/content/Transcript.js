@@ -262,7 +262,7 @@ class Transcript extends Component {
 
           <div>
 
-          <div class="column"></div>
+          <div className="column"></div>
     
 
           <div className="transcript_container clear">
@@ -277,7 +277,7 @@ class Transcript extends Component {
                 <section className="clear utterance_container">
                   <div className="content_container clear">
                   <div className="speaker">
-                      <select style={{width: '80px', position: 'absolute'}} onChange="this.nextElementSibling.value=this.value">
+                      <select style={{width: '80px', position: 'absolute'}} onChange={this.nextElementSibling.value=this.value}>
                         <option>Speaker 1</option>
                         <option> Speaker 2</option>
                       </select>

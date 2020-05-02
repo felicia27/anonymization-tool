@@ -33,22 +33,26 @@ class Test extends Component {
         let currentComponent = this;
         const currentUserEmail = app.auth().currentUser.email;
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
+        //currentProject is the projectId of the project the audio file is stored in
+        let currentProject = currentComponent.props.match.params.projectId;
+        //currentAudio is the audioId of the audio file that was clicked on
+        let currentAudio = currentComponent.props.match.params.audioId;
 
         let audioObjects = [];
 
-        docUser.collection("audios").get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
+        //This only retrieves the audio file that was clicked. If testing is needed change the exact path of the Route in App.js
+        //and change the values of currentProject and currentAudio above to prevent a redirect of wiping the error from the console.
+        docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(function(querySnapShot) {
                 // console.log(doc.id, " => ", doc.data());
-                let audioObject = {
-                    audioId: doc.id,
-                    audioFileName: doc.data().fileName,
-                    audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
-                    audioUrl: doc.data().audioUrl,
-                    audioTranscript: doc.data().transcript,
-                    idTranscript: doc.data().idTranscript,
-                }
-                audioObjects.push(audioObject);
-            });
+            let audioObject = {
+                audioId: querySnapShot.id,
+                audioFileName: querySnapShot.data().fileName,
+                audioCreatedAt: moment(querySnapShot.data().createdAt.toDate()).format("MMM Do YYYY"),
+                audioUrl: querySnapShot.data().audioUrl,
+                audioTranscript: querySnapShot.data().transcript,
+                idTranscript: querySnapShot.data().idTranscript,
+            }
+            audioObjects.push(audioObject);
             currentComponent.setState({
                 allAudioFiles: [...currentComponent.state.allAudioFiles, ...audioObjects ]
             });
@@ -58,7 +62,7 @@ class Test extends Component {
     // This syntax ensures `this` is bound within handleClick.
     // Warning: this is *experimental* syntax.
     handleClick = (audioId) => {
-      console.log(audioId);
+      console.log(audioId.idTranscript);
         this.setState({
 
             activeListItem: audioId
