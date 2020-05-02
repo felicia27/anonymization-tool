@@ -9,12 +9,15 @@ import Upload from "./upload/Upload";
 import { List, Typography, Icon } from "antd";
 import deleteLogo from "./staticHTML/image/trash.png";
 import uploadLogo from "./staticHTML/image/plus.png";
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 const { Title } = Typography;
 
 class Folder extends Component {
     constructor(props) {
         super(props);
+
+        this.db = firebase.firestore();
     
         this.state = {
             clicked: false,
@@ -80,6 +83,12 @@ class Folder extends Component {
     }
 
     render() {
+        let allProjectAudios = this.props.projectAudios.map(audio => {
+            return(
+                <Link to={"test/" + this.props.id + "/" + audio.audioId} key={audio.audioId}>{audio.audioFileName}</Link>
+            );
+        });
+
         const { backgroundcolor } = this.state
         return (
             <div>
@@ -114,7 +123,10 @@ class Folder extends Component {
                         <p id="myFiles">Files</p>
                         <img id="addFile" src={uploadLogo}></img>
                         <p id="divider">---------------------------------------------</p>
-                        <div><a href="edit.html">audiofile1.wav</a></div>
+                        <div><List
+                            dataSource={allProjectAudios}
+                            renderItem={item => <List.Item>{item}</List.Item>}
+                            /></div>
                         {/*id = {this.props.id}*/}  
                         {/*<button onClick={this.props.delete}>Delete</button>*/}
 

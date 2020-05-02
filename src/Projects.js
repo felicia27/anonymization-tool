@@ -7,7 +7,6 @@ import firebase from "firebase";
 import React, { Component } from "react";
 import { List, Typography, Icon } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
-import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 import Folder from "./Folder.js";
 
 const { Title } = Typography;
@@ -24,7 +23,8 @@ class Projects extends Component {
             folderArray: [],
             id: "",
             title: "Project Title",
-            projectDescription: "Project description"
+            projectDescription: "Project description",
+            projectInfo: null
         };
 
         this.folderID = 0;
@@ -69,14 +69,15 @@ class Projects extends Component {
                     
                     currentComponent.setState({ 
                     projectCount: projectObjects.length,
-                    allProjects: [...projectObjects]
                     });
+                
+                    
+                    currentComponent.addFolder(projectObject);
+                    
                 });
             });
-            /*
-            projectObjects.forEach((f) => {
-                currentComponent.createFolder(f.projectFileName);
-            });*/
+            
+            
         });
     }
 
@@ -109,8 +110,8 @@ class Projects extends Component {
             projectDescription: ""
         }, {merge: true}).then(() => {
             let projectObjects = [];
-        docUser.collection("projects").doc(projectName.slice(0,36)).get().then(function(querySnapshot) {
-                // console.log(doc.id, " => ", doc.data());
+            docUser.collection("projects").doc(projectName.slice(0,36)).get().then(function(querySnapshot) {
+                    // console.log(doc.id, " => ", doc.data());
                 let audioObjects = [];
                 docUser.collection("projects").doc(querySnapshot.id).collection("audios").get().then(function(audioSnapShot) {
                     audioSnapShot.forEach(function(audio) {
@@ -135,8 +136,9 @@ class Projects extends Component {
                     
                     currentComponent.setState({ 
                     projectCount: currentComponent.state.projectCount + projectObjects.length,
-                    allProjects: [...currentComponent.state.allProjects,...projectObjects]
                     });
+
+                    currentComponent.addFolder(projectObject);
                 });
             });
         });
@@ -179,16 +181,16 @@ class Projects extends Component {
         })
     }
 
-    addFolder = () => {
+    addFolder = (project) => {
         this.folderID = this.folderID +1;
-        const copyFolderArray = Object.assign([], this.state.folderArray);
-        copyFolderArray.push({
-            id: this.folderID,
-            title: this.state.title,
-            projectDescription: this.state.projectDescription
-        })
+        let newProject = {
+            id: project.projectId,
+            title: project.projectName,
+            projectDescription: project.projectDescription,
+            projectInfo: project
+        }
         this.setState({
-            folderArray: copyFolderArray
+            folderArray: [...this.state.folderArray, newProject]
         })
     }
 
@@ -218,6 +220,7 @@ class Projects extends Component {
                             id={folder.id}
                             title={folder.title}
                             projectDescription={folder.projectDescription}
+                            projectAudios={folder.projectInfo.projectAudios}
                             delete={this.deleteEvent.bind(this, index)}
                             onClick={() => this.handleClick(index)} //color button (delete)
                         />
