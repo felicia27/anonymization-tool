@@ -33,7 +33,6 @@ nav img{
     float: right;
 }
 
-
 .project_container{
     display: flex;
     flex-direction: row;
@@ -57,10 +56,10 @@ nav img{
     margin: -10px 50px;
     float: right;
 }
-.folder h1{
+.folder input{
     position: relative;
     left: 35px;
-    top: 5px;
+    top: -20px;
 
     font-style: normal;
     font-weight: bold;
@@ -69,11 +68,17 @@ nav img{
 
     text-decoration: none;
     color: #000000;
+
+    background-color: transparent;
+    width: 230px;
 }
-.folder p{
+.folder input[disabled] {
+    border: 0;
+  }
+#desc{
     position: relative;
     left: 35px;
-    top: 20px;
+    top: -25px;
 
     font-style: normal;
     font-weight: normal;
@@ -85,7 +90,7 @@ nav img{
 #myFiles{
     position: relative;
     left: 35px;
-    top: 60px;
+    top: 30px;
 
     font-style: normal;
     font-weight: normal;
@@ -97,7 +102,7 @@ nav img{
 #divider{
     position: relative;
     left: 35px;
-    top: 60px;
+    top: 30px;
 
     font-style: normal;
     font-weight: normal;
@@ -109,13 +114,30 @@ nav img{
 .folder a{
     position: relative;
     left: 35px;
-    top: 50px;
+    top: 20px;
 
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
     line-height: 0px;
     color: #000000;
+}
+
+
+
+#deleteButton{
+    position: relative;
+    left: -10px;
+    top: -14px;
+    width:20px;
+    height: 20px;
+    line-height: 20px;
+    float: right;
+    appearance: none;
+    border: none;
+    background: transparent;
+    background-size: 20px;
+    color: transparent;
 }
 
 
@@ -173,7 +195,7 @@ nav img{
 #addFile{
     position: relative;
     left: 36px;
-    top: 45px;
+    top: 15px;
     width: 15px;
     height: 15px;
 }
@@ -200,7 +222,7 @@ nav img{
     left: -103px;
     top: 101px;
 
-    background: #6FD171;
+    /*background: #6FD171;*/
     border-radius: 10px;
     transform: rotate(90deg);
 }
@@ -211,10 +233,9 @@ nav img{
     left: -98px;
     top: 87px;
 
-    background: #6FD171;
+    /*background: #6FD171;*/
     transform: matrix(0, 1, 1, 0, 0, 0);
 }
-
 
 
 /*

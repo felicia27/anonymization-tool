@@ -8,6 +8,7 @@ import React, { Component } from "react";
 import { List, Typography, Icon } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
 import { Link, BrowserRouter as Router, Route } from "react-router-dom";
+import Folder from "./Folder.js";
 
 const { Title } = Typography;
 
@@ -20,8 +21,13 @@ class Projects extends Component {
 
         this.state = {
             projectCount: null,
-            allProjects: []
+            folderArray: [],
+            id: "",
+            title: "Project Title",
+            projectDescription: "Project description"
         };
+
+        this.folderID = 0;
     }
 
     componentDidMount() {
@@ -142,6 +148,7 @@ class Projects extends Component {
 
     createFolder(folderName) {
         console.log(folderName);
+        /*
         var para = document.createElement("div");
         para.innerHTML = document.getElementById("myDIV").innerHTML;
         para.setAttribute("id", "myDIV"+ this.state.projectCount);
@@ -154,43 +161,42 @@ class Projects extends Component {
 
         para.querySelector("h1").innerHTML = folderName;
 
-        document.body.appendChild(para);
+        document.body.appendChild(para);*/
     }
 
-    editFolder(current, c){
-        console.log(document.getElementById("border"+ this.state.projectCount));
-        
-        if (c == "rename")
-        {
-            document.getElementById("title"+ this.state.projectCount).contentEditable = true;
-        }
-        if (c == "edit")
-        {
-            document.getElementById("myP"+ this.state.projectCount).contentEditable = true;
-        }
+    deleteEvent = (index) => {
+        const copyFolderArray = Object.assign([], this.state.folderArray);
+        copyFolderArray.splice(index, 1);
+        this.setState({
+            folderArray: copyFolderArray
+        })
     }
 
-    colorFolder(current, c){
-        console.log(document.getElementById("border"+ this.state.projectCount));
-
-        if (c == "green")
-        {
-            document.getElementById("border"+ this.state.projectCount).style.backgroundColor = "#6FD171";
-            document.getElementById("border_completed"+ this.state.projectCount).style.backgroundColor = "#6FD171";
-        }
-        if (c == "red")
-        {
-
-            document.getElementById("border"+ this.state.projectCount).style.backgroundColor = "#FF5E5E";
-            document.getElementById("border_completed"+ this.state.projectCount).style.backgroundColor = "#FF5E5E";
-        }
-        if (c == "blue")
-        {
-            document.getElementById("border"+ this.state.projectCount).style.backgroundColor = "#5D94FF";
-            document.getElementById("border_completed"+ this.state.projectCount).style.backgroundColor = "#5D94FF";
-        }
+    //delete later
+    setFolder = (element) => {
+        this.setState({
+            projectDescription: element.target.value
+        })
     }
 
+    addFolder = () => {
+        this.folderID = this.folderID +1;
+        const copyFolderArray = Object.assign([], this.state.folderArray);
+        copyFolderArray.push({
+            id: this.folderID,
+            title: this.state.title,
+            projectDescription: this.state.projectDescription
+        })
+        this.setState({
+            folderArray: copyFolderArray
+        })
+    }
+
+    //delete later
+    handleClick = index => {
+        console.log("click")
+      };
+      
     render() {
         
 
@@ -202,53 +208,21 @@ class Projects extends Component {
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
         
-                <div id="myDIV"  className="project_container">
-                    {this.state.allProjects.map(project => {
+                {/*<input type="text" onBlur={this.setFolder} /> */}
+                <button onClick={this.addFolder}>Add Folder</button>
 
-                        let projectAudioList = project.projectAudios.map(audio => {
-                            return(
-                                <Link to={"/test/" + project.projectId + "/" + audio.audioId}>{audio.audioFileName}</Link>
-                                //<a key={audio.audioId}>
-                                //    <p>{audio.audioFileName}</p>
-                                //</a>
-                            );
-                        });
-
-                        return(
-                            <div className="folder" key={project.projectId}>
-                                <div id="border" className="green_border"></div>
-                                <div id="border_completed" className="green_completed"></div>
-                        
-                                <select id="deleteBox" onChange={() => this.deleteFolder(this, this.options[this.selectedIndex].value)}>
-                                    <option style={{display: "none"}}></option>
-                                    <option value="delete">Delete</option>
-                                </select>
-
-                                <select id="editBox" onChange={() => this.editFolder(this, this.options[this.selectedIndex].value)}>
-                                    <option style={{display: "none"}}></option>
-                                    <option value="rename">Rename</option>
-                                    <option value="edit">Edit description</option>
-                                </select>
-
-                                <select id="colorBox" onChange={() => this.colorFolder(this, this.options[this.selectedIndex].value)}>
-                                    <option style={{display: "none"}}></option>
-                                    <option value="green">Green</option>
-                                    <option value="red">Red</option>
-                                    <option value="blue">Blue</option>
-                                </select>
-                                
-                                <h1>{project.projectName}</h1>
-                                <p id="myP">{project.projectDescription}</p>
-                                <p id="myFiles">Files</p>
-                                <img id="addFile" src={uploadLogo}></img>
-                                <p id="divider">---------------------------------------------</p>
-                                <div><List
-                                    dataSource={projectAudioList}
-                                    renderItem={item => <List.Item>{item}</List.Item>}/></div>
-                            </div>
-                        );
-                    })}
-                </div>
+                {this.state.folderArray.map((folder, index)=>{
+                    return(
+                        <Folder
+                            key={folder.id}
+                            id={folder.id}
+                            title={folder.title}
+                            projectDescription={folder.projectDescription}
+                            delete={this.deleteEvent.bind(this, index)}
+                            onClick={() => this.handleClick(index)} //color button (delete)
+                        />
+                    )
+                })}
             </div>
         );
     }
