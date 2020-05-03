@@ -71,6 +71,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   // Get a Promise representation of the final result of the job
   const [response] = await operation.promise();
   const jsonResponse = JSON.stringify(response);
+  const objectValue = JSON.parse(jsonResponse);
   const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
   var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
   var res = rawTranscript.split(" ");
