@@ -31,7 +31,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   console.log("Content Type: ", contentType);
   const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
   // [END eventAttributes]
-  
+
   // [START stopConditions]
   // Exit if this is triggered on a file that is not an image.
   if (!contentType.startsWith('audio/')) {
@@ -67,14 +67,37 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   };
 
   const [operation] = await client.longRunningRecognize(request);
-  
+
   // Get a Promise representation of the final result of the job
   const [response] = await operation.promise();
   const jsonResponse = JSON.stringify(response);
+  const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
+  var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
+  var res = rawTranscript.split(" ");
+
+  var word_dic = {};
+  wordTimeArray.forEach(function (item, index) {
+  	start = item["startTime"]
+    end = item["endTime"]
+  	if (!("seconds" in start)){
+  		word_dic[index] = {"word": item["word"], "start Time": start["nanos"].toString(),"end Time": end["seconds"]+ end["nanos"].toString()};
+	  }
+    else{
+    	 word_dic[index] = {"word": item["word"], "start Time": start["seconds"] + start["nanos"].toString(),"end Time": end["seconds"]+ end["nanos"].toString()};
+    }
+  });
+  const finaledTranscript = JSON.stringify(word_dic);
+  const labels = JSON.stringify({"unlabeled": word_dic});
 
 
   db.collection("transcripts").doc(filePathUserEmail).collection("audios").doc(uuidFirestoreDocId).set({
-    transcript: jsonResponse
+    transcript: jsonResponse,
+    finished: true,
+    idTranscript: finaledTranscript,
+    labels: labels,
+    baseTranscript: rawTranscript
+
+
   }, { merge: true });
 
   return null;
