@@ -88,17 +88,19 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     }
   });
   const finaledTranscript = JSON.stringify(word_dic);
-  const labels = JSON.stringify({"unlabeled": word_dic});
+  var labels = {"unlabeled": []};
+  for (var key in word_dic) {
+    labels["unlabeled"].push(key);
+  };
+  const labelTranscript = JSON.stringify(labels);
 
 
   db.collection("transcripts").doc(filePathUserEmail).collection("audios").doc(uuidFirestoreDocId).set({
     transcript: jsonResponse,
     finished: true,
     idTranscript: finaledTranscript,
-    labels: labels,
+    label: labelTranscript,
     baseTranscript: rawTranscript
-
-
   }, { merge: true });
 
   return null;
