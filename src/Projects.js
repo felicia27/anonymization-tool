@@ -8,6 +8,7 @@ import React, { Component } from "react";
 import { List, Typography, Icon } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
 import Folder from "./Folder.js";
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -142,28 +143,6 @@ class Projects extends Component {
                 });
             });
         });
-
-        
-        
-        //this.createFolder(projectName.slice(37));
-    }
-
-    createFolder(folderName) {
-        console.log(folderName);
-        /*
-        var para = document.createElement("div");
-        para.innerHTML = document.getElementById("myDIV").innerHTML;
-        para.setAttribute("id", "myDIV"+ this.state.projectCount);
-
-        para.querySelector(".green_border").setAttribute("id", "border"+ this.state.projectCount);
-        para.querySelector(".green_completed").setAttribute("id", "border_completed"+ this.state.projectCount);
-        
-        para.querySelector("p").setAttribute("id", "myP"+ this.state.projectCount);
-        para.querySelector("h1").setAttribute("id", "title"+ this.state.projectCount);
-
-        para.querySelector("h1").innerHTML = folderName;
-
-        document.body.appendChild(para);*/
     }
 
     deleteEvent = (index) => {
@@ -171,13 +150,6 @@ class Projects extends Component {
         copyFolderArray.splice(index, 1);
         this.setState({
             folderArray: copyFolderArray
-        })
-    }
-
-    //delete later
-    setFolder = (element) => {
-        this.setState({
-            projectDescription: element.target.value
         })
     }
 
@@ -194,11 +166,6 @@ class Projects extends Component {
         })
     }
 
-    //delete later
-    handleClick = index => {
-        console.log("click")
-      };
-      
     render() {
         
 
@@ -209,9 +176,6 @@ class Projects extends Component {
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
-        
-                {/*<input type="text" onBlur={this.setFolder} /> */}
-                <button onClick={this.addFolder}>Add Folder</button>
 
                 {this.state.folderArray.map((folder, index)=>{
                     return(

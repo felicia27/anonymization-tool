@@ -16,8 +16,8 @@ const App = () => {
       <Router>
         <div className="App">
           <PrivateRoute exact path="/home" component={Home} />
-          <PrivateRoute exact path = "/" component={Test} />
-          <PrivateRoute exact path="/projects" component={Projects} />
+          <PrivateRoute exact path = "/edit/:projectId/:audioId" component={Test} />
+          <PrivateRoute exact path="/" component={Projects} />
           
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />

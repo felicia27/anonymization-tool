@@ -21,7 +21,7 @@ class Test extends Component {
 
         this.state = {
             activeListItem: null,
-            allAudioFiles: [],
+            
         };
     }
 
@@ -35,16 +35,16 @@ class Test extends Component {
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
         //currentProject is the projectId of the project the audio file is stored in
         let currentProject = currentComponent.props.match.params.projectId;
-        //currentAudio is the audioId of the audio file that was clicked on
+        //currentAudio is the audioId of the audio file that was clicked in the Projects page
         let currentAudio = currentComponent.props.match.params.audioId;
 
         let audioObjects = [];
 
         //This only retrieves the audio file that was clicked. If testing is needed change the exact path of the Route in App.js
         //and change the values of currentProject and currentAudio above to prevent a redirect of wiping the error from the console.
-        //docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(function(querySnapShot) {
-        docUser.collection("audios").get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
+        docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(function(doc) {
+        //docUser.collection("audios").get().then(function(querySnapshot) {
+            //querySnapshot.forEach(function(doc) {
                 // console.log(doc.id, " => ", doc.data());
                 let audioObject = {
                     audioId: doc.id,
@@ -55,56 +55,23 @@ class Test extends Component {
                     idTranscript: doc.data().idTranscript,
                 }
             audioObjects.push(audioObject);
-            });
+            //});
             currentComponent.setState({
-                allAudioFiles: [...currentComponent.state.allAudioFiles, ...audioObjects ]
+                activeListItem: audioObject
             });
         });
     }
 
     // This syntax ensures `this` is bound within handleClick.
     // Warning: this is *experimental* syntax.
-    handleClick = (audioId) => {
-      console.log(audioId.idTranscript);
-        this.setState({
-
-            activeListItem: audioId
-        });
-    }
 
     render() {
-        let allAudioList = this.state.allAudioFiles.map(audio => {
-            return (
-                <a href="/#" onClick={() => this.handleClick(audio)} key={ audio.audioId } className="ListAudioFiles-a">
-                    <p className="ListAudioFiles-title">{audio.audioFileName}</p>
-                </a>
-            );
-        });
-
         return (
-
-
             <div className="Home-container">
                 <div className="Home-header">
                     <Header />
 
                 </div>
-
-                <div className="Home-sidebar">
-                    {/* <ListAudioFiles /> */}
-                    <div className="ListAudioFiles-container ListAudioFiles-scrollStyle">
-                        <List
-                            size="small"
-                            header={<div className="ListAudioFiles-header"><Upload /></div>} // Upload button in header
-                            footer={<div className="ListAudioFiles-footer">End of list</div>}
-                            itemLayout="vertical"
-                            // bordered
-                            dataSource={allAudioList}
-                            renderItem={item => <List.Item className="ListAudioFiles-item">{item}</List.Item>}
-                        />
-                    </div>
-                </div>
-
 
                 { this.state.activeListItem ?
                     <div className="Home-content">

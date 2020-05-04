@@ -4,7 +4,7 @@
     grid-template-rows: auto 1fr;
     grid-template-areas:
       "Home-header Home-header Home-header Home-header"
-      "Home-sidebar Home-content Home-content Home-content";
+      "Home-content Home-content Home-content Home-content";
     /* row-gap: 30px; */
   }
 

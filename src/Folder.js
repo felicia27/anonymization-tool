@@ -85,7 +85,7 @@ class Folder extends Component {
     render() {
         let allProjectAudios = this.props.projectAudios.map(audio => {
             return(
-                <Link to={"test/" + this.props.id + "/" + audio.audioId} key={audio.audioId}>{audio.audioFileName}</Link>
+                <Link to={"/edit/" + this.props.id + "/" + audio.audioId} key={audio.audioId}>{audio.audioFileName}</Link>
             );
         });
 
