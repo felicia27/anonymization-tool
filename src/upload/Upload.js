@@ -4,6 +4,8 @@ import firebase from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 import "./Upload.css";
 import { Icon } from "antd";
+import uploadLogo from "./plus.png";
+
 
 class Upload extends Component {
     state = {
@@ -55,10 +57,11 @@ class Upload extends Component {
                 });
 
                 // Add a new document with a generated id.
-                this.db.collection("transcripts").doc(this.getUsername()).collection("audios").doc(filename.slice(0,36)).set({
+                this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(this.props.projectId)
+                .collection("audios").doc(filename.slice(37,73)).set({
                     audioUrl: url,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    fileName: filename.slice(37), //small hack to save duplicate files in gcs and also keep the original file name in Firestore
+                    fileName: filename.slice(74), //small hack to save duplicate files in gcs and also keep the original file name in Firestore
                     transcript: "",
                     // transcriptObjectUri: "transcripts/" + this.getUsername() + "/" + filename.slice(0, -4) + "_transcript.json" // slicing to remove .wav and add transcript literal
                 }, { merge: true })
@@ -77,13 +80,12 @@ class Upload extends Component {
             <div className="Upload-container">
                 <div className="Upload-button">
                     <form>
-                        <label style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
-                            <Icon style={{paddingRight: "10px"}} type="upload" />
-                            UPLOAD AUDIO
+                        <label style={{ cursor: 'pointer'}}>
+                        <img id="addFile" src={uploadLogo}></img>
                             <FileUploader
                             hidden
                             accept="audio/*"
-                            filename={file => this.create_UUID() + '_' + file.name}
+                            filename={file => this.props.projectId + '_' + this.create_UUID() + '_' + file.name}
                             storageRef={firebase.storage().ref('audios/' + this.getUsername())}
                             onUploadStart={this.handleUploadStart}
                             onUploadError={this.handleUploadError}

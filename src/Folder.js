@@ -121,7 +121,8 @@ class Folder extends Component {
                         <input type="text" defaultValue={this.props.title} disabled={!this.state.editTitleEnabled}/>
                         <input id="desc" type="text" defaultValue={this.props.projectDescription} disabled={!this.state.editDescriptionEnabled}/>
                         <p id="myFiles">Files</p>
-                        <img id="addFile" src={uploadLogo}></img>
+                        
+                        <Upload projectId={this.props.id}/>
                         <p id="divider">---------------------------------------------</p>
                         <div><List
                             dataSource={allProjectAudios}

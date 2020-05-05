@@ -24,12 +24,15 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   // [START eventAttributes]
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
   const filePath = object.name; // File path in the bucket.
+  console.log(filePath);
   const filePathUserEmail = filePath.split('/')[1];
-  const uuidFirestoreDocId = filePath.split('/')[2].slice(0,36)
-  console.log(uuidFirestoreDocId);
+  const uuidProjectFirestoreDocId = filePath.split('/')[2].split('_')[0];
+  const uuidAudioFirestoreDocId = filePath.split('/')[2].split('_')[1];
+  console.log(uuidAudioFirestoreDocId);
   const contentType = object.contentType; // File content type.
   console.log("Content Type: ", contentType);
   const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
+
   // [END eventAttributes]
 
   // [START stopConditions]
@@ -39,7 +42,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   }
 
   // Get the file name.
-  const fileName = path.basename(filePath);
+  const fileName = path.basename(filePath).slice(37);
   console.log("Filename: ", fileName);
   // Exit if the image is already a thumbnail.
   if (fileName.endsWith('_transcript.json')) {
@@ -91,11 +94,12 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   var labels = {"unlabeled": []};
   for (var key in word_dic) {
     labels["unlabeled"].push(key);
-  };
+  }
   const labelTranscript = JSON.stringify(labels);
 
 
-  db.collection("transcripts").doc(filePathUserEmail).collection("audios").doc(uuidFirestoreDocId).set({
+  db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
+  .collection("audios").doc(uuidAudioFirestoreDocId).set({
     transcript: jsonResponse,
     finished: true,
     idTranscript: finaledTranscript,

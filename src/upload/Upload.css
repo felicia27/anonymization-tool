@@ -1,22 +1,22 @@
 .Upload-container {
     display: grid;
     grid-template-areas: 
-      "Upload-button Upload-progress";
-    grid-template-columns: auto 1fr;
+      "Upload-progress Upload-button";
+    grid-template-columns: auto 0.5fr;
     /* Make sure the row height is okay with what set in App.css for the header container */
     grid-template-rows: auto;
 }
 
 .Upload-button {
     grid-area: Upload-button;
-    padding: 20px 0 20px 0;
+    padding: 1px 0 1px 0;
 }
 
 .Upload-progress {
     grid-area: Upload-progress;
     justify-self: center;
     align-self: center;
-    font-size: 1.2em;
+    font-size: 0.8em;
 }
 
 .fade-animation {
@@ -34,3 +34,11 @@
       visibility: hidden;
     }
   }
+
+#addFile{
+  position: relative;
+  left: 36px;
+  top: 15px;
+  width: 15px;
+  height: 15px;
+}
