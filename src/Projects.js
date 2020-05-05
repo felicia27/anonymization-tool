@@ -176,7 +176,7 @@ class Projects extends Component {
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
-
+                <div id="folderAlign">
                 {this.state.folderArray.map((folder, index)=>{
                     return(
                         <Folder
@@ -190,6 +190,7 @@ class Projects extends Component {
                         />
                     )
                 })}
+                </div>
             </div>
         );
     }

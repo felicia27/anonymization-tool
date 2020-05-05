@@ -87,6 +87,11 @@ nav img{
     color: #000000;
 }
 
+#folderAlign{
+    display:flex; 
+    flex-direction:row;
+}
+
 #myFiles{
     position: relative;
     left: 35px;
