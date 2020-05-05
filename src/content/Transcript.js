@@ -1,26 +1,28 @@
 // import firebase from "firebase";
 import { Typography } from "antd";
 import React, { Component } from 'react';
+import firebase from "firebase";
 import './Transcript.css'
 import "./edit.css"
+import { Icon } from "antd";
 
 const { Text, Title } = Typography;
 const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
 var userSelectText = "";
-var  labelDict = {
-  "Delete": [],
-  "Mask": []
-};
+
 
 class Transcript extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            transcriptArray: [],
-            wordArray: [],
             IDArray: [],
-            update:0
-        }
+            update:0,
+            labelDict: {"Delete": [], "Mask": []}
+        };
+        this.currentProject = this.props.projectID;
+        this.currentAudio = this.props.filename;
+        this.docUser = this.props.docUser;
     }
 
     componentDidMount() {
@@ -28,6 +30,7 @@ class Transcript extends Component {
     }
 
     componentDidUpdate(prevProps) {
+
         if(prevProps.audioId !== this.props.audioId) {
             this.processTranscript();
             this.setState({
@@ -36,69 +39,51 @@ class Transcript extends Component {
         }
     }
 
-    processTranscript = () => {
-        let audioTranscript = JSON.parse(this.props.audioTranscript);
+    processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
-        // const transcription = audioTranscript.results
-        //         .map(result => result.alternatives[0].transcript)
-        //         .join('\n');
 
-        let wordArray = [];
-        let transcriptArray = [];
-        let IDArray = []
-        for (const [key, value] of Object.entries(idTranscript)) {
-            console.log(key);
-            console.log(value.word)
-            IDArray.push({
-                key: key,
-                value: value.word
-            });
-
-        }
-
-        audioTranscript.results.forEach(result => {
-            
-            let transcript = result.alternatives[0].transcript
-            result.alternatives[0].words.forEach(wordInfo => {
-                // NOTE: If you have a time offset exceeding 2^32 seconds, use the
-                // wordInfo.{x}Time.seconds.high to calculate seconds.
-                const startSecs =
-                `${wordInfo.startTime.seconds}` +
-                `.` +
-                wordInfo.startTime.nanos / 100000000;
-                const endSecs =
-                `${wordInfo.endTime.seconds}` +
-                `.` +
-                wordInfo.endTime.nanos / 100000000;
-                let key = `${wordInfo.word}`;
-                let value = `${startSecs} secs - ${endSecs} secs`;
-                wordArray.push({
-                    key: key,
-                    value: value
-                });
-            });
-            transcriptArray.push(transcript);
-        });
         this.setState({
-            transcriptArray:transcriptArray ,
-            IDArray: IDArray,
-            wordArray: wordArray
+            IDArray: idTranscript,
         })
-        console.log(IDArray);
-        console.log(wordArray);
-        console.log(transcriptArray);
     }
-     onMouseUpHandler(){
+
+    SaveChanges = (e) => {
+      console.log("file saving");
+      var delDict = this.state.labelDict["Delete"];
+      var maskDict = this.state.labelDict["Mask"];
+      var currentidTranscript = this.state.IDArray;
+
+      for(let i = 0 ; i < maskDict.length; i++) {
+         let elMasked = maskDict[i];
+         currentidTranscript[elMasked]["label"] = "MASK";
+      }
+
+      for(let i = 0 ; i < delDict.length; i++) {
+         let elToBeDeleted = delDict[i];
+         currentidTranscript.splice(elToBeDeleted, 1);
+      }
+
+      this.db = firebase.firestore();
+      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
+        idTranscript: JSON.stringify(currentidTranscript),
+      }, { merge: true });
+      this.setState({
+        labelDict: {"Delete": [], "Mask": []},
+      })
+      console.log("file updated");
+
+    }
+
+     onMouseUpHandler = (e) =>{
+       
        var event = window.event;
-       getSelectionText();
+       this.getSelectionText();
+       this.highlightText();
+       this.displayMenu(event);
+       this.recordDict(event);
+     }
 
-       highlightText();
-
-       displayMenu(event);
-
-       returnDatatoBackend(event);
-
-     function removePunctuation(string) {
+     removePunctuation(string) {
         return string
           .split('')
           .filter(function(letter) {
@@ -106,56 +91,58 @@ class Transcript extends Component {
           })
           .join('');
       }
-        function getSelectionText() {
-          var text;
 
-          if (window.getSelection) {
-            text = window.getSelection();
-              if (!text.isCollapsed) {
-                var range = document.createRange();
-                range.setStart(text.anchorNode, text.anchorOffset);
-                range.setEnd(text.focusNode, text.focusOffset);
-                var backwards = range.collapsed;
-                range.detach();
+      getSelectionText() {
+        var text;
 
-                var endNode = text.focusNode, endOffset = text.focusOffset;
-                text.collapse(text.anchorNode, text.anchorOffset);
+        if (window.getSelection) {
+          text = window.getSelection();
+            if (!text.isCollapsed) {
+              var range = document.createRange();
+              range.setStart(text.anchorNode, text.anchorOffset);
+              range.setEnd(text.focusNode, text.focusOffset);
+              var backwards = range.collapsed;
+              range.detach();
 
-                var direction = [];
-                if (backwards) {
-                  direction = ['backward', 'forward'];
-                } else {
-                  direction = ['forward', 'backward'];
-                }
-                text.modify("move", direction[0], "character");
-                text.modify("move", direction[1], "word");
-                text.extend(endNode, endOffset);
-                text.modify("extend", direction[1], "character");
-                text.modify("extend", direction[0], "word");
+              var endNode = text.focusNode, endOffset = text.focusOffset;
+              text.collapse(text.anchorNode, text.anchorOffset);
+
+              var direction = [];
+              if (backwards) {
+                direction = ['backward', 'forward'];
+              } else {
+                direction = ['forward', 'backward'];
+              }
+              text.modify("move", direction[0], "character");
+              text.modify("move", direction[1], "word");
+              text.extend(endNode, endOffset);
+              text.modify("extend", direction[1], "character");
+              text.modify("extend", direction[0], "word");
+
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            var textRange = text.createRange();
+            if (textRange.text) {
+              textRange.expand("word");
+              while (/\s$/.test(textRange.text)) {
+                textRange.moveEnd("character", -1);
 
               }
-          } else if (document.selection && document.selection.type != "Control") {
-              var textRange = text.createRange();
-              if (textRange.text) {
-                textRange.expand("word");
-                while (/\s$/.test(textRange.text)) {
-                  textRange.moveEnd("character", -1);
+              textRange.select()
+            }
+        }
+        document.getElementById("labelSelect").classList.toggle("show");
 
-                }
-                textRange.select()
-              }
-          }
-          document.getElementById("labelSelect").classList.toggle("show");
-
-          if (text.toString() === "") {
-            console.log("empty selection")
-          }
-          else {
-            userSelectText = removePunctuation(text.toString());
-             console.log(userSelectText);
-          }
+        if (text.toString() === "") {
+          console.log("empty selection")
+        }
+        else {
+          userSelectText = this.removePunctuation(text.toString());
+           console.log(userSelectText);
+        }
       }
-      function highlightText() {
+
+      highlightText() {
         var range = window.getSelection().getRangeAt(0);
         var selectionContents = range.extractContents();
         var span = document.createElement("span");
@@ -164,8 +151,7 @@ class Transcript extends Component {
         range.insertNode(span);
       }
 
-      function displayMenu(event){
-
+      displayMenu(event){
         var x = event.pageX;
         var y = event.pageY;
 
@@ -173,17 +159,14 @@ class Transcript extends Component {
         menu.style.position = 'absolute';
         menu.style.left = x+1000;
         menu.style.top = y;
-
       }
 
-      function getLabelSelection(event){
-
+      getLabelSelection(event){
         var label = event.target.id;
-        console.log(label.toString());
         return label.toString()
       }
 
-      function displayDeleteLabel(event){
+      displayDeleteLabel(event){
         var x = event.pageX;
         var y = event.pageY;
         var label_container = document.createElement('div');
@@ -191,14 +174,11 @@ class Transcript extends Component {
         label_container.style.float = 'left';
         label_container.style.position = 'absolute';
         label_container.style.top = (y).toString() + 'px'
-      
         label_container.innerHTML = `<span class="label delete">Delete</span>`;
-      
         document.getElementsByClassName('column')[0].appendChild(label_container);
-      
       }
-      
-      function displayMaskLabel(event){
+
+      displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
         var label_container = document.createElement('div');
@@ -206,36 +186,43 @@ class Transcript extends Component {
         label_container.style.float = 'left';
         label_container.style.position = 'absolute';
         label_container.style.top = (y).toString() + 'px'
-      
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
-      
         document.getElementsByClassName('column')[0].appendChild(label_container);
       }
 
-      function returnDatatoBackend(event) {
-        
+      recordDict(event) {
         // var splitText = userSelectText.split(" ");
-        var wordIDs = userSelectText.match(/\d+/g).map(Number);
-        
-        if (getLabelSelection(event) === "Delete" && userSelectText !== "") {
-          for (var word of wordIDs) {
-            labelDict["Delete"].push(word);
-            displayDeleteLabel(event);
-            userSelectText = "";
-          }
+        if (userSelectText !== ""){
+          var wordIDs = userSelectText.match(/\d+/g).map(Number);
         }
 
-        else if (getLabelSelection(event) === "Mask" && userSelectText !== "") {
+        if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
           for (var word of wordIDs) {
-            labelDict["Mask"].push(word);
-            displayMaskLabel(event);
-            userSelectText = "";
+            var templabelDict = this.state.labelDict;
+            templabelDict["Delete"].push(word);
+            this.setState({
+                labelDict: templabelDict,
+            })
           }
+          this.displayDeleteLabel(event);
+          userSelectText = "";
         }
-        console.log(labelDict);
-        return labelDict;
+
+        else if (this.getLabelSelection(event) === "Mask" && userSelectText !== "") {
+          for (var word of wordIDs) {
+            var templabelDict = this.state.labelDict;
+            templabelDict["Mask"].push(word);
+            this.setState({
+                labelDict: templabelDict,
+            })
+          }
+          this.displayMaskLabel(event);
+          userSelectText = "";
+        }
+        console.log(JSON.stringify(this.state.labelDict));
     }
-  }
+
+
 
     render() {
 
@@ -244,27 +231,25 @@ class Transcript extends Component {
 
                 <div key={index} className="Transcript-transcription-text">
 
-                    <span onMouseUp={this.onMouseUpHandler}>{word.value}<span className="test">{index} + " "</span></span>
+                    <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
 
                 </div>
             );
         });
 
-        // let wordSnippets = this.state.IDArray.map((word, index) => {
-        //     return (
-        //         <div key={index} className="Transcript-transcription-text">
-        //             <span >{word.value}</span>
-        //         </div>
-        //     );
-        // });
-
         return (
 
           <div>
+          <div className="Transcript-Save">
+              <form>
+                  <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
+                      <Icon  style={{paddingRight: "10px"}} type="upload" />
+                      Save Changes
+                  </label>
+              </form>
+          </div> {/* End of Uploader Button */}
 
           <div className="column"></div>
-    
-
           <div className="transcript_container clear">
 
               <div className="transcript">

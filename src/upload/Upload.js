@@ -14,7 +14,7 @@ class Upload extends Component {
         progress: 0,
         audioURL: ""
     };
-    
+
     db = firebase.firestore();
 
     create_UUID = () => {
@@ -25,19 +25,19 @@ class Upload extends Component {
             return (c=='x' ? r :(r&0x3|0x8)).toString(16);
         });
         return uuid;
-    }     
+    }
 
     getUsername = () => app.auth().currentUser.email;
-      
+
     handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
-      
+
     handleProgress = progress => this.setState({ progress });
-      
+
     handleUploadError = error => {
         this.setState({ isUploading: false });
         console.error(error);
     };
-    
+
     handleUploadSuccess = filename => {
         this.setState({ audio: filename, progress: 100, isUploading: false });
         // console.log(filename);
@@ -62,8 +62,7 @@ class Upload extends Component {
                     audioUrl: url,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     fileName: filename.slice(74), //small hack to save duplicate files in gcs and also keep the original file name in Firestore
-                    transcript: "",
-                    // transcriptObjectUri: "transcripts/" + this.getUsername() + "/" + filename.slice(0, -4) + "_transcript.json" // slicing to remove .wav and add transcript literal
+                    idTranscript: [],
                 }, { merge: true })
                 .then(function() {
                     console.log("Document successfully written.");
@@ -74,7 +73,7 @@ class Upload extends Component {
                 this.setState({audioURL: url});
           });
     };
-    
+
     render() {
         return (
             <div className="Upload-container">

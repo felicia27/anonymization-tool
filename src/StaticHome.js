@@ -21,7 +21,7 @@ class Test extends Component {
 
         this.state = {
             activeListItem: null,
-            
+
         };
     }
 
@@ -43,27 +43,21 @@ class Test extends Component {
         //This only retrieves the audio file that was clicked. If testing is needed change the exact path of the Route in App.js
         //and change the values of currentProject and currentAudio above to prevent a redirect of wiping the error from the console.
         docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(function(doc) {
-        //docUser.collection("audios").get().then(function(querySnapshot) {
-            //querySnapshot.forEach(function(doc) {
-                // console.log(doc.id, " => ", doc.data());
+
                 let audioObject = {
                     audioId: doc.id,
                     audioFileName: doc.data().fileName,
                     audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
                     audioUrl: doc.data().audioUrl,
-                    audioTranscript: doc.data().transcript,
                     idTranscript: doc.data().idTranscript,
                 }
             audioObjects.push(audioObject);
-            //});
+
             currentComponent.setState({
                 activeListItem: audioObject
             });
         });
     }
-
-    // This syntax ensures `this` is bound within handleClick.
-    // Warning: this is *experimental* syntax.
 
     render() {
         return (
@@ -80,7 +74,7 @@ class Test extends Component {
                         </div>
 
                         <div className="Home-content-transcriptView">
-                            <Transcript {...this.state.activeListItem} />
+                            <Transcript {...this.state.activeListItem} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
                         </div>
                     </div>
                     :

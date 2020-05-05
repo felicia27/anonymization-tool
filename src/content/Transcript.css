@@ -27,3 +27,12 @@
 .test{
   font-size: 0px;
 }
+
+.Transcript-Save {
+
+    justify-self: center;
+    align-self: center;
+    text-decoration: none;
+    display: inline-block;
+
+}

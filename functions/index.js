@@ -79,32 +79,25 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
   var res = rawTranscript.split(" ");
 
-  var word_dic = {};
+  var word_dic = [];
   wordTimeArray.forEach(function (item, index) {
   	start = item["startTime"]
     end = item["endTime"]
   	if (!("seconds" in start)){
-  		word_dic[index] = {"word": item["word"], "start Time": start["nanos"].toString(),"end Time": end["seconds"]+ end["nanos"].toString()};
+  		word_dic.push({"word": item["word"], "startTime": start["nanos"].toString(),"endTime": end["seconds"]+ end["nanos"].toString(), "label": "unlabeled"});
 	  }
     else{
-    	 word_dic[index] = {"word": item["word"], "start Time": start["seconds"] + start["nanos"].toString(),"end Time": end["seconds"]+ end["nanos"].toString()};
+    	 word_dic.push({"word": item["word"], "startTime": start["seconds"] + start["nanos"].toString(),"endTime": end["seconds"]+ end["nanos"].toString(), "label": "unlabeled"});
     }
   });
   const finaledTranscript = JSON.stringify(word_dic);
-  var labels = {"unlabeled": []};
-  for (var key in word_dic) {
-    labels["unlabeled"].push(key);
-  }
-  const labelTranscript = JSON.stringify(labels);
-
 
   db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
   .collection("audios").doc(uuidAudioFirestoreDocId).set({
-    transcript: jsonResponse,
+    //transcript: jsonResponse,
     finished: true,
     idTranscript: finaledTranscript,
-    label: labelTranscript,
-    baseTranscript: rawTranscript
+    //baseTranscript: rawTranscript
   }, { merge: true });
 
   return null;
