@@ -61,7 +61,17 @@ class Transcript extends Component {
 
       for(let i = 0 ; i < delDict.length; i++) {
          let elToBeDeleted = delDict[i];
+         var time_span = parseInt(currentidTranscript[elToBeDeleted].endTime) - parseInt(currentidTranscript[elToBeDeleted].startTime);
          currentidTranscript.splice(elToBeDeleted, 1);
+         for (let n = elToBeDeleted; n<currentidTranscript.length; n++)
+         {
+           var newStartTime = parseInt(currentidTranscript[n].startTime) - time_span;
+           var newEndTime = parseInt(currentidTranscript[n].endTime) - time_span;
+           currentidTranscript[n].startTime = newStartTime.toString();
+           currentidTranscript[n].endTime = newEndTime.toString();
+
+         }
+
       }
 
       this.db = firebase.firestore();
@@ -79,8 +89,9 @@ class Transcript extends Component {
 
        var event = window.event;
        this.getSelectionText();
-       this.highlightText();
+
        this.displayMenu(event);
+       this.highlightText(event);
        this.recordDict(event);
      }
 
@@ -143,19 +154,26 @@ class Transcript extends Component {
         }
       }
 
-      highlightText() {
+      highlightText(event) {
         var range = window.getSelection().getRangeAt(0);
+        console.log(window.getSelection());
 
+
+        if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
+            range = this.state.lastHi;
+            var selectionContents = range.extractContents();
+            var span = document.createElement("span");
+            span.appendChild(selectionContents);
+            span.style.backgroundColor = "lightgray";
+            range.insertNode(span);
+         }
         this.setState({
-          lasthi: range,
+          lastHi: range,
         })
-        var selectionContents = range.extractContents();
-        var span = document.createElement("span");
-        span.appendChild(selectionContents);
-        span.style.backgroundColor = "lightgray";
 
-        range.insertNode(span);
-        console.log(range);
+
+
+
       }
       unhighlightText() {
         var range = this.state.lastHi;
@@ -217,7 +235,7 @@ class Transcript extends Component {
           var end = this.state.IDArray[wordIDs[wordIDs.length-1]].endTime;
 
           this.props.play_audio(start,end);
-          this.unhighlightText();
+          //this.unhighlightText();
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
 
