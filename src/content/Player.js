@@ -6,6 +6,7 @@ class Player extends Component {
 
 
     componentDidMount(){
+       this.props.onRef(this);
           wavesurfer = WaveSurfer.create({
               container: document.querySelector('#waveform'),
               waveColor: '#D9DCFF',
@@ -39,7 +40,16 @@ class Player extends Component {
                    //wavesurfer.play();
            });
     }
-
+    componentWillUnmount() {
+    this.props.onRef(undefined);
+  }
+    play_specific(beg, end){
+      console.log("playing");
+      console.log(end);
+      console.log(beg/1000000000);
+      console.log(end/1000000000);
+      wavesurfer.play(beg/1000000000, end/1000000000);
+    }
      controlHandler(action){
 
         console.log(action);

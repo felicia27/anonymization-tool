@@ -13,7 +13,7 @@ import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 const { Title } = Typography;
 
 class Projects extends Component {
-    
+
     constructor(props) {
         super(props);
 
@@ -40,7 +40,7 @@ class Projects extends Component {
         let currentComponent = this;
         const currentUserEmail = app.auth().currentUser.email;
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
-        
+
         let projectObjects = [];
 
         docUser.collection("projects").get().then(function(querySnapshot) {
@@ -67,18 +67,18 @@ class Projects extends Component {
                         projectAudios: audioObjects,
                     }
                     projectObjects.push(projectObject);
-                    
-                    currentComponent.setState({ 
+
+                    currentComponent.setState({
                     projectCount: projectObjects.length,
                     });
-                
-                    
+
+
                     currentComponent.addFolder(projectObject);
-                    
+
                 });
             });
-            
-            
+
+
         });
     }
 
@@ -104,7 +104,7 @@ class Projects extends Component {
         const projectName = this.create_UUID() + '_Project ' + currentCount;
 
         console.log('create ' + projectName.slice(37));
-        
+
         docUser.collection("projects").doc(projectName.slice(0,36)).set({
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             projectName: projectName.slice(37),
@@ -134,8 +134,8 @@ class Projects extends Component {
                         projectAudios: audioObjects,
                     }
                     projectObjects.push(projectObject);
-                    
-                    currentComponent.setState({ 
+
+                    currentComponent.setState({
                     projectCount: currentComponent.state.projectCount + projectObjects.length,
                     });
 
@@ -167,7 +167,7 @@ class Projects extends Component {
     }
 
     render() {
-        
+
 
         return (
             <div>

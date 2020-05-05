@@ -18,7 +18,8 @@ class Transcript extends Component {
         this.state = {
             IDArray: [],
             update:0,
-            labelDict: {"Delete": [], "Mask": []}
+            labelDict: {"Delete": [], "Mask": []},
+            lastHi: 0,
         };
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
@@ -75,7 +76,7 @@ class Transcript extends Component {
     }
 
      onMouseUpHandler = (e) =>{
-       
+
        var event = window.event;
        this.getSelectionText();
        this.highlightText();
@@ -144,10 +145,25 @@ class Transcript extends Component {
 
       highlightText() {
         var range = window.getSelection().getRangeAt(0);
+
+        this.setState({
+          lasthi: range,
+        })
         var selectionContents = range.extractContents();
         var span = document.createElement("span");
         span.appendChild(selectionContents);
         span.style.backgroundColor = "lightgray";
+
+        range.insertNode(span);
+        console.log(range);
+      }
+      unhighlightText() {
+        var range = this.state.lastHi;
+        var selectionContents = range.extractContents();
+        var span = document.createElement("span");
+        span.appendChild(selectionContents);
+
+        span.style.backgroundColor = 'transparent';
         range.insertNode(span);
       }
 
@@ -195,8 +211,17 @@ class Transcript extends Component {
         if (userSelectText !== ""){
           var wordIDs = userSelectText.match(/\d+/g).map(Number);
         }
+        if (this.getLabelSelection(event) === "Play" && userSelectText !== ""){
+          var start = this.state.IDArray[wordIDs[0]].startTime;
 
+          var end = this.state.IDArray[wordIDs[wordIDs.length-1]].endTime;
+
+          this.props.play_audio(start,end);
+          this.unhighlightText();
+        }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
+
+
           for (var word of wordIDs) {
             var templabelDict = this.state.labelDict;
             templabelDict["Delete"].push(word);
@@ -204,6 +229,8 @@ class Transcript extends Component {
                 labelDict: templabelDict,
             })
           }
+          console.log(wordIDs[0]);
+          console.log(wordIDs[wordIDs.length-1]);
           this.displayDeleteLabel(event);
           userSelectText = "";
         }
@@ -242,9 +269,9 @@ class Transcript extends Component {
           <div>
           <div className="Transcript-Save">
               <form>
-                  <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
-                      <Icon  style={{paddingRight: "10px"}} type="upload" />
-                      Save Changes
+                  <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer'}}>
+                      <Icon  style={{paddingRight: "10px"}} type="save" />
+                      Save
                   </label>
               </form>
           </div> {/* End of Uploader Button */}
@@ -257,6 +284,7 @@ class Transcript extends Component {
                   <div onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
                     <a id="Delete">Delete</a>
                     <a id="Mask">Mask</a>
+                    <a id="Play">Play</a>
                   </div>
                 </div>
                 <section className="clear utterance_container">

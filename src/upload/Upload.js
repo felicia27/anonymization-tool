@@ -70,6 +70,7 @@ class Upload extends Component {
                 .catch(function(error) {
                     console.error("Error adding document: ", error);
                 });
+                
                 this.setState({audioURL: url});
           });
     };
