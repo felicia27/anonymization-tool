@@ -195,12 +195,6 @@ class Transcript extends Component {
         menu.style.position = 'absolute';
 
         menu.style.margin = (y-500)+"px 0px 0px " +x+"px";
-
-
-
-
-
-        //menu.style.backgroundColor = 'green';
       }
 
       getLabelSelection(event){
@@ -294,11 +288,17 @@ class Transcript extends Component {
     }
 
 
+    timeStampClicked = ()=>{
+      this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN());
+      console.log("pressed");
+      var Stamp = document.getElementById("timeStamp");
+      Stamp.style.color = 'lightgreen';
 
+    };
     render() {
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
-            if (word["label"] != "unlabeled")
+            if (word["label"] == "unlabeled")
             {
               return (
 
@@ -363,7 +363,7 @@ class Transcript extends Component {
                       <input style={{width: '0px', marginTop: '1px', border: 'none', position: 'relative', left: '0px', marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
                     <div className="content">
-                      <button className="timecode" style = {{color: 'blue'}} onClick={()=>this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN())}>{firstWordTimeSec}s</button>
+                      <button  onClick={this.timeStampClicked.bind(this)} id = "timeStamp" style = {{color: 'blue'}} className="timecode">{firstWordTimeSec}s</button>
                       <div>
                       {transcriptSnippets}
                       </div>
