@@ -24,6 +24,14 @@ class Transcript extends Component {
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
     }
+    
+    componentWillMount() {
+      document.addEventListener('mousedown', this.handleClick, false);
+    }
+
+    componentWillUnmount() {
+      document.removeEventListener('mousedown', this.handleClick, false);
+    }
 
     componentDidMount() {
         this.processTranscript();
@@ -38,6 +46,23 @@ class Transcript extends Component {
             });
         }
     }
+
+    handleClick = (e) => {
+      var menu = document.getElementById("labelSelect");
+      if (this.node.contains(e.target)) {
+        this.highlightText(e);
+       // menu.style.display = "none";
+
+        // if (this.getLabelSelection(e) == "Mask" || this.getLabelSelection(e) == "Delete"){
+        //   console.log("SELECTED")
+        //   menu.style.display = "none";
+       //}
+        return;
+      }
+      menu.style.display = "none";
+     // this.handleClickOutside();
+    }
+
 
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
@@ -60,7 +85,17 @@ class Transcript extends Component {
 
       for(let i = 0 ; i < delDict.length; i++) {
          let elToBeDeleted = delDict[i];
+         var time_span = parseInt(currentidTranscript[elToBeDeleted].endTime) - parseInt(currentidTranscript[elToBeDeleted].startTime);
          currentidTranscript.splice(elToBeDeleted, 1);
+         for (let n = elToBeDeleted; n<currentidTranscript.length; n++)
+         {
+           var newStartTime = parseInt(currentidTranscript[n].startTime) - time_span;
+           var newEndTime = parseInt(currentidTranscript[n].endTime) - time_span;
+           currentidTranscript[n].startTime = newStartTime.toString();
+           currentidTranscript[n].endTime = newEndTime.toString();
+
+         }
+
       }
 
       this.db = firebase.firestore();
@@ -75,11 +110,11 @@ class Transcript extends Component {
     }
 
      onMouseUpHandler = (e) =>{
-       
+
        var event = window.event;
        this.getSelectionText();
-       this.highlightText();
        this.displayMenu(event);
+   //    this.highlightText(event);
        this.recordDict(event);
      }
 
@@ -142,23 +177,43 @@ class Transcript extends Component {
         }
       }
 
-      highlightText() {
+      highlightText(event) {
         var range = window.getSelection().getRangeAt(0);
-        var selectionContents = range.extractContents();
-        var span = document.createElement("span");
-        span.appendChild(selectionContents);
-        span.style.backgroundColor = "lightgray";
-        range.insertNode(span);
+
+        if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
+          //  range = this.state.lastHi;
+            var selectionContents = range.extractContents();
+            var span = document.createElement("span");
+            span.appendChild(selectionContents);
+            span.style.backgroundColor = "lightgray";
+            range.insertNode(span);
+         }
+      //   document.getElementById("labelSelect").style.display = "none";
+       // this.setState({
+         // lastHi: range,
+        //})
       }
+
+      // unhighlightText() {
+      // //  var range = this.state.lastHi;
+      //   var selectionContents = range.extractContents();
+      //   var span = document.createElement("span");
+      //   span.appendChild(selectionContents);
+
+      //   span.style.backgroundColor = 'transparent';
+      //   range.insertNode(span);
+      // }
 
       displayMenu(event){
         var x = event.pageX;
         var y = event.pageY;
 
         var menu = document.getElementById("labelSelect");
+        menu.style.display = "block";
         menu.style.position = 'absolute';
         menu.style.left = x+1000;
         menu.style.top = y;
+
       }
 
       getLabelSelection(event){
@@ -176,6 +231,7 @@ class Transcript extends Component {
         label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label delete">Delete</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
+        document.getElementById("labelSelect").style.display = 'none';
       }
 
       displayMaskLabel(event){
@@ -188,6 +244,7 @@ class Transcript extends Component {
         label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
+        document.getElementById("labelSelect").style.display = 'none';
       }
 
       recordDict(event) {
@@ -195,8 +252,17 @@ class Transcript extends Component {
         if (userSelectText !== ""){
           var wordIDs = userSelectText.match(/\d+/g).map(Number);
         }
+        if (this.getLabelSelection(event) === "Play" && userSelectText !== ""){
+          var start = this.state.IDArray[wordIDs[0]].startTime;
 
+          var end = this.state.IDArray[wordIDs[wordIDs.length-1]].endTime;
+
+          this.props.play_audio(start,end);
+          document.getElementById("labelSelect").style.display = 'none';
+        }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
+
+
           for (var word of wordIDs) {
             var templabelDict = this.state.labelDict;
             templabelDict["Delete"].push(word);
@@ -204,6 +270,8 @@ class Transcript extends Component {
                 labelDict: templabelDict,
             })
           }
+          console.log(wordIDs[0]);
+          console.log(wordIDs[wordIDs.length-1]);
           this.displayDeleteLabel(event);
           userSelectText = "";
         }
@@ -242,9 +310,9 @@ class Transcript extends Component {
           <div>
           <div className="Transcript-Save">
               <form>
-                  <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
-                      <Icon  style={{paddingRight: "10px"}} type="upload" />
-                      Save Changes
+                  <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer'}}>
+                      <Icon  style={{paddingRight: "10px"}} type="save" />
+                      Save
                   </label>
               </form>
           </div> {/* End of Uploader Button */}
@@ -254,9 +322,10 @@ class Transcript extends Component {
 
               <div className="transcript">
                 <div className="labels">
-                  <div onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
+                  <div ref = {node => this.node = node} onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
                     <a id="Delete">Delete</a>
                     <a id="Mask">Mask</a>
+                    <a id="Play">Play</a>
                   </div>
                 </div>
                 <section className="clear utterance_container">

@@ -22,6 +22,7 @@ class Test extends Component {
         this.state = {
             activeListItem: null,
 
+
         };
     }
 
@@ -58,6 +59,11 @@ class Test extends Component {
             });
         });
     }
+    handle_audio_play = (beg, end) => {
+      console.log(beg);
+      this.refs.player.play_specific(beg, end);
+
+    }
 
     render() {
         return (
@@ -70,11 +76,11 @@ class Test extends Component {
                 { this.state.activeListItem ?
                     <div className="Home-content">
                         <div className="Home-content-audioPlayer">
-                            <Player {...this.state.activeListItem} />
+                            <Player {...this.state.activeListItem} ref="player" onRef={ref => (this.player = ref)} />
                         </div>
 
                         <div className="Home-content-transcriptView">
-                            <Transcript {...this.state.activeListItem} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
+                            <Transcript {...this.state.activeListItem} play_audio={this.handle_audio_play} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
                         </div>
                     </div>
                     :

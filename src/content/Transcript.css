@@ -3,6 +3,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
     grid-template-areas:
+      "Transcript-Save"
       "Transcript-transcription"
       "Transcript-words";
     margin: 20px;
@@ -29,7 +30,7 @@
 }
 
 .Transcript-Save {
-
+    grid-area: Transcript-Save;
     justify-self: center;
     align-self: center;
     text-decoration: none;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Header.css';
 import { Button, Icon } from "antd";
 import app from "../base";
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 
 
@@ -12,12 +13,22 @@ class Header extends Component {
       }
 
       handleClick() {
-        console.log('Click happened');
+        console.log("redirecting");
+        window.location.href="localhost:3000";
       }
 
     render() {
         return (
             <div className="Header-container">
+                <div className="Header-export">
+                 <Link to={"/"}>
+
+                    <Button type="primary" onClick= {() => this.handleClick()}>
+                        <Icon  type="arrow-left" />
+
+                    </Button>
+                </Link>
+                </div>
                 <div className="Header-logo">
                     <span>Data Anonymization Tool</span>
                 </div>
@@ -29,12 +40,7 @@ class Header extends Component {
                     </Button>
                 </div>
 
-                <div className="Header-export">
-                    <Button type="primary" onClick= {() => this.handleClick()}>
-                        <Icon style={{paddingRight: "10px"}} type="upload" />
-                        Export Audio
-                    </Button>
-                </div>
+
             </div>
 
         );
