@@ -18,12 +18,19 @@ class Transcript extends Component {
         this.state = {
             IDArray: [],
             update:0,
-            labelDict: {"Delete": [], "Mask": []},
-            lastHi: 0,
+            labelDict: {"Delete": [], "Mask": []}
         };
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
+    }
+    
+    componentWillMount() {
+      document.addEventListener('mousedown', this.handleClick, false);
+    }
+
+    componentWillUnmount() {
+      document.removeEventListener('mousedown', this.handleClick, false);
     }
 
     componentDidMount() {
@@ -39,6 +46,23 @@ class Transcript extends Component {
             });
         }
     }
+
+    handleClick = (e) => {
+      var menu = document.getElementById("labelSelect");
+      if (this.node.contains(e.target)) {
+        this.highlightText(e);
+       // menu.style.display = "none";
+
+        // if (this.getLabelSelection(e) == "Mask" || this.getLabelSelection(e) == "Delete"){
+        //   console.log("SELECTED")
+        //   menu.style.display = "none";
+       //}
+        return;
+      }
+      menu.style.display = "none";
+     // this.handleClickOutside();
+    }
+
 
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
@@ -89,9 +113,8 @@ class Transcript extends Component {
 
        var event = window.event;
        this.getSelectionText();
-
        this.displayMenu(event);
-       this.highlightText(event);
+   //    this.highlightText(event);
        this.recordDict(event);
      }
 
@@ -156,43 +179,41 @@ class Transcript extends Component {
 
       highlightText(event) {
         var range = window.getSelection().getRangeAt(0);
-        console.log(window.getSelection());
-
 
         if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
-            range = this.state.lastHi;
+          //  range = this.state.lastHi;
             var selectionContents = range.extractContents();
             var span = document.createElement("span");
             span.appendChild(selectionContents);
             span.style.backgroundColor = "lightgray";
             range.insertNode(span);
          }
-        this.setState({
-          lastHi: range,
-        })
-
-
-
-
+      //   document.getElementById("labelSelect").style.display = "none";
+       // this.setState({
+         // lastHi: range,
+        //})
       }
-      unhighlightText() {
-        var range = this.state.lastHi;
-        var selectionContents = range.extractContents();
-        var span = document.createElement("span");
-        span.appendChild(selectionContents);
 
-        span.style.backgroundColor = 'transparent';
-        range.insertNode(span);
-      }
+      // unhighlightText() {
+      // //  var range = this.state.lastHi;
+      //   var selectionContents = range.extractContents();
+      //   var span = document.createElement("span");
+      //   span.appendChild(selectionContents);
+
+      //   span.style.backgroundColor = 'transparent';
+      //   range.insertNode(span);
+      // }
 
       displayMenu(event){
         var x = event.pageX;
         var y = event.pageY;
 
         var menu = document.getElementById("labelSelect");
+        menu.style.display = "block";
         menu.style.position = 'absolute';
         menu.style.left = x+1000;
         menu.style.top = y;
+
       }
 
       getLabelSelection(event){
@@ -210,6 +231,7 @@ class Transcript extends Component {
         label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label delete">Delete</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
+        document.getElementById("labelSelect").style.display = 'none';
       }
 
       displayMaskLabel(event){
@@ -222,6 +244,7 @@ class Transcript extends Component {
         label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
+        document.getElementById("labelSelect").style.display = 'none';
       }
 
       recordDict(event) {
@@ -235,7 +258,7 @@ class Transcript extends Component {
           var end = this.state.IDArray[wordIDs[wordIDs.length-1]].endTime;
 
           this.props.play_audio(start,end);
-          //this.unhighlightText();
+          document.getElementById("labelSelect").style.display = 'none';
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
 
@@ -299,7 +322,7 @@ class Transcript extends Component {
 
               <div className="transcript">
                 <div className="labels">
-                  <div onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
+                  <div ref = {node => this.node = node} onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
                     <a id="Delete">Delete</a>
                     <a id="Mask">Mask</a>
                     <a id="Play">Play</a>
