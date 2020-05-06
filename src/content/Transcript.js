@@ -209,7 +209,7 @@ class Transcript extends Component {
         var menu = document.getElementById("labelSelect");
         menu.style.display = "block";
         menu.style.position = 'absolute';
-        menu.style.margin = (y-500)+"px 0px 0px " +x+"px";
+        menu.style.margin = (y-350)+"px 0px 0px " +(x+30)+"px";
       }
 
       getLabelSelection(event){
@@ -387,7 +387,7 @@ class Transcript extends Component {
                             <input type="text" id = "editTextBox" style={{display:'none'}}
                               onChange={this.textChange.bind(this)} onKeyPress={this.enterPressed.bind(this)}></input>
                       </div>
-                      
+
                       <div>
                       {transcriptSnippets}
                       </div>
