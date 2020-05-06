@@ -171,7 +171,7 @@ class Projects extends Component {
 
         return (
             <div>
-                <nav><a href="#"><img src="./staticHTML/image/menu.png"></img></a>Audio Transcription Tool
+                <nav><a href="#"><img src={require("./staticHTML/image/menu.png")}></img></a>Audio Transcription Tool
                     <a href="#"><span className="button" onClick={() => this.createProject()}>+ Create new project</span></a></nav>
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>

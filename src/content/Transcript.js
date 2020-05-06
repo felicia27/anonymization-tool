@@ -183,7 +183,7 @@ class Transcript extends Component {
           lastHi: range,
         })
       }
-      
+
 
       displayMenu(event){
         var x = event.pageX;
@@ -298,15 +298,28 @@ class Transcript extends Component {
     render() {
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
+            if (word["label"] != "unlabeled")
+            {
+              return (
 
-            return (
+                  <div key={index} className="Transcript-transcription-text">
 
-                <div key={index} className="Transcript-transcription-text">
+                      <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
 
-                    <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
+                  </div>
+              );
+            }
+            else {
+              return (
 
-                </div>
-            );
+                  <div key={index} className="Transcript-transcription-text">
+
+                      <span style = {{backgroundColor: "lightgray"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
+
+                  </div>
+              );
+            }
+
         });
 
         let firstWordTimeSec = this.state.IDArray.map((word, index)=>{
