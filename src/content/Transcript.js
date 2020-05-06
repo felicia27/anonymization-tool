@@ -71,9 +71,7 @@ class Transcript extends Component {
            currentidTranscript[n].endTime = newEndTime.toString();
 
          }
-
       }
-
       this.db = firebase.firestore();
       this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
         idTranscript: JSON.stringify(currentidTranscript),
@@ -82,6 +80,7 @@ class Transcript extends Component {
         labelDict: {"Delete": [], "Mask": []},
       })
       console.log("file updated");
+
 
     }
 
@@ -158,7 +157,6 @@ class Transcript extends Component {
         var range = window.getSelection().getRangeAt(0);
         console.log(window.getSelection());
 
-
         if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
             range = this.state.lastHi;
             var selectionContents = range.extractContents();
@@ -170,10 +168,6 @@ class Transcript extends Component {
         this.setState({
           lastHi: range,
         })
-
-
-
-
       }
       unhighlightText() {
         var range = this.state.lastHi;
@@ -188,11 +182,18 @@ class Transcript extends Component {
       displayMenu(event){
         var x = event.pageX;
         var y = event.pageY;
-
+        console.log(x);
+        console.log(y);
         var menu = document.getElementById("labelSelect");
         menu.style.position = 'absolute';
-        menu.style.left = x+1000;
-        menu.style.top = y;
+
+        menu.style.margin = (y-500)+"px 0px 0px " +x+"px";
+
+
+
+
+
+        //menu.style.backgroundColor = 'green';
       }
 
       getLabelSelection(event){
@@ -231,11 +232,8 @@ class Transcript extends Component {
         }
         if (this.getLabelSelection(event) === "Play" && userSelectText !== ""){
           var start = this.state.IDArray[wordIDs[0]].startTime;
-
           var end = this.state.IDArray[wordIDs[wordIDs.length-1]].endTime;
-
           this.props.play_audio(start,end);
-          //this.unhighlightText();
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
 
@@ -247,8 +245,6 @@ class Transcript extends Component {
                 labelDict: templabelDict,
             })
           }
-          console.log(wordIDs[0]);
-          console.log(wordIDs[wordIDs.length-1]);
           this.displayDeleteLabel(event);
           userSelectText = "";
         }
@@ -266,6 +262,13 @@ class Transcript extends Component {
         }
         console.log(JSON.stringify(this.state.labelDict));
     }
+    firstWordTimeN(){
+      return this.state.IDArray[0]["startTime"];
+    }
+    lastWordTimeN(){
+
+      return this.state.IDArray[this.state.IDArray.length-1]["endTime"];
+    }
 
 
 
@@ -282,21 +285,27 @@ class Transcript extends Component {
             );
         });
 
+        let firstWordTimeSec = this.state.IDArray.map((word, index)=>{
+          if (index == 0){
+            return word["startTime"]/1000000000;
+          }
+        });
+
+
+
         return (
 
           <div>
-          <div className="Transcript-Save">
-              <form>
-                  <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer'}}>
-                      <Icon  style={{paddingRight: "10px"}} type="save" />
-                      Save
-                  </label>
-              </form>
-          </div> {/* End of Uploader Button */}
-
-          <div className="column"></div>
-          <div className="transcript_container clear">
-
+              <div className="Transcript-Save">
+                  <form>
+                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer'}}>
+                          <Icon  style={{paddingRight: "10px"}} type="save" />
+                          Save
+                      </label>
+                  </form>
+              </div>
+              <div className="column"></div>
+            <div className="transcript_container clear">
               <div className="transcript">
                 <div className="labels">
                   <div onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
@@ -315,7 +324,7 @@ class Transcript extends Component {
                       <input style={{width: '0px', marginTop: '1px', border: 'none', position: 'relative', left: '0px', marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
                     <div className="content">
-                      <div className="timecode">00:00:03</div>
+                      <button className="timecode" style = {{color: 'blue'}} onClick={()=>this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN())}>{firstWordTimeSec}s</button>
                       <div>
                       {transcriptSnippets}
                       </div>
@@ -326,6 +335,8 @@ class Transcript extends Component {
               </div>
             </div>
             </div>
+
+
 
         );
     }

@@ -6,13 +6,16 @@ import "./Upload.css";
 import { Icon } from "antd";
 import uploadLogo from "./plus.png";
 
-
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 class Upload extends Component {
     state = {
         audio: "",
         isUploading: false,
         progress: 0,
-        audioURL: ""
+        audioURL: "",
+        GCDone: false
     };
 
     db = firebase.firestore();
@@ -39,7 +42,7 @@ class Upload extends Component {
     };
 
     handleUploadSuccess = filename => {
-        this.setState({ audio: filename, progress: 100, isUploading: false });
+      this.setState({ audio: filename, progress: 34});
         // console.log(filename);
         firebase
             .storage()
@@ -62,6 +65,7 @@ class Upload extends Component {
                     audioUrl: url,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     fileName: filename.slice(74), //small hack to save duplicate files in gcs and also keep the original file name in Firestore
+                    finished: false,
                     idTranscript: [],
                 }, { merge: true })
                 .then(function() {
@@ -70,10 +74,37 @@ class Upload extends Component {
                 .catch(function(error) {
                     console.error("Error adding document: ", error);
                 });
-                
+                this.checkDB();
+                this.setState({ progress: 99, isUploading: true });
+                console.log("finished running");
                 this.setState({audioURL: url});
           });
     };
+    async checkDB(){
+      this.setState({ progress: 82, isUploading: true });
+      console.log("checkDB running");
+      var gcpFinished = false;
+
+      while (gcpFinished == false)
+      {
+          await sleep(1000);
+          this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(this.props.projectId)
+          .collection("audios").doc(this.state.audio.slice(37,73)).get()
+          .then(doc => {
+            console.log(doc.data());
+            //console.log(doc.data().finished)
+            if (doc.data().finished != false)
+            {
+              this.setState({ progress: 100, isUploading: false, GCDone: true });
+              gcpFinished = true;
+            }
+          })
+          .catch(function(error) {
+              console.error("Error adding document: ", error);
+          });
+
+      }
+    }
 
     render() {
         return (
@@ -98,8 +129,8 @@ class Upload extends Component {
 
                 <div className="Upload-progress">
                     {this.state.isUploading && <div>Progress: {this.state.progress}</div>}
-                    {/* The expression below is running before handleUploadSuccess finishes */}
-                    {this.state.audioURL && <div className="fade-animation">File uploaded</div>}
+
+                    {this.state.GCDone && <div className="fade-animation">File uploaded</div>}
                 </div>
             </div>
         );

@@ -37,3 +37,202 @@
     display: inline-block;
 
 }
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    background-color: #F5F5F5;
+    margin: 0;
+    padding: 0;
+}
+nav{
+    padding: 10px 20px;
+    background-color: white;
+}
+nav img{
+    width: 15px;
+    margin: 0 30px;
+}
+.transcript_container{
+    width: 80%;
+    float: left;
+}
+.column {
+    float: right;
+    width: 20%;
+}
+.edit_container{
+    width: 10%;
+    float: left;
+    width: 80px;
+    height: 60px;
+    text-align: center;
+    padding-top: 100px;
+}
+.edit_control{
+    border: solid 1px #B8B9B8;
+    color: #8a8a8a;
+    background-color: white;
+    width: 80px;
+    height: 60px;
+    text-align: center;
+    padding-top: 100px;
+    font-size: 0.6em;
+    font-weight: bold;
+    margin: auto;
+}
+.edit_control a{
+    text-decoration: none;
+
+    align: center;
+    color: #8a8a8a;
+}
+.edit_control img{
+  align: center;
+    width: 20px;
+}
+.txt_completed{
+    color: #19BE18;
+    font-size: 1.5em;
+}
+.transcript{
+    width: 80%;
+    float: left;
+    font-size: 0.8em;
+}
+.utterance_container{
+   width: 100%;
+}
+
+[contenteditable="true"]:focus {
+    outline: none;
+}
+
+.content_container{
+    background-color: white;
+    width: 100%;
+    float: center;
+    border-left: solid 1px #B8B9B8;
+    border-right: solid 1px #B8B9B8;
+    padding: 30px;
+}
+.speaker{
+    float: left;
+    width: 20%;
+
+}
+.content{
+    float: left;
+    width: 75%;
+}
+.label_container{
+    float: left;
+    width: 30%;
+    margin: 30px 0 0 20px;
+    padding-left: 10px;
+    border-left: solid 4px green;
+}
+.label{
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 5px 2px;
+    color: white;
+    font-weight: bold;
+    float: left;
+}
+.mask{
+    background-color: cornflowerblue;
+}
+.delete{
+    background-color: red;
+}
+.timecode{
+    padding: 0 0 10px 0;
+    font-weight: bold;
+}
+.coded{
+    background-color: #B8B9B8;
+}
+.clear::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+button{
+    outline: none;
+    border: none;
+}
+
+.select-editable {
+    position:relative;
+    background-color:white;
+    border:solid grey 1px;
+    width:120px;
+    height:18px;
+}
+.select-editable select {
+    position:absolute;
+    top:0px;
+    left:0px;
+    font-size:14px;
+    border:none;
+    width:120px;
+    margin:0;
+}
+.select-editable input {
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100px;
+    padding:1px;
+    font-size:12px;
+    border:none;
+}
+.select-editable select:focus, .select-editable input:focus {
+    outline:none;
+}
+
+.speaker {
+    overflow: hidden;
+  }
+
+.speaker select {
+  text-indent: 1px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 2px 2px 2px 2px;
+  border: none;
+  font-size: 14px;
+}
+
+
+
+.labelSelect {
+    position: relative;
+    /* display: inline-block; */
+  }
+
+/* Dropdown Content (Hidden by Default) */
+.labelSelect-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 140px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.labelSelect-content a {
+  color: black;
+  padding: 10px 14px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.labelSelect-content a:hover {background-color: #ddd}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}

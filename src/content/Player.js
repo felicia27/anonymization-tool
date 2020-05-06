@@ -44,15 +44,18 @@ class Player extends Component {
     this.props.onRef(undefined);
   }
     play_specific(beg, end){
-      console.log("playing");
-      console.log(end);
-      console.log(beg/1000000000);
-      console.log(end/1000000000);
+      var playPauseButton = document.getElementById("playPauseButtonImage");
+
+      playPauseButton.src = require("./image/pause-button.png");
       wavesurfer.play(beg/1000000000, end/1000000000);
+
+      
+
+
     }
      controlHandler(action){
 
-        console.log(action);
+
         var playPauseButton = document.getElementById("playPauseButtonImage")
         var muteButton = document.getElementById("muteImage")
         switch (action) {
