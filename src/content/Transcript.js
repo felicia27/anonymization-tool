@@ -18,13 +18,14 @@ class Transcript extends Component {
         this.state = {
             IDArray: [],
             update:0,
-            labelDict: {"Delete": [], "Mask": []}
+            labelDict: {"Delete": [], "Mask": [], "Edit":[]}
         };
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
+
     }
-    
+
     componentWillMount() {
       document.addEventListener('mousedown', this.handleClick, false);
     }
@@ -51,16 +52,9 @@ class Transcript extends Component {
       var menu = document.getElementById("labelSelect");
       if (this.node.contains(e.target)) {
         this.highlightText(e);
-       // menu.style.display = "none";
-
-        // if (this.getLabelSelection(e) == "Mask" || this.getLabelSelection(e) == "Delete"){
-        //   console.log("SELECTED")
-        //   menu.style.display = "none";
-       //}
         return;
       }
       menu.style.display = "none";
-     // this.handleClickOutside();
     }
 
 
@@ -103,7 +97,7 @@ class Transcript extends Component {
         idTranscript: JSON.stringify(currentidTranscript),
       }, { merge: true });
       this.setState({
-        labelDict: {"Delete": [], "Mask": []},
+        labelDict: {"Delete": [], "Mask": [], "Edit": []},
       })
       console.log("file updated");
 
@@ -114,7 +108,6 @@ class Transcript extends Component {
        var event = window.event;
        this.getSelectionText();
        this.displayMenu(event);
-   //    this.highlightText(event);
        this.recordDict(event);
      }
 
@@ -181,28 +174,15 @@ class Transcript extends Component {
         var range = window.getSelection().getRangeAt(0);
 
         if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
-          //  range = this.state.lastHi;
             var selectionContents = range.extractContents();
             var span = document.createElement("span");
             span.appendChild(selectionContents);
             span.style.backgroundColor = "lightgray";
             range.insertNode(span);
          }
-      //   document.getElementById("labelSelect").style.display = "none";
-       // this.setState({
-         // lastHi: range,
-        //})
       }
 
-      // unhighlightText() {
-      // //  var range = this.state.lastHi;
-      //   var selectionContents = range.extractContents();
-      //   var span = document.createElement("span");
-      //   span.appendChild(selectionContents);
 
-      //   span.style.backgroundColor = 'transparent';
-      //   range.insertNode(span);
-      // }
 
       displayMenu(event){
         var x = event.pageX;
@@ -287,14 +267,29 @@ class Transcript extends Component {
           this.displayMaskLabel(event);
           userSelectText = "";
         }
+
+        else if (this.getLabelSelection(event) === "Edit" && userSelectText !== "") {
+
+          for (var word of wordIDs) {
+            var templabelDict = this.state.labelDict;
+            templabelDict["Edit"].push(word);
+            this.setState({
+                labelDict: templabelDict,
+            })
+          document.getElementById("labelSelect").style.display = 'none';
+          userSelectText = "";
+        }
+      }
         console.log(JSON.stringify(this.state.labelDict));
     }
+  
 
 
 
     render() {
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
+
             return (
 
                 <div key={index} className="Transcript-transcription-text">
@@ -304,6 +299,7 @@ class Transcript extends Component {
                 </div>
             );
         });
+
 
         return (
 
@@ -321,10 +317,12 @@ class Transcript extends Component {
           <div className="transcript_container clear">
 
               <div className="transcript">
+
                 <div className="labels">
                   <div ref = {node => this.node = node} onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
                     <a id="Delete">Delete</a>
                     <a id="Mask">Mask</a>
+                    <a id="Edit">Edit</a>
                     <a id="Play">Play</a>
                   </div>
                 </div>
@@ -339,6 +337,7 @@ class Transcript extends Component {
                     </div>
                     <div className="content">
                       <div className="timecode">00:00:03</div>
+                      
                       <div>
                       {transcriptSnippets}
                       </div>
