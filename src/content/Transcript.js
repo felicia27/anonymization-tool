@@ -18,12 +18,19 @@ class Transcript extends Component {
         this.state = {
             IDArray: [],
             update:0,
-            labelDict: {"Delete": [], "Mask": [], "Edit":[]}
+            labelDict: {"Delete": [], "Mask": [], "Edit":[]},
+            editedText: "",
         };
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
 
+    }
+
+    textChange(event) {
+      this.setState({
+        editedText: event.target.value,
+      })
     }
 
     componentWillMount() {
@@ -110,6 +117,24 @@ class Transcript extends Component {
        this.recordDict(event);
      }
 
+     enterPressed(event) {
+      var code = event.keyCode || event.which;
+      var textBox = document.getElementById("editTextBox")
+      if(code === 13) { //13 is the enter keycode
+          //Do stuff in here
+
+          var templabelDict = this.state.labelDict;
+            templabelDict["Edit"][templabelDict["Edit"].length-1].push(this.state.editedText);
+            this.setState({
+                labelDict: templabelDict,
+                editedText: "",
+            })
+          textBox.style.display = "none";
+          textBox.value = "";
+      } 
+      console.log(JSON.stringify(this.state.labelDict));
+  }
+
      removePunctuation(string) {
         return string
           .split('')
@@ -188,19 +213,11 @@ class Transcript extends Component {
       displayMenu(event){
         var x = event.pageX;
         var y = event.pageY;
-        console.log(x);
-        console.log(y);
         var menu = document.getElementById("labelSelect");
         menu.style.display = "block";
         menu.style.position = 'absolute';
 
         menu.style.margin = (y-500)+"px 0px 0px " +x+"px";
-
-
-
-
-
-        //menu.style.backgroundColor = 'green';
       }
 
       getLabelSelection(event){
@@ -272,19 +289,23 @@ class Transcript extends Component {
         }
 
         else if (this.getLabelSelection(event) === "Edit" && userSelectText !== "") {
-
+          var textBox = document.getElementById("editTextBox")
+          textBox.style.display = "block";
           for (var word of wordIDs) {
             var templabelDict = this.state.labelDict;
-            templabelDict["Edit"].push(word);
+            templabelDict["Edit"].push([word]);
             this.setState({
                 labelDict: templabelDict,
             })
           document.getElementById("labelSelect").style.display = 'none';
           userSelectText = "";
         }
-      }
+      
         console.log(JSON.stringify(this.state.labelDict));
     }
+  }
+
+
     firstWordTimeN(){
       return this.state.IDArray[0]["startTime"];
     }
@@ -363,7 +384,14 @@ class Transcript extends Component {
                       <input style={{width: '0px', marginTop: '1px', border: 'none', position: 'relative', left: '0px', marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
                     <div className="content">
+
                       <button className="timecode" style = {{color: 'blue'}} onClick={()=>this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN())}>{firstWordTimeSec}s</button>
+
+                      <div className = "editText">
+                            <input type="text" id = "editTextBox" style={{display:'none'}}
+                              onChange={this.textChange.bind(this)} onKeyPress={this.enterPressed.bind(this)}></input>
+                      </div>
+
                       <div>
                       {transcriptSnippets}
                       </div>
