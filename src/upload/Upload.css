@@ -16,11 +16,37 @@
     grid-area: Upload-progress;
     justify-self: center;
     align-self: center;
-    font-size: 0.8em;
+    font-size: 0.7em;
 }
+
+.progressBar {
+  position: relative;
+  margin-left: 35px;
+  margin-top: 25px;
+}
+
+progress {
+  border-radius: 1px; 
+  width: 235px;
+}
+
+progress::-webkit-progress-bar {
+  background-color: #B8D1F6;
+  border-radius: 1px;
+ }
+ progress::-webkit-progress-value {
+  background-color: #5D94FF;
+  border-radius: 1px; 
+ }
+ progress::-moz-progress-bar {
+   /* style rules */
+ }
 
 .fade-animation {
   animation: FadeAnimation 1s ease-in .2s forwards;
+  position: relative;
+  margin-top: 25px;
+  margin-left: -17px;
 }
 
 @keyframes FadeAnimation {

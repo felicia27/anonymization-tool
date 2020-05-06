@@ -45,6 +45,7 @@ nav img{
     height: 223px;
     margin: 35px;
     float: left;
+    overflow-y: scroll;
     
     background: #FFFFFF;
     border: 1px solid #949494;
@@ -217,6 +218,7 @@ nav img{
     height: 19px;
     left: -103px;
     top: 101px;
+    overflow-y: scroll;
 
     /*background: #6FD171;*/
     border-radius: 10px;

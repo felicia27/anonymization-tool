@@ -97,7 +97,9 @@ class Upload extends Component {
                 </div> {/* End of Uploader Button */}
 
                 <div className="Upload-progress">
-                    {this.state.isUploading && <div>Progress: {this.state.progress}</div>}
+                    {this.state.isUploading && <div className="progressBar">
+                        <progress value={this.state.progress} max="100"/>
+                        <span>Progress: {this.state.progress}%</span></div>}
                     {/* The expression below is running before handleUploadSuccess finishes */}
                     {this.state.audioURL && <div className="fade-animation">File uploaded</div>}
                 </div>
