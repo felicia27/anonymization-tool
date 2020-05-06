@@ -75,8 +75,14 @@ class Transcript extends Component {
 
       var delDict = this.state.labelDict["Delete"];
       var maskDict = this.state.labelDict["Mask"];
+      var editDict = this.state.labelDict["Edit"];
       var currentidTranscript = this.state.IDArray;
 
+      for(let i = 0 ; i < editDict.length; i++) {
+         let elEdited = editDict[i][0];
+         currentidTranscript[elEdited]["word"] = editDict[i][1];
+
+      }
       for(let i = 0 ; i < maskDict.length; i++) {
          let elMasked = maskDict[i][0];
          currentidTranscript[elMasked]["label"] = "MASK";
@@ -86,6 +92,8 @@ class Transcript extends Component {
 
       for(let i = 0 ; i < delDict.length; i++) {
          let elToBeDeleted = delDict[i];
+         var editInTrans = document.getElementById(elToBeDeleted);
+         editInTrans.style.backgroundColor = 'transparent';
          var time_span = parseInt(currentidTranscript[elToBeDeleted].endTime) - parseInt(currentidTranscript[elToBeDeleted].startTime);
          currentidTranscript.splice(elToBeDeleted, 1);
          for (let n = elToBeDeleted; n<currentidTranscript.length; n++)
@@ -122,13 +130,18 @@ class Transcript extends Component {
 
           var templabelDict = this.state.labelDict;
             templabelDict["Edit"][templabelDict["Edit"].length-1].push(this.state.editedText);
+
+            //templabelDict["Edit"][templabelDict["Edit"].length-1];
+            //this.state.editedText;
+            var editInTrans = document.getElementById(templabelDict["Edit"][templabelDict["Edit"].length-1][0]);
+            editInTrans.style.backgroundColor = 'green';
             this.setState({
                 labelDict: templabelDict,
                 editedText: "",
             })
           textBox.style.display = "none";
           textBox.value = "";
-      } 
+      }
       console.log(JSON.stringify(this.state.labelDict));
   }
 
@@ -220,6 +233,7 @@ class Transcript extends Component {
       displayDeleteLabel(event){
         var x = event.pageX;
         var y = event.pageY;
+        y -= 100;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -233,7 +247,7 @@ class Transcript extends Component {
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-
+        y -= 100;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -244,8 +258,6 @@ class Transcript extends Component {
         document.getElementById("labelSelect").style.display = 'none';
       }
       updateMaskLabel(x, y){
-
-
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -302,7 +314,7 @@ class Transcript extends Component {
           document.getElementById("labelSelect").style.display = 'none';
           userSelectText = "";
         }
-      
+
         console.log(JSON.stringify(this.state.labelDict));
     }
   }
@@ -330,15 +342,15 @@ class Transcript extends Component {
             if (word["label"] == "unlabeled")
             {
               return (
-                  <div key={index} className="Transcript-transcription-text">
+                  <div id={index} key={index} className="Transcript-transcription-text">
                       <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
                   </div>
               );
             }
             if (word["label"] == "MASK") {
-              this.updateMaskLabel(word["x"], word["y"]);
+              this.updateMaskLabel(word["x"], word["y"]-100);
               return (
-                  <div key={index} className="Transcript-transcription-text">
+                  <div id={index} key= {index} className="Transcript-transcription-text">
                       <span style = {{backgroundColor: "lightgray"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
                   </div>
               );

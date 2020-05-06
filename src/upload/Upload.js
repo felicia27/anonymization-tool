@@ -42,7 +42,7 @@ class Upload extends Component {
     };
 
     handleUploadSuccess = filename => {
-      this.setState({ audio: filename, progress: 34});
+      this.setState({ audio: filename, progress: 13});
         // console.log(filename);
         firebase
             .storage()
@@ -75,15 +75,15 @@ class Upload extends Component {
                     console.error("Error adding document: ", error);
                 });
                 this.checkDB();
-                this.setState({ progress: 99, isUploading: true });
+                //this.setState({ progress: 99, isUploading: true });
                 console.log("finished running");
                 this.setState({audioURL: url});
           });
     };
     async checkDB(){
-      this.setState({ progress: 82, isUploading: true });
+      this.setState({ progress: 35, isUploading: true });
       var gcpFinished = false;
-
+      var progress = 35;
       while (gcpFinished == false)
       {
           await sleep(1000);
@@ -93,8 +93,15 @@ class Upload extends Component {
 
             if (doc.data().finished != false)
             {
-              this.setState({ progress: 100, isUploading: false, GCDone: true });
+              this.setState({progress: 99});
+
               gcpFinished = true;
+            }
+
+            if (progress < 82)
+            {
+              progress += 17;
+              this.setState({progress: progress});
             }
           })
           .catch(function(error) {
@@ -102,6 +109,7 @@ class Upload extends Component {
           });
 
       }
+      this.setState({ progress: 100, isUploading: false, GCDone: true });
     }
 
     render() {
@@ -129,8 +137,9 @@ class Upload extends Component {
                     {this.state.isUploading && <div className="progressBar">
                         <progress value={this.state.progress} max="100"/>
                         <span>Progress: {this.state.progress}%</span></div>}
-                    {/* The expression below is running before handleUploadSuccess finishes */}
+
                     {this.state.GCDone && <div className="fade-animation">File uploaded</div>}
+                    {this.state.GCDone && window.location.reload()}
                 </div>
             </div>
         );
