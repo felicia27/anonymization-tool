@@ -24,7 +24,6 @@ class Transcript extends Component {
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
-
     }
 
     textChange(event) {
@@ -64,7 +63,6 @@ class Transcript extends Component {
       menu.style.display = "none";
     }
 
-
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
 
@@ -74,14 +72,16 @@ class Transcript extends Component {
     }
 
     SaveChanges = (e) => {
-      console.log("file saving");
+
       var delDict = this.state.labelDict["Delete"];
       var maskDict = this.state.labelDict["Mask"];
       var currentidTranscript = this.state.IDArray;
 
       for(let i = 0 ; i < maskDict.length; i++) {
-         let elMasked = maskDict[i];
+         let elMasked = maskDict[i][0];
          currentidTranscript[elMasked]["label"] = "MASK";
+         currentidTranscript[elMasked]["x"] = maskDict[i][1];
+         currentidTranscript[elMasked]["y"] = maskDict[i][2];
       }
 
       for(let i = 0 ; i < delDict.length; i++) {
@@ -104,13 +104,10 @@ class Transcript extends Component {
       this.setState({
         labelDict: {"Delete": [], "Mask": [], "Edit": []},
       })
-      console.log("file updated");
-
-
+      alert("File Updated");
     }
 
      onMouseUpHandler = (e) =>{
-
        var event = window.event;
        this.getSelectionText();
        this.displayMenu(event);
@@ -146,7 +143,6 @@ class Transcript extends Component {
 
       getSelectionText() {
         var text;
-
         if (window.getSelection) {
           text = window.getSelection();
             if (!text.isCollapsed) {
@@ -178,13 +174,11 @@ class Transcript extends Component {
               textRange.expand("word");
               while (/\s$/.test(textRange.text)) {
                 textRange.moveEnd("character", -1);
-
               }
               textRange.select()
             }
         }
         document.getElementById("labelSelect").classList.toggle("show");
-
         if (text.toString() === "") {
           console.log("empty selection")
         }
@@ -209,14 +203,12 @@ class Transcript extends Component {
         })
       }
 
-
       displayMenu(event){
         var x = event.pageX;
         var y = event.pageY;
         var menu = document.getElementById("labelSelect");
         menu.style.display = "block";
         menu.style.position = 'absolute';
-
         menu.style.margin = (y-500)+"px 0px 0px " +x+"px";
       }
 
@@ -241,6 +233,7 @@ class Transcript extends Component {
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
+
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -250,9 +243,20 @@ class Transcript extends Component {
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
       }
+      updateMaskLabel(x, y){
+
+
+        var label_container = document.createElement('div');
+        label_container.className = 'label_container';
+        label_container.style.float = 'left';
+        label_container.style.position = 'absolute';
+        label_container.style.top = y.toString() + 'px'
+        label_container.innerHTML = `<span class="label mask">Mask</span>`;
+        document.getElementsByClassName('column')[0].appendChild(label_container);
+        document.getElementById("labelSelect").style.display = 'none';
+      }
 
       recordDict(event) {
-        // var splitText = userSelectText.split(" ");
         if (userSelectText !== ""){
           var wordIDs = userSelectText.match(/\d+/g).map(Number);
         }
@@ -263,8 +267,6 @@ class Transcript extends Component {
           document.getElementById("labelSelect").style.display = 'none';
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
-
-
           for (var word of wordIDs) {
             var templabelDict = this.state.labelDict;
             templabelDict["Delete"].push(word);
@@ -275,11 +277,12 @@ class Transcript extends Component {
           this.displayDeleteLabel(event);
           userSelectText = "";
         }
-
         else if (this.getLabelSelection(event) === "Mask" && userSelectText !== "") {
+          var x = event.pageX;
+          var y = event.pageY;
           for (var word of wordIDs) {
             var templabelDict = this.state.labelDict;
-            templabelDict["Mask"].push(word);
+            templabelDict["Mask"].push([word, x, y]);
             this.setState({
                 labelDict: templabelDict,
             })
@@ -287,7 +290,6 @@ class Transcript extends Component {
           this.displayMaskLabel(event);
           userSelectText = "";
         }
-
         else if (this.getLabelSelection(event) === "Edit" && userSelectText !== "") {
           var textBox = document.getElementById("editTextBox")
           textBox.style.display = "block";
@@ -315,44 +317,39 @@ class Transcript extends Component {
     }
 
 
+    timeStampClicked = ()=>{
+      this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN());
+      console.log("pressed");
+      var Stamp = document.getElementById("timeStamp");
+      Stamp.style.color = 'lightgreen';
 
+    };
     render() {
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
-            if (word["label"] != "unlabeled")
+            if (word["label"] == "unlabeled")
             {
               return (
-
                   <div key={index} className="Transcript-transcription-text">
-
                       <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
-
                   </div>
               );
             }
-            else {
+            if (word["label"] == "MASK") {
+              this.updateMaskLabel(word["x"], word["y"]);
               return (
-
                   <div key={index} className="Transcript-transcription-text">
-
                       <span style = {{backgroundColor: "lightgray"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
-
                   </div>
               );
             }
-
         });
-
         let firstWordTimeSec = this.state.IDArray.map((word, index)=>{
           if (index == 0){
             return word["startTime"]/1000000000;
           }
         });
-
-
-
         return (
-
           <div>
               <div className="Transcript-Save">
                   <form>
@@ -384,27 +381,22 @@ class Transcript extends Component {
                       <input style={{width: '0px', marginTop: '1px', border: 'none', position: 'relative', left: '0px', marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
                     <div className="content">
-
-                      <button className="timecode" style = {{color: 'blue'}} onClick={()=>this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN())}>{firstWordTimeSec}s</button>
+                      <button  onClick={this.timeStampClicked.bind(this)} id = "timeStamp" style = {{color: 'blue'}} className="timecode">{firstWordTimeSec}s</button>
 
                       <div className = "editText">
                             <input type="text" id = "editTextBox" style={{display:'none'}}
                               onChange={this.textChange.bind(this)} onKeyPress={this.enterPressed.bind(this)}></input>
                       </div>
-
+                      
                       <div>
                       {transcriptSnippets}
                       </div>
                     </div>
                   </div>
                 </section>
-
               </div>
             </div>
             </div>
-
-
-
         );
     }
 }

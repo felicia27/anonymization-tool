@@ -82,7 +82,6 @@ class Upload extends Component {
     };
     async checkDB(){
       this.setState({ progress: 82, isUploading: true });
-      console.log("checkDB running");
       var gcpFinished = false;
 
       while (gcpFinished == false)
@@ -91,8 +90,7 @@ class Upload extends Component {
           this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(this.props.projectId)
           .collection("audios").doc(this.state.audio.slice(37,73)).get()
           .then(doc => {
-            console.log(doc.data());
-            //console.log(doc.data().finished)
+
             if (doc.data().finished != false)
             {
               this.setState({ progress: 100, isUploading: false, GCDone: true });
