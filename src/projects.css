@@ -90,7 +90,7 @@ nav img{
 
 #folderAlign{
     display:flex; 
-    flex-direction:row;
+    flex-flow:row wrap;
 }
 
 #myFiles{
@@ -422,8 +422,18 @@ nav img{
 .coded{
     background-color: #B8B9B8;
 }
+
 .clear::after {
     content: "";
     clear: both;
     display: table;
-  }
+}
+
+.fileDelete{
+    position: relative;
+    top: 21px;
+    padding: 0 0 0 0;
+}
+.link{
+    float:left;
+}

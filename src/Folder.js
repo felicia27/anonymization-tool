@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import app from "./base";
-import firebase from "firebase";
+import firebase, { storage } from "firebase";
 import FileUploader from "react-firebase-file-uploader";
 import "./projects.css";
 import 'antd/dist/antd.css';
@@ -34,6 +34,20 @@ class Folder extends Component {
             if (this.props.onClick) this.props.onClick() 
         });
     };
+
+    deleteFile(audioId, audioFileName) {
+        const currentUser = app.auth().currentUser.email;
+        let storage = firebase.storage();
+        let storageRef = storage.ref()
+        let deleteRef = storageRef.child("audios/" + currentUser + "/" + this.props.id + "_" + audioId + "_" + audioFileName);
+        deleteRef.delete().then(() => {
+            this.db.collection("transcripts").doc(currentUser)
+            .collection("projects").doc(this.props.id).collection("audios").doc(audioId).delete().then(() => {
+                console.log("Fully deleted " + audioFileName)
+                window.location.reload();
+            });
+        })
+    }
 
     textChange(inputEntry) {
         console.log(inputEntry)
@@ -85,7 +99,10 @@ class Folder extends Component {
     render() {
         let allProjectAudios = this.props.projectAudios.map(audio => {
             return(
-                <Link to={"/edit/" + this.props.id + "/" + audio.audioId} key={audio.audioId}>{audio.audioFileName}</Link>
+                <div>
+                    <img className="fileDelete" onClick={() => this.deleteFile(audio.audioId, audio.audioFileName)} src={deleteLogo}/>
+                    <Link to={"/edit/" + this.props.id + "/" + audio.audioId} key={audio.audioId} className="link">{audio.audioFileName}</Link>
+                </div>
             );
         });
 
@@ -97,7 +114,7 @@ class Folder extends Component {
                         <div className="green_border" style={{backgroundColor: backgroundcolor}}></div>
                         <div className="green_completed" style={{backgroundColor: backgroundcolor}}></div>
 
-                        <a id="deleteButton" role="button" onClick={this.props.delete}><img src={deleteLogo}/></a>
+                        <a id="deleteButton" role="button" onClick={this.props.deleteFolder}><img src={deleteLogo}/></a>
 
                         {/*<select id="deleteBox" onChange={() => this.deleteFolder(this, this.options[this.selectedIndex].value)}>
                             <option style={{display: "none"}}></option>

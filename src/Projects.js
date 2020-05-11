@@ -5,12 +5,13 @@ import moment from "moment";
 import Upload from "./upload/Upload";
 import firebase from "firebase";
 import React, { Component } from "react";
-import { List, Typography, Icon } from "antd";
+import { List, Typography, Icon , Modal, Space , Button } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
 import Folder from "./Folder.js";
-import { Link, BrowserRouter as Router, Route } from "react-router-dom";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
+const { confirm } = Modal;
 
 class Projects extends Component {
 
@@ -18,6 +19,7 @@ class Projects extends Component {
         super(props);
 
         this.db = firebase.firestore();
+        
 
         this.state = {
             projectCount: null,
@@ -108,7 +110,7 @@ class Projects extends Component {
         docUser.collection("projects").doc(projectName.slice(0,36)).set({
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             projectName: projectName.slice(37),
-            projectDescription: ""
+            projectDescription: "Project Description"
         }, {merge: true}).then(() => {
             let projectObjects = [];
             docUser.collection("projects").doc(projectName.slice(0,36)).get().then(function(querySnapshot) {
@@ -145,12 +147,22 @@ class Projects extends Component {
         });
     }
 
-    deleteEvent = (index) => {
-        const copyFolderArray = Object.assign([], this.state.folderArray);
-        copyFolderArray.splice(index, 1);
-        this.setState({
-            folderArray: copyFolderArray
-        })
+    deleteEvent = (index, projectId, audiosList) => {
+        if(audiosList.length == 0 ){
+            this.db.collection("transcripts").doc(app.auth().currentUser.email)
+            .collection("projects").doc(projectId).delete().then(() => {
+                console.log("Successfully deleted");
+                const copyFolderArray = Object.assign([], this.state.folderArray);
+                copyFolderArray.splice(index, 1);
+                this.setState({
+                    folderArray: copyFolderArray,
+                    projectCount: this.state.projectCount-1
+                })
+            });
+        }
+        else {
+            this.showConfirm();
+        }
     }
 
     addFolder = (project) => {
@@ -165,6 +177,19 @@ class Projects extends Component {
             folderArray: [...this.state.folderArray, newProject]
         })
     }
+
+    showConfirm() {
+        confirm({
+          title: 'Please delete all files in the project before deleting the project.',
+          icon: <ExclamationCircleOutlined />,
+          onOk() {
+            console.log('OK');
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
+        });
+      }
 
     render() {
 
@@ -185,7 +210,7 @@ class Projects extends Component {
                             title={folder.title}
                             projectDescription={folder.projectDescription}
                             projectAudios={folder.projectInfo.projectAudios}
-                            delete={this.deleteEvent.bind(this, index)}
+                            deleteFolder={this.deleteEvent.bind(this, index, folder.id, folder.projectInfo.projectAudios)}
                             onClick={() => this.handleClick(index)} //color button (delete)
                         />
                     )
