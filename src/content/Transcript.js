@@ -72,6 +72,7 @@ class Transcript extends Component {
     }
 
     SaveChanges = (e) => {
+      this.getEditedText()
 
       var delDict = this.state.labelDict["Delete"];
       var maskDict = this.state.labelDict["Mask"];
@@ -153,6 +154,13 @@ class Transcript extends Component {
           })
           .join('');
       }
+      
+    getEditedText() {
+      var contenteditable = document.querySelector('[contenteditable]'),
+      text = contenteditable.textContent;
+      console.log(text, "TEXT!!")
+    }
+
 
       getSelectionText() {
         var text;
@@ -343,7 +351,7 @@ class Transcript extends Component {
             {
               return (
                   <div id={index} key={index} className="Transcript-transcription-text">
-                      <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
+                      <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} </span></span>
                   </div>
               );
             }
@@ -400,7 +408,7 @@ class Transcript extends Component {
                               onChange={this.textChange.bind(this)} onKeyPress={this.enterPressed.bind(this)}></input>
                       </div>
 
-                      <div>
+                      <div id="transcriptSnippets" contentEditable = "true" onInput={e => console.log('Text inside div', e.currentTarget.textContent)}>
                       {transcriptSnippets}
                       </div>
                     </div>
