@@ -373,7 +373,7 @@ class Transcript extends Component {
           <div>
               <div className="Transcript-Save">
                   <form>
-                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer'}}>
+                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
                           Save
                       </label>
@@ -393,13 +393,16 @@ class Transcript extends Component {
                 </div>
                 <section className="clear utterance_container">
                   <div className="content_container clear">
-                  <div className="speaker">
-                      <select style={{width: '80px', position: 'absolute'}}>
+
+                    <div className="speaker">
+                      <select style={{width: '100px', position: 'absolute'}} onchange="this.nextElementSibling.value=this.value">
                         <option>Speaker 1</option>
                         <option> Speaker 2</option>
                       </select>
-                      <input style={{width: '0px', marginTop: '1px', border: 'none', position: 'relative', left: '0px', marginRight: '25px'}} defaultValue="Speaker 1" />
+                      <input style={{width: '70px', marginTop: '1px', border: 'none', position: 'relative', left: '1px', marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
+
+
                     <div className="content">
                       <button  onClick={this.timeStampClicked.bind(this)} id = "timeStamp" style = {{color: 'blue'}} className="timecode">{firstWordTimeSec}s</button>
 
