@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './Player.css'
 import WaveSurfer from 'wavesurfer.js';
+// import CursorPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.cursor.min.js';
+import $ from 'jquery';
 var wavesurfer;
 class Player extends Component {
 
@@ -14,8 +16,9 @@ class Player extends Component {
               cursorColor: '#4353FF',
               barWidth: 3,
               barRadius: 3,
-              cursorWidth: 1,
+              cursorWidth: 2,
               height: 100,
+              barHeight: 3,
               barGap: 3,
               skipLength: 5,
               // plugins: [
@@ -32,6 +35,22 @@ class Player extends Component {
               // ]
           });
 
+          var formatTime = function (time) {
+            return [
+                Math.floor((time % 3600) / 60), // minutes
+                ('00' + Math.floor(time % 60)).slice(-2) // seconds
+            ].join(':');
+        };
+        
+        // Show current time
+        wavesurfer.on('audioprocess', function () {
+            $('.waveform__counter').text(formatTime(wavesurfer.getCurrentTime()) );
+        });
+        
+        // Show clip duration
+        wavesurfer.on('ready', function () {
+            $('.waveform__duration').text(formatTime(wavesurfer.getDuration()) );
+        });
 
           console.log(this.props.audioUrl);
           wavesurfer.load(this.props.audioUrl);
@@ -96,7 +115,11 @@ class Player extends Component {
 
         return (
           <div className="audio_container clear">
-          <div id="waveform" style={{position: 'relative'}}>
+          <div id="waveform" style={{position: 'relative'}}>  
+          </div>
+          <div class="times">
+          <div class="waveform__counter" style = {{float:"left", paddingLeft:20}}>0:00</div>
+          <div class="waveform__duration" style = {{float: "right", paddingRight:20}}></div>
           </div>
 
 
@@ -114,8 +137,8 @@ class Player extends Component {
                   <img id="muteImage" src={require("./image/unmute.png")} width="40px" height="40px" />
                 </button>
               </div>
-
           </div>
+          
 
         );
     }

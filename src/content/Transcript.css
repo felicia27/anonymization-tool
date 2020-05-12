@@ -111,15 +111,13 @@ nav img{
     background-color: white;
     width: 100%;
     float: center;
+    margin-left: 150px;
+    margin-top: 20px;
     border-left: solid 1px #B8B9B8;
     border-right: solid 1px #B8B9B8;
     padding: 30px;
 }
-.speaker{
-    float: left;
-    width: 20%;
 
-}
 .content{
     float: left;
     width: 75%;
@@ -194,16 +192,19 @@ button{
 
 .speaker {
     overflow: hidden;
+    float: left;
+    width: 20%;
   }
 
 .speaker select {
-  text-indent: 1px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  padding: 2px 2px 2px 2px;
-  border: none;
-  font-size: 14px;
+    text-indent: 1px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 2px 2px 2px 2px;
+    border: none;
+    background: transparent url("image/down.png") padding-box;
+    font-size: 14px;
 }
 
 
