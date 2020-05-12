@@ -75,8 +75,7 @@ class Upload extends Component {
                     console.error("Error adding document: ", error);
                 });
                 this.checkDB();
-                //this.setState({ progress: 99, isUploading: true });
-                console.log("finished running");
+                
                 this.setState({audioURL: url});
           });
     };
@@ -135,8 +134,8 @@ class Upload extends Component {
 
                 <div className="Upload-progress">
                     {this.state.isUploading && <div className="progressBar">
-                        <progress value={this.state.progress} max="100"/>
-                        <span>Progress: {this.state.progress}%</span></div>}
+
+                        <span>Progress: Pending</span></div>}
 
                     {this.state.GCDone && <div className="fade-animation">File uploaded</div>}
                     {this.state.GCDone && window.location.reload()}

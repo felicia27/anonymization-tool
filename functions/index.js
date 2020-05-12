@@ -84,10 +84,10 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   	start = item["startTime"]
     end = item["endTime"]
   	if (!("seconds" in start)){
-  		word_dic.push({"word": item["word"], "startTime": start["nanos"].toString(),"endTime": end["seconds"]+ end["nanos"].toString(), "label": "unlabeled", "x": 0, "y":0});
+  		word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
 	  }
     else{
-    	 word_dic.push({"word": item["word"], "startTime": start["seconds"] + start["nanos"].toString(),"endTime": end["seconds"]+ end["nanos"].toString(), "label": "unlabeled", "x": 0, "y":0});
+    	 word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
     }
   });
   const finaledTranscript = JSON.stringify(word_dic);
