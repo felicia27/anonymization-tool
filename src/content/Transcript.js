@@ -402,7 +402,7 @@ class Transcript extends Component {
           <div>
               <div className="Transcript-Save">
                   <form>
-                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0}}>
+                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, bottom:380}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
                           Save
                       </label>
