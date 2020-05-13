@@ -24,10 +24,11 @@ class Folder extends Component {
             clicked: false,
             editTitleEnabled: false,
             editDescriptionEnabled: false,
-            backgroundcolor: '#6FD171',
-            title: 'Project title',
-            projectDescription: 'Project description'
+            backgroundcolor: '#6FD171'
         };
+
+        this.title = React.createRef();
+        this.projectDescription = React.createRef();
     }
     
     handleClick = event => {
@@ -93,17 +94,21 @@ class Folder extends Component {
     updateTitle = () => {
         this.setState({
             editTitleEnabled: false,
-            title: this.refs.newTitle.value
         })
-        alert(this.props.title);
+        const currentUserEmail = app.auth().currentUser.email;
+        let docUser = this.db.collection("transcripts").doc(currentUserEmail);
+        docUser.collection("projects").doc(this.props.id).set({
+            projectName: this.title.current.value}, {merge:true})
     }
 
     updateDescription = () => {
         this.setState({
             editDescriptionEnabled: false,
-            projectDescription: this.refs.newDescription.value
         })
-        alert(this.props.projectDescription);
+        const currentUserEmail = app.auth().currentUser.email;
+        let docUser = this.db.collection("transcripts").doc(currentUserEmail);
+        docUser.collection("projects").doc(this.props.id).set({
+            projectDescription: this.projectDescription.current.value}, {merge:true})
     }
 
     renderEditTitle = () => {
@@ -111,7 +116,7 @@ class Folder extends Component {
             <input 
                 type="text" 
                 defaultValue={this.props.title}
-                ref="newTitle"/>
+                ref={this.title}/>
             <button className="saveButton" onClick={this.updateTitle}>Save</button>
         </div>
     }
@@ -121,8 +126,8 @@ class Folder extends Component {
             <input 
                 className="desc"
                 type="text" 
-                defaultValue={this.props.projectDescription}
-                ref="newDescription"/>
+                defaultValue={this.props.projecDescription}
+                ref={this.projectDescription}/>
             <button className="saveButton" onClick={this.updateDescription}>Save</button>
         </div>
     }
@@ -132,8 +137,7 @@ class Folder extends Component {
             <input 
                 type="text"
                 defaultValue={this.props.title}
-                disabled={!this.state.editTitleEnabled}
-                />
+                disabled={!this.state.editTitleEnabled}/>
         </div>
     }
 
@@ -169,7 +173,6 @@ class Folder extends Component {
 
                         <select id="editBox" onChange={(evt) => this.textChange(evt.target.value)}>
                             <option style={{display: "none"}}></option>
-                            {/*onClick={this.handleEditClick.bind(this)}*/}
                             <option value="rename" >Rename</option>
                             <option value="edit">Edit description</option>
                         </select>
@@ -183,23 +186,15 @@ class Folder extends Component {
 
                         {this.state.editTitleEnabled ? this.renderEditTitle() : this.renderDefaultTitle()}
                         {this.state.editDescriptionEnabled ? this.renderEditDescription() : this.renderDefaultDescription()}
-                        {/*<p id="title" ref="newText">{this.props.title}</p>
-                        <p id="desc">{this.props.projectDescription}</p>
-                        <input id="title" type="text" ref="newText" defaultValue={this.props.title} disabled={!this.state.editTitleEnabled}/>
-                        <input id="desc" type="text" defaultValue={this.props.projectDescription} disabled={!this.state.editDescriptionEnabled}/>
-                        */}
-
+                      
                         <p id="myFiles">Files</p>
                         
                         <Upload projectId={this.props.id}/>
                         <p id="divider">---------------------------------------------</p>
                         <div><List
                             dataSource={allProjectAudios}
-                            renderItem={item => <List.Item>{item}</List.Item>}
-                            /></div>
-                        {/*id = {this.props.id}*/}  
-                        {/*<button onClick={this.props.delete}>Delete</button>*/}
-
+                            renderItem={item => <List.Item>{item}</List.Item>}/>
+                        </div>
                     </div>
                 </div>
             </div>
