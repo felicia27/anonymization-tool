@@ -5,10 +5,12 @@ import firebase from "firebase";
 import './Transcript.css'
 import "./edit.css"
 import { Icon } from "antd";
-
+import rangy from "rangy";
+import {alignWords} from "./EditTrans.js"
 const { Text, Title } = Typography;
 const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
 var userSelectText = "";
+var spanID = [];
 
 
 class Transcript extends Component {
@@ -18,9 +20,16 @@ class Transcript extends Component {
         this.state = {
             IDArray: [],
             update:0,
-            labelDict: {"Delete": [], "Mask": [], "Edit":[]},
+
             editedText: "",
+            change:0,
+            saving: false,
+            saved: false,
         };
+        this.labelDict = {"Delete": [], "Mask": [], "Edit":[]};
+
+        this.timeout = 0;
+
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
@@ -53,6 +62,12 @@ class Transcript extends Component {
             });
         }
     }
+    shouldComponentUpdate(nextProps, nextState){
+      if (this.state.change != nextState.change){
+        return false
+      }
+      return true
+    }
 
     handleClick = (e) => {
       var menu = document.getElementById("labelSelect");
@@ -65,86 +80,41 @@ class Transcript extends Component {
 
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
-
         this.setState({
             IDArray: idTranscript,
         })
     }
 
-    SaveChanges = (e) => {
-      this.getEditedText()
-
-      var delDict = this.state.labelDict["Delete"];
-      var maskDict = this.state.labelDict["Mask"];
-      var editDict = this.state.labelDict["Edit"];
+    SaveChanges(){
+      var maskDict = this.labelDict["Mask"];
+      var delDict = this.labelDict["Delete"];
       var currentidTranscript = this.state.IDArray;
 
-      for(let i = 0 ; i < editDict.length; i++) {
-         let elEdited = editDict[i][0];
-         currentidTranscript[elEdited]["word"] = editDict[i][1];
-
-      }
       for(let i = 0 ; i < maskDict.length; i++) {
          let elMasked = maskDict[i][0];
          currentidTranscript[elMasked]["label"] = "MASK";
          currentidTranscript[elMasked]["x"] = maskDict[i][1];
          currentidTranscript[elMasked]["y"] = maskDict[i][2];
       }
-
       for(let i = 0 ; i < delDict.length; i++) {
-         let elToBeDeleted = delDict[i];
-         var editInTrans = document.getElementById(elToBeDeleted);
-         editInTrans.style.backgroundColor = 'transparent';
-         var time_span = parseInt(currentidTranscript[elToBeDeleted].endTime) - parseInt(currentidTranscript[elToBeDeleted].startTime);
-         currentidTranscript.splice(elToBeDeleted, 1);
-         for (let n = elToBeDeleted; n<currentidTranscript.length; n++)
-         {
-           var newStartTime = parseInt(currentidTranscript[n].startTime) - time_span;
-           var newEndTime = parseInt(currentidTranscript[n].endTime) - time_span;
-           currentidTranscript[n].startTime = newStartTime.toString();
-           currentidTranscript[n].endTime = newEndTime.toString();
 
-         }
       }
-      this.db = firebase.firestore();
-      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
-        idTranscript: JSON.stringify(currentidTranscript),
-      }, { merge: true });
+      this.labelDict = {"Delete": [], "Mask": [], "Edit": []};
+      var nextChange = this.state.change;
       this.setState({
-        labelDict: {"Delete": [], "Mask": [], "Edit": []},
-      })
-      alert("File Updated");
+
+        IDArray: currentidTranscript,
+        change: nextChange+= 1,
+      });
+
     }
 
      onMouseUpHandler = (e) =>{
        var event = window.event;
-       this.getSelectionText();
+       this.getSelectionText(e);
        this.displayMenu(event);
        this.recordDict(event);
      }
-
-     enterPressed(event) {
-      var code = event.keyCode || event.which;
-      var textBox = document.getElementById("editTextBox")
-      if(code === 13) { //13 is the enter keycode
-          //Do stuff in here
-
-          var templabelDict = this.state.labelDict;
-            templabelDict["Edit"][templabelDict["Edit"].length-1].push(this.state.editedText);
-
-            //templabelDict["Edit"][templabelDict["Edit"].length-1];
-            //this.state.editedText;
-            var editInTrans = document.getElementById(templabelDict["Edit"][templabelDict["Edit"].length-1][0]);
-            editInTrans.style.backgroundColor = 'green';
-            this.setState({
-                labelDict: templabelDict,
-                editedText: "",
-            })
-          textBox.style.display = "none";
-          textBox.value = "";
-      }
-      console.log(JSON.stringify(this.state.labelDict));
-  }
 
      removePunctuation(string) {
         return string
@@ -154,15 +124,63 @@ class Transcript extends Component {
           })
           .join('');
       }
-      
-    getEditedText() {
-      var contenteditable = document.querySelector('[contenteditable]'),
-      text = contenteditable.textContent;
-      console.log(text, "TEXT!!")
+    updateText(){
+
+        console.log("typing");
+        var duration = 2000;
+
+        clearTimeout(this.timeout);
+
+        this.timeout = setTimeout(()=>{
+          this.updateTranscriptToDB()}, duration);
+      }
+    updateTranscriptToDB(){
+        console.log("saving");
+
+        var currentidTranscript = this.state.IDArray;
+        var contenteditable = document.querySelector('[contenteditable]');
+        var text = contenteditable.textContent;
+        console.log(text);
+        text = text.replace(/\u00a0/g, " ")
+        text = text.replace(/  +/g, " ");
+        var splitted = text.trim().split(" ");
+        var newTrans = alignWords(currentidTranscript, splitted);
+        console.log(newTrans);
+        this.db = firebase.firestore();
+        this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
+          idTranscript: JSON.stringify(newTrans),
+        }, { merge: true });
+
+        var nextChange = this.state.change;
+        this.setState({
+
+          IDArray: newTrans,
+          change: nextChange+= 1,
+        });
+        console.log("saved");
+
     }
 
 
-      getSelectionText() {
+    getSelectedSpanIds() {
+      var sel = rangy.getSelection(), ids = [];
+      for (var r = 0, range, spans; r < sel.rangeCount; ++r) {
+          range = sel.getRangeAt(r);
+          if (range.startContainer == range.endContainer && range.startContainer.nodeType == 3) {
+              range = range.cloneRange();
+              range.selectNode(range.startContainer.parentNode);
+          }
+          spans = range.getNodes([1], function(node) {
+                return node.nodeName.toLowerCase() == "span";
+          });
+          for (var i = 0, len = spans.length; i < len; ++i) {
+              ids.push(parseInt(spans[i].id));
+          }
+      }
+      return ids;
+    }
+
+      getSelectionText(e) {
         var text;
         if (window.getSelection) {
           text = window.getSelection();
@@ -201,11 +219,16 @@ class Transcript extends Component {
         }
         document.getElementById("labelSelect").classList.toggle("show");
         if (text.toString() === "") {
+
           console.log("empty selection")
         }
         else {
           userSelectText = this.removePunctuation(text.toString());
            console.log(userSelectText);
+
+          spanID = this.getSelectedSpanIds();
+           //console.log(userSelectText);
+           //console.log(spanID);
         }
       }
 
@@ -213,24 +236,33 @@ class Transcript extends Component {
         var range = window.getSelection().getRangeAt(0);
 
         if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
-            var selectionContents = range.extractContents();
-            var span = document.createElement("span");
-            span.appendChild(selectionContents);
-            span.style.backgroundColor = "lightgray";
-            range.insertNode(span);
+            //var selectionContents = range.extractContents();
+            for (var id in spanID){
+              console.log(id);
+              var span = document.getElementById(spanID[id]);
+              span.style.backgroundColor = "lightblue";
+            }
+
+            // if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
+            //     var selectionContents = range.extractContents();
+            //     var span = document.createElement("span");
+            //     span.appendChild(selectionContents);
+            //     span.style.backgroundColor = "lightgray";
+            //     range.insertNode(span);
+            //  }
+
          }
-        this.setState({
-          lastHi: range,
-        })
       }
 
       displayMenu(event){
-        var x = event.pageX;
-        var y = event.pageY;
-        var menu = document.getElementById("labelSelect");
-        menu.style.display = "block";
-        menu.style.position = 'absolute';
-        menu.style.margin = (y-350)+"px 0px 0px " +(x+30)+"px";
+        if (userSelectText != ""){
+          var x = event.pageX;
+          var y = event.pageY;
+          var menu = document.getElementById("labelSelect");
+          menu.style.display = "block";
+          menu.style.position = 'absolute';
+          menu.style.margin = (y-500)+"px 0px 0px " +(x+30)+"px";
+      }
       }
 
       getLabelSelection(event){
@@ -241,7 +273,7 @@ class Transcript extends Component {
       displayDeleteLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-        y -= 100;
+        //y -= 100;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -255,7 +287,7 @@ class Transcript extends Component {
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-        y -= 100;
+        y += 50;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -266,66 +298,62 @@ class Transcript extends Component {
         document.getElementById("labelSelect").style.display = 'none';
       }
       updateMaskLabel(x, y){
+
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'absolute';
-        label_container.style.top = y.toString() + 'px'
+        label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
       }
 
       recordDict(event) {
-        if (userSelectText !== ""){
-          var wordIDs = userSelectText.match(/\d+/g).map(Number);
-        }
+        // if (userSelectText !== ""){
+        //   var wordIDs = userSelectText.match(/\d+/g).map(Number);
+        // }
+
         if (this.getLabelSelection(event) === "Play" && userSelectText !== ""){
-          var start = this.state.IDArray[wordIDs[0]].startTime;
-          var end = this.state.IDArray[wordIDs[wordIDs.length-1]].endTime;
-          this.props.play_audio(start,end);
-          document.getElementById("labelSelect").style.display = 'none';
+           var start = this.state.IDArray[spanID[0]].startTime;
+           var end = this.state.IDArray[this.state.IDArray.length-1].endTime;
+           this.props.play_audio(start,end);
+           document.getElementById("labelSelect").style.display = 'none';
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
-          for (var word of wordIDs) {
-            var templabelDict = this.state.labelDict;
-            templabelDict["Delete"].push(word);
-            this.setState({
-                labelDict: templabelDict,
-            })
-          }
-          this.displayDeleteLabel(event);
-          userSelectText = "";
+          // for (var word of spanID) {
+          //   var templabelDict = this.state.labelDict;
+          //   templabelDict["Delete"].push(word);
+          //   this.setState({
+          //       labelDict: templabelDict,
+          //   })
+          // }
+          // this.displayDeleteLabel(event);
+          // userSelectText = "";
         }
         else if (this.getLabelSelection(event) === "Mask" && userSelectText !== "") {
+          console.log("MASKING");
+          console.log(userSelectText);
+          console.log(spanID);
           var x = event.pageX;
           var y = event.pageY;
-          for (var word of wordIDs) {
-            var templabelDict = this.state.labelDict;
+          for (var word of spanID) {
+            var templabelDict = this.labelDict;
             templabelDict["Mask"].push([word, x, y]);
-            this.setState({
-                labelDict: templabelDict,
-            })
-          }
+            var newChange = this.state.change;
+            this.labelDict = templabelDict;
+
+            console.log(this.labelDict)
+          };
+
           this.displayMaskLabel(event);
           userSelectText = "";
+          spanID = [];
+          this.SaveChanges();
         }
-        else if (this.getLabelSelection(event) === "Edit" && userSelectText !== "") {
-          var textBox = document.getElementById("editTextBox")
-          textBox.style.display = "block";
-          for (var word of wordIDs) {
-            var templabelDict = this.state.labelDict;
-            templabelDict["Edit"].push([word]);
-            this.setState({
-                labelDict: templabelDict,
-            })
-          document.getElementById("labelSelect").style.display = 'none';
-          userSelectText = "";
-        }
-
-        console.log(JSON.stringify(this.state.labelDict));
+        //console.log(JSON.stringify(this.state.labelDict));
     }
-  }
+
 
 
     firstWordTimeN(){
@@ -336,7 +364,6 @@ class Transcript extends Component {
       return this.state.IDArray[this.state.IDArray.length-1]["endTime"];
     }
 
-
     timeStampClicked = ()=>{
       this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN());
       console.log("pressed");
@@ -344,23 +371,25 @@ class Transcript extends Component {
       Stamp.style.color = 'lightgreen';
 
     };
+
     render() {
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
-            if (word["label"] == "unlabeled")
+            if (!('label' in word))
             {
+              console.log(word.word)
               return (
-                  <div id={index} key={index} className="Transcript-transcription-text">
-                      <span onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} </span></span>
-                  </div>
+
+                      <span id={index} key={index} className="Transcript-transcription-text"  onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}&nbsp;</span>
+
               );
             }
             if (word["label"] == "MASK") {
               this.updateMaskLabel(word["x"], word["y"]-100);
               return (
-                  <div id={index} key= {index} className="Transcript-transcription-text">
-                      <span style = {{backgroundColor: "lightgray"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}<span className="test">{index} + " "</span></span>
-                  </div>
+
+                      <span id={index} key= {index} className="Transcript-transcription-text" style = {{backgroundColor: "lightblue"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}&nbsp;</span>
+
               );
             }
         });
@@ -387,7 +416,6 @@ class Transcript extends Component {
                   <div ref = {node => this.node = node} onMouseUp={this.onMouseUpHandler} id="labelSelect" className="labelSelect-content">
                     <a id="Delete">Delete</a>
                     <a id="Mask">Mask</a>
-                    <a id="Edit">Edit</a>
                     <a id="Play">Play</a>
                   </div>
                 </div>
@@ -406,12 +434,9 @@ class Transcript extends Component {
                     <div className="content">
                       <button  onClick={this.timeStampClicked.bind(this)} id = "timeStamp" style = {{color: 'blue'}} className="timecode">{firstWordTimeSec}s</button>
 
-                      <div className = "editText">
-                            <input type="text" id = "editTextBox" style={{display:'none'}}
-                              onChange={this.textChange.bind(this)} onKeyPress={this.enterPressed.bind(this)}></input>
-                      </div>
 
-                      <div id="transcriptSnippets" contentEditable = "true" onInput={e => console.log('Text inside div', e.currentTarget.textContent)}>
+
+                      <div id="transcriptSnippets" contentEditable = "true" onInput={this.updateText.bind(this)}>
                       {transcriptSnippets}
                       </div>
                     </div>
