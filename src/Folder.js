@@ -10,7 +10,7 @@ import { List, Typography, Icon } from "antd";
 import deleteLogo from "./staticHTML/image/trash.png";
 import uploadLogo from "./staticHTML/image/plus.png";
 import { Link, BrowserRouter as Router, Route } from "react-router-dom";
-import PopUp from "./PopUp";
+
 
 const { Title } = Typography;
 
@@ -95,7 +95,7 @@ class Folder extends Component {
             editTitleEnabled: false,
             title: this.refs.newTitle.value
         })
-        alert(this.refs.newTitle.value);
+        alert(this.props.title);
     }
 
     updateDescription = () => {
@@ -103,7 +103,7 @@ class Folder extends Component {
             editDescriptionEnabled: false,
             projectDescription: this.refs.newDescription.value
         })
-        alert(this.refs.newDescription.value);
+        alert(this.props.projectDescription);
     }
 
     renderEditTitle = () => {
