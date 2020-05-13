@@ -70,7 +70,7 @@ function adjustTimecodesBoundaries(words) {
   });
 }
 
-function interpolate(wordsList) {
+export const interpolate = (wordsList) => {
   const words = interpolationOptimization(wordsList);
   const indicies = [ ...Array(words.length).keys() ];
   const indiciesWithStart = [];

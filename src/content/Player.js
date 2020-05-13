@@ -68,11 +68,11 @@ class Player extends Component {
       playPauseButton.src = require("./image/pause-button.png");
       wavesurfer.play(beg/1000000000);
 
-      while (wavesurfer.getCurrentTime() < end/1000000000){
+      // while (wavesurfer.getCurrentTime() < end/1000000000){
+      //
+      // }
 
-      }
-      
-      this.props.highlightNext(id);
+      //this.props.highlightNext(id);
 }
 
       notify_next(end, id){

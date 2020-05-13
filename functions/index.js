@@ -83,11 +83,54 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   wordTimeArray.forEach(function (item, index) {
   	start = item["startTime"]
     end = item["endTime"]
-  	if (!("seconds" in start)){
-  		word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
-	  }
+    console.log(start);
+    console.log(end);
+    if (start == null && end == null){
+    		word_dic.push({"word": item["word"]});
+    }
+    else if (start == null){
+      if (!("seconds" in start)){
+    		word_dic.push({"word": item["word"], "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+  	  }
+      else{
+      	 word_dic.push({"word": item["word"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+      }
+    }
+    else if (end == null){
+      if (!("seconds" in start)){
+    		word_dic.push({"word": item["word"], "startTime": start["nanos"]});
+  	  }
+      else{
+      	 word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString())});
+      }
+    }
+
+  	else if (!("seconds" in start)){
+     if (!("nanos" in end)){
+  		word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ 000000000.toString())});
+  	  }
+      else{
+        word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+
+      }
+    }
     else{
-    	 word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+      console.log(("nanos" in start));
+      console.log(start);
+      if (!("nanos" in start)&& !("nanos" in end) ){
+        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] ), "endTime": parseInt(end["seconds"] + 000000000.toString())});
+      }
+      else if (!("nanos" in start)){
+        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ 000000000.toString()), "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+      }
+
+      else if (!("nanos" in end)){
+    	   word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+000000000.toString())});
+      }
+      else{
+        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+
+      }
     }
   });
   const finaledTranscript = JSON.stringify(word_dic);

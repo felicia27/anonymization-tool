@@ -7,7 +7,7 @@ import "./edit.css"
 import { Icon } from "antd";
 import rangy from "rangy";
 import Save from "./savingBar.js"
-import {alignWords} from "./EditTrans.js"
+import {alignWords, interpolate} from "./EditTrans.js"
 const { Text, Title } = Typography;
 const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
 var userSelectText = "";
@@ -82,12 +82,15 @@ class Transcript extends Component {
 
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
+        console.log(idTranscript)
+        idTranscript = interpolate(idTranscript);
         this.setState({
             IDArray: idTranscript,
         })
     }
 
     SaveChanges(){
+      this.refs.Save.Saving();
       var maskDict = this.labelDict["Mask"];
       var delDict = this.labelDict["Delete"];
       var currentidTranscript = this.state.IDArray;
@@ -113,7 +116,7 @@ class Transcript extends Component {
       this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
         idTranscript: JSON.stringify(currentidTranscript),
       }, { merge: true });
-
+      this.refs.Save.Saved();
     }
 
      onMouseUpHandler = (e) =>{
@@ -305,7 +308,7 @@ class Transcript extends Component {
         document.getElementById("labelSelect").style.display = 'none';
       }
       updateMaskLabel(x, y){
-
+        y += 150;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -331,7 +334,7 @@ class Transcript extends Component {
            //        currentPlay: spanID[0],
            //    })
            //this.currentPlay = spanID[0];
-           document.getElementById(this.currentPlay).style.fontWeight='bold';
+           //document.getElementById(this.currentPlay).style.fontWeight='bold';
            document.getElementById("labelSelect").style.display = 'none';
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
