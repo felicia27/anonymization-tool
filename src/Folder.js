@@ -10,6 +10,7 @@ import { List, Typography, Icon } from "antd";
 import deleteLogo from "./staticHTML/image/trash.png";
 import uploadLogo from "./staticHTML/image/plus.png";
 import { Link, BrowserRouter as Router, Route } from "react-router-dom";
+import PopUp from "./PopUp";
 
 const { Title } = Typography;
 
@@ -24,10 +25,13 @@ class Folder extends Component {
             editTitleEnabled: false,
             editDescriptionEnabled: false,
             backgroundcolor: '#6FD171',
+            title: 'Project title',
+            projectDescription: 'Project description'
         };
     }
     
     handleClick = event => {
+        event.persist();
         this.setState({ 
             clicked: !this.state.clicked 
         }, () => { // Should prob use the callback that setState provides
@@ -52,15 +56,22 @@ class Folder extends Component {
     textChange(inputEntry) {
         console.log(inputEntry)
         if (inputEntry == 'rename') {
-            this.renderEditView();
-            this.setState({
-                editTitleEnabled: !this.state.editTitleEnabled
-            }) 
+            this.editTitleMode();
         } else if (inputEntry == 'edit') {
-            this.setState({
-                editDescriptionEnabled: !this.state.editDescriptionEnabled
-            })
+            this.editDescriptionMode();
         } 
+    }
+
+    editTitleMode = () => {
+        this.setState({
+            editTitleEnabled: !this.state.editTitleEnabled
+        })
+    }
+
+    editDescriptionMode = () => {
+        this.setState({
+            editDescriptionEnabled: !this.state.editDescriptionEnabled
+        })
     }
 
     colorChange(inputEntry) {
@@ -79,21 +90,61 @@ class Folder extends Component {
         }
     }
 
-    renderEditView = () => {
+    updateTitle = () => {
+        this.setState({
+            editTitleEnabled: false,
+            title: this.refs.newTitle.value
+        })
+        alert(this.refs.newTitle.value);
+    }
+
+    updateDescription = () => {
+        this.setState({
+            editDescriptionEnabled: false,
+            projectDescription: this.refs.newDescription.value
+        })
+        alert(this.refs.newDescription.value);
+    }
+
+    renderEditTitle = () => {
         return <div>
             <input 
-            type="text" 
-            defaultValue={this.props.title}/>
-        <button onClick={this.changeEditMode}>X</button>
-        <button onClick={this.updateComponentValue}>OK</button>
+                type="text" 
+                defaultValue={this.props.title}
+                ref="newTitle"/>
+            <button className="saveButton" onClick={this.updateTitle}>Save</button>
         </div>
     }
 
-    updateComponentValue = () => {
-        this.setState({
-            editTitleEnabled: false,
-            title: this.refs.theTextInput.value 
-        })
+    renderEditDescription = () => {
+        return <div>
+            <input 
+                className="desc"
+                type="text" 
+                defaultValue={this.props.projectDescription}
+                ref="newDescription"/>
+            <button className="saveButton" onClick={this.updateDescription}>Save</button>
+        </div>
+    }
+
+    renderDefaultTitle = () => {
+        return <div>
+            <input 
+                type="text"
+                defaultValue={this.props.title}
+                disabled={!this.state.editTitleEnabled}
+                />
+        </div>
+    }
+
+    renderDefaultDescription = () => {
+        return <div>
+            <input
+                className="desc"
+                type="text" 
+                defaultValue={this.props.projectDescription} 
+                disabled={!this.state.editDescriptionEnabled}/>
+        </div>
     }
 
     render() {
@@ -116,11 +167,6 @@ class Folder extends Component {
 
                         <a id="deleteButton" role="button" onClick={this.props.deleteFolder}><img src={deleteLogo}/></a>
 
-                        {/*<select id="deleteBox" onChange={() => this.deleteFolder(this, this.options[this.selectedIndex].value)}>
-                            <option style={{display: "none"}}></option>
-                            <option value="delete">Delete</option>
-                        </select>*/}
-
                         <select id="editBox" onChange={(evt) => this.textChange(evt.target.value)}>
                             <option style={{display: "none"}}></option>
                             {/*onClick={this.handleEditClick.bind(this)}*/}
@@ -134,9 +180,15 @@ class Folder extends Component {
                             <option value="red">Red</option>
                             <option value="blue">Blue</option>
                         </select>
-                        
-                        <input type="text" defaultValue={this.props.title} disabled={!this.state.editTitleEnabled}/>
+
+                        {this.state.editTitleEnabled ? this.renderEditTitle() : this.renderDefaultTitle()}
+                        {this.state.editDescriptionEnabled ? this.renderEditDescription() : this.renderDefaultDescription()}
+                        {/*<p id="title" ref="newText">{this.props.title}</p>
+                        <p id="desc">{this.props.projectDescription}</p>
+                        <input id="title" type="text" ref="newText" defaultValue={this.props.title} disabled={!this.state.editTitleEnabled}/>
                         <input id="desc" type="text" defaultValue={this.props.projectDescription} disabled={!this.state.editDescriptionEnabled}/>
+                        */}
+
                         <p id="myFiles">Files</p>
                         
                         <Upload projectId={this.props.id}/>
