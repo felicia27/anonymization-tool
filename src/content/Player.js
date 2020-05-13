@@ -41,12 +41,12 @@ class Player extends Component {
                 ('00' + Math.floor(time % 60)).slice(-2) // seconds
             ].join(':');
         };
-        
+
         // Show current time
         wavesurfer.on('audioprocess', function () {
             $('.waveform__counter').text(formatTime(wavesurfer.getCurrentTime()) );
         });
-        
+
         // Show clip duration
         wavesurfer.on('ready', function () {
             $('.waveform__duration').text(formatTime(wavesurfer.getDuration()) );
@@ -62,16 +62,30 @@ class Player extends Component {
     componentWillUnmount() {
     this.props.onRef(undefined);
   }
-    play_specific(beg, end){
+    play_specific(beg, end, id){
       var playPauseButton = document.getElementById("playPauseButtonImage");
 
       playPauseButton.src = require("./image/pause-button.png");
-      wavesurfer.play(beg/1000000000, end/1000000000);
+      wavesurfer.play(beg/1000000000);
 
+      while (wavesurfer.getCurrentTime() < end/1000000000){
+
+      }
       
+      this.props.highlightNext(id);
+}
+
+      notify_next(end, id){
+
+        while (wavesurfer.getCurrentTime() < end/1000000000){
+
+        }
+
+        this.props.highlightNext(id);
+      }
 
 
-    }
+
      controlHandler(action){
 
 
@@ -115,7 +129,7 @@ class Player extends Component {
 
         return (
           <div className="audio_container clear">
-          <div id="waveform" style={{position: 'relative'}}>  
+          <div id="waveform" style={{position: 'relative'}}>
           </div>
           <div class="times">
           <div class="waveform__counter" style = {{float:"left", paddingLeft:20}}>0:00</div>
@@ -138,7 +152,7 @@ class Player extends Component {
                 </button>
               </div>
           </div>
-          
+
 
         );
     }

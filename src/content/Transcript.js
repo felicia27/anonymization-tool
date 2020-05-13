@@ -6,6 +6,7 @@ import './Transcript.css'
 import "./edit.css"
 import { Icon } from "antd";
 import rangy from "rangy";
+import Save from "./savingBar.js"
 import {alignWords} from "./EditTrans.js"
 const { Text, Title } = Typography;
 const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
@@ -20,14 +21,15 @@ class Transcript extends Component {
         this.state = {
             IDArray: [],
             update:0,
-
+            dummy: 0,
             editedText: "",
             change:0,
             saving: false,
             saved: false,
         };
+        this.currentPlay=0;
         this.labelDict = {"Delete": [], "Mask": [], "Edit":[]};
-
+        //this.currentPlay = 0;
         this.timeout = 0;
 
         this.currentProject = this.props.projectID;
@@ -101,11 +103,16 @@ class Transcript extends Component {
       }
       this.labelDict = {"Delete": [], "Mask": [], "Edit": []};
       var nextChange = this.state.change;
+      console.log(currentidTranscript);
       this.setState({
 
         IDArray: currentidTranscript,
         change: nextChange+= 1,
       });
+      this.db = firebase.firestore();
+      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
+        idTranscript: JSON.stringify(currentidTranscript),
+      }, { merge: true });
 
     }
 
@@ -135,7 +142,7 @@ class Transcript extends Component {
           this.updateTranscriptToDB()}, duration);
       }
     updateTranscriptToDB(){
-        console.log("saving");
+        this.refs.Save.Saving();
 
         var currentidTranscript = this.state.IDArray;
         var contenteditable = document.querySelector('[contenteditable]');
@@ -157,7 +164,7 @@ class Transcript extends Component {
           IDArray: newTrans,
           change: nextChange+= 1,
         });
-        console.log("saved");
+        this.refs.Save.Saved();
 
     }
 
@@ -316,8 +323,15 @@ class Transcript extends Component {
 
         if (this.getLabelSelection(event) === "Play" && userSelectText !== ""){
            var start = this.state.IDArray[spanID[0]].startTime;
-           var end = this.state.IDArray[this.state.IDArray.length-1].endTime;
-           this.props.play_audio(start,end);
+           var end = this.state.IDArray[spanID[spanID.length-1]].endTime;
+
+           this.currentPlay = spanID[0];
+           this.props.play_audio(start,end, this.currentPlay);
+           // this.setState({
+           //        currentPlay: spanID[0],
+           //    })
+           //this.currentPlay = spanID[0];
+           document.getElementById(this.currentPlay).style.fontWeight='bold';
            document.getElementById("labelSelect").style.display = 'none';
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
@@ -354,7 +368,26 @@ class Transcript extends Component {
         //console.log(JSON.stringify(this.state.labelDict));
     }
 
+    highlightNextText(id){
+      console.log("highlighting next text")
+      this.currentPlay = id
+      console.log(this.state.IDArray.length-1);
+      console.log(this.currentPlay);
+      if (this.currentPlay < this.state.IDArray.length-1){
+        for(var i=0;i<this.state.IDArray.length;i++){
+          document.getElementById(this.currentPlay).style.fontWeight = 'bold';
+        }
+        //this.setState.currentPlay += 1;
 
+        //document.getElementById(this.currentPlay + 1).style.fontWeight = 'normal';
+        var temp = this.currentPlay + 1;
+        this.setState({
+               dummy: temp,
+           })
+
+        this.props.readyForNext(this.state.IDArray[temp].endTime, temp);
+      }
+    }
 
     firstWordTimeN(){
       return this.state.IDArray[0]["startTime"];
@@ -402,12 +435,16 @@ class Transcript extends Component {
           <div>
               <div className="Transcript-Save">
                   <form>
-                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, bottom:380}}>
+                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
                           Save
                       </label>
                   </form>
+                  <form>
+                    <Save ref ="Save" onRef={ref => (this.Save = ref)}/>
+                  </form>
               </div>
+
               <div className="column"></div>
             <div className="transcript_container clear">
               <div className="transcript">
@@ -439,7 +476,9 @@ class Transcript extends Component {
                       <div id="transcriptSnippets" contentEditable = "true" onInput={this.updateText.bind(this)}>
                       {transcriptSnippets}
                       </div>
+
                     </div>
+
                   </div>
                 </section>
               </div>

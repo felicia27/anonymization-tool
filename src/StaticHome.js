@@ -59,10 +59,20 @@ class Test extends Component {
             });
         });
     }
-    handle_audio_play = (beg, end) => {
-      console.log(beg);
-      this.refs.player.play_specific(beg, end);
+    handle_audio_play = (beg, end, id) => {
 
+      this.refs.player.play_specific(beg, end, id);
+
+    }
+
+    transHighlightNext = (id) => {
+
+      this.refs.transcript.highlightNextText(id);
+    }
+
+    notifyNext = (end, id) => {
+  
+      this.refs.player.notify_next(end, id);
     }
 
     render() {
@@ -76,11 +86,11 @@ class Test extends Component {
                 { this.state.activeListItem ?
                     <div className="Home-content">
                         <div className="Home-content-audioPlayer">
-                            <Player {...this.state.activeListItem} ref="player" onRef={ref => (this.player = ref)} />
+                            <Player {...this.state.activeListItem} ref="player" highlightNext={this.transHighlightNext} onRef={ref => (this.player = ref)} />
                         </div>
 
                         <div className="Home-content-transcriptView">
-                            <Transcript {...this.state.activeListItem} play_audio={this.handle_audio_play} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
+                            <Transcript {...this.state.activeListItem} ref = "transcript" play_audio={this.handle_audio_play} readyForNext={this.notifyNext} onRef={ref => (this.transcript = ref)} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
                         </div>
                     </div>
                     :
