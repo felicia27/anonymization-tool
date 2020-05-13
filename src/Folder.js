@@ -6,13 +6,14 @@ import "./projects.css";
 import 'antd/dist/antd.css';
 import moment from "moment";
 import Upload from "./upload/Upload";
-import { List, Typography, Icon } from "antd";
+import { List, Typography, Icon , Modal } from "antd";
 import deleteLogo from "./staticHTML/image/trash.png";
 import uploadLogo from "./staticHTML/image/plus.png";
 import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 
 const { Title } = Typography;
+const { confirm } = Modal;
 
 class Folder extends Component {
     constructor(props) {
@@ -53,6 +54,20 @@ class Folder extends Component {
             });
         })
     }
+
+    showConfirm(audioId, audioFileName) {
+        let currentComponent = this;
+        confirm({
+          title: 'Are you sure you want to delete this file?',
+          onOk() {
+            console.log('OK');
+            currentComponent.deleteFile(audioId, audioFileName);
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
+        });
+      }
 
     textChange(inputEntry) {
         console.log(inputEntry)
@@ -160,7 +175,7 @@ class Folder extends Component {
         let allProjectAudios = this.props.projectAudios.map(audio => {
             return(
                 <div>
-                    <img className="fileDelete" style={{cursor: "pointer"}}onClick={() => this.deleteFile(audio.audioId, audio.audioFileName)} src={deleteLogo}/>
+                    <img className="fileDelete" style={{cursor: "pointer"}}onClick={() => this.showConfirm(audio.audioId, audio.audioFileName)} src={deleteLogo}/>
                     <Link to={"/edit/" + this.props.id + "/" + audio.audioId} key={audio.audioId} className="link">{audio.audioFileName}</Link>
                 </div>
             );
