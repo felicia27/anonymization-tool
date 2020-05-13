@@ -26,8 +26,9 @@ class Projects extends Component {
             folderArray: [],
             id: "",
             title: "Project Title",
-            projectDescription: "Project description",
-            projectInfo: null
+            projectDescription: "Project Description",
+            projectInfo: null,
+            backgroundcolor: "green"
         };
 
         this.folderID = 0;
@@ -112,7 +113,7 @@ class Projects extends Component {
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             projectName: projectName.slice(37),
             projectDescription: "Project Description",
-            projectColor: "green",
+            projectColor: '#6FD171',
         }, {merge: true}).then(() => {
             let projectObjects = [];
             docUser.collection("projects").doc(projectName.slice(0,36)).get().then(function(querySnapshot) {
@@ -174,6 +175,7 @@ class Projects extends Component {
             id: project.projectId,
             title: project.projectName,
             projectDescription: project.projectDescription,
+            backgroundcolor: project.projectColor,
             projectInfo: project
         }
         this.setState({
@@ -199,7 +201,7 @@ class Projects extends Component {
 
         return (
             <div>
-                <nav><a href="#"><img src={require("./staticHTML/image/menu.png")}></img></a>Audio Transcription Tool
+                <nav><a href="#"></a>Audio Transcription Tool
                     <a href="#"><span className="button" onClick={() => this.createProject()}>+ Create new project</span></a></nav>
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>
@@ -212,6 +214,7 @@ class Projects extends Component {
                             id={folder.id}
                             title={folder.title}
                             projectDescription={folder.projectDescription}
+                            backgroundcolor={folder.backgroundcolor}
                             projectAudios={folder.projectInfo.projectAudios}
                             deleteFolder={this.deleteEvent.bind(this, index, folder.id, folder.projectInfo.projectAudios)}
                             onClick={() => this.handleClick(index)} //color button (delete)
