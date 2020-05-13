@@ -155,7 +155,7 @@ class Folder extends Component {
         let allProjectAudios = this.props.projectAudios.map(audio => {
             return(
                 <div>
-                    <img className="fileDelete" onClick={() => this.deleteFile(audio.audioId, audio.audioFileName)} src={deleteLogo}/>
+                    <img className="fileDelete" style={{cursor: "pointer"}}onClick={() => this.deleteFile(audio.audioId, audio.audioFileName)} src={deleteLogo}/>
                     <Link to={"/edit/" + this.props.id + "/" + audio.audioId} key={audio.audioId} className="link">{audio.audioFileName}</Link>
                 </div>
             );

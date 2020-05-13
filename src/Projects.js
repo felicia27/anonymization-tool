@@ -67,6 +67,7 @@ class Projects extends Component {
                         projectDescription: doc.data().projectDescription,
                         projectCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
                         projectAudios: audioObjects,
+                        projectColor: doc.data().projectColor,
                     }
                     projectObjects.push(projectObject);
 
@@ -110,7 +111,8 @@ class Projects extends Component {
         docUser.collection("projects").doc(projectName.slice(0,36)).set({
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             projectName: projectName.slice(37),
-            projectDescription: "Project Description"
+            projectDescription: "Project Description",
+            projectColor: "green",
         }, {merge: true}).then(() => {
             let projectObjects = [];
             docUser.collection("projects").doc(projectName.slice(0,36)).get().then(function(querySnapshot) {
@@ -134,6 +136,7 @@ class Projects extends Component {
                         projectDescription: querySnapshot.data().projectDescription,
                         projectCreatedAt: moment(querySnapshot.data().createdAt.toDate()).format("MMM Do YYYY"),
                         projectAudios: audioObjects,
+                        projectColor: querySnapshot.data().projectColor,
                     }
                     projectObjects.push(projectObject);
 
