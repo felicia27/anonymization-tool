@@ -5,7 +5,7 @@ import moment from "moment";
 import Upload from "./upload/Upload";
 import firebase from "firebase";
 import React, { Component } from "react";
-import { List, Typography, Icon , Modal, Space , Button } from "antd";
+import { List, Typography, Icon , Modal } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
 import Folder from "./Folder.js";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
