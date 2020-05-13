@@ -9,6 +9,10 @@ nav{
     padding: 10px 20px;
     background-color: white;
 }
+nav a{
+    position: relative;
+    margin-left: 25px;
+}
 nav img{
     width: 15px;
     margin: 0 30px;

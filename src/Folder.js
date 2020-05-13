@@ -89,6 +89,11 @@ class Folder extends Component {
                 backgroundcolor: '#5D94FF'
             }) 
         }
+        const currentUserEmail = app.auth().currentUser.email;
+        let docUser = this.db.collection("transcripts").doc(currentUserEmail);
+        docUser.collection("projects").doc(this.props.id).set({
+            projectColor: inputEntry}, {merge:true})
+
     }
 
     updateTitle = () => {
