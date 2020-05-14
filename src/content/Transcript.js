@@ -2,6 +2,7 @@
 import { Typography } from "antd";
 import React, { Component } from 'react';
 import './Transcript.css'
+import firebase from "firebase";
 
 const { Text, Title } = Typography;
 
@@ -15,6 +16,7 @@ class Transcript extends Component {
             update:0
         }
     }
+
     
     componentDidMount() {
         this.processTranscript();
@@ -27,6 +29,17 @@ class Transcript extends Component {
                 update: this.state.update + 1,
             });
         }
+    }
+
+    downloadAudio = () => {
+        window.open(this.props.audioDownload);
+    }
+
+    handleClick = () => {
+        let audioData = {UUID: '4621ab52-1497-4358-be36-328138545a5d', email: 'allen072798@gmail.com', startTime: '1', endTime: '5'};
+        
+        let pubMessage = firebase.functions().httpsCallable('pubMessage');
+        pubMessage({text: audioData});
     }
 
     processTranscript = () => {
@@ -101,6 +114,16 @@ class Transcript extends Component {
 
         return (
             <div className="Transcript-container">
+                <div onClick={() => this.handleClick()} className="Pub-button">
+                    <label style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
+                        EXPORT AUDIO
+                    </label>
+                </div>
+                <div onClick={() => this.downloadAudio()} className="Download-button">
+                    <label style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
+                        DOWNLOAD AUDIO
+                    </label>
+                </div>
                 <div className="Transcript-transcription">
                     <Title level={2}>Transcription</Title>
                     {transcriptSnippets}
