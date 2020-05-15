@@ -82,7 +82,7 @@ class Transcript extends Component {
 
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
-        console.log(idTranscript)
+       // console.log(idTranscript)
         idTranscript = interpolate(idTranscript);
         this.setState({
             IDArray: idTranscript,
@@ -106,7 +106,7 @@ class Transcript extends Component {
       }
       this.labelDict = {"Delete": [], "Mask": [], "Edit": []};
       var nextChange = this.state.change;
-      console.log(currentidTranscript);
+     // console.log(currentidTranscript);
       this.setState({
 
         IDArray: currentidTranscript,
@@ -136,7 +136,7 @@ class Transcript extends Component {
       }
     updateText(){
 
-        console.log("typing");
+       // console.log("typing");
         var duration = 2000;
 
         clearTimeout(this.timeout);
@@ -150,12 +150,12 @@ class Transcript extends Component {
         var currentidTranscript = this.state.IDArray;
         var contenteditable = document.querySelector('[contenteditable]');
         var text = contenteditable.textContent;
-        console.log(text);
+     //   console.log(text);
         text = text.replace(/\u00a0/g, " ")
         text = text.replace(/  +/g, " ");
         var splitted = text.trim().split(" ");
         var newTrans = alignWords(currentidTranscript, splitted);
-        console.log(newTrans);
+       // console.log(newTrans);
         this.db = firebase.firestore();
         this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
           idTranscript: JSON.stringify(newTrans),
@@ -245,13 +245,25 @@ class Transcript extends Component {
       highlightText(event) {
         var range = window.getSelection().getRangeAt(0);
 
-        if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
+        if (this.getLabelSelection(event) == "Mask"){
+          console.log("MASK SELECTED")
             //var selectionContents = range.extractContents();
             for (var id in spanID){
-              console.log(id);
+              
               var span = document.getElementById(spanID[id]);
+              console.log("SPAN", span);
               span.style.backgroundColor = "lightblue";
             }
+          }
+
+        else if (this.getLabelSelection(event) == "Delete"){
+              console.log("DELETE SELECTED")
+              //var selectionContents = range.extractContents();
+              for (var id in spanID){
+                var span = document.getElementById(spanID[id]);
+                console.log("SPAN", span.innerText)
+                span.innerHTML='<del>' + span.innerText +'</del>';
+              }
 
             // if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
             //     var selectionContents = range.extractContents();
@@ -261,8 +273,8 @@ class Transcript extends Component {
             //     range.insertNode(span);
             //  }
 
-         }
-      }
+            }
+    }
 
       displayMenu(event){
         if (userSelectText != ""){
@@ -271,7 +283,7 @@ class Transcript extends Component {
           var menu = document.getElementById("labelSelect");
           menu.style.display = "block";
           menu.style.position = 'absolute';
-          menu.style.margin = (y-500)+"px 0px 0px " +(x+30)+"px";
+          menu.style.margin = (y-300)+"px 0px 0px " +(x+30)+"px";
       }
       }
 
@@ -349,9 +361,9 @@ class Transcript extends Component {
           // userSelectText = "";
         }
         else if (this.getLabelSelection(event) === "Mask" && userSelectText !== "") {
-          console.log("MASKING");
-          console.log(userSelectText);
-          console.log(spanID);
+       //   console.log("MASKING");
+      //    console.log(userSelectText);
+       //   console.log(spanID);
           var x = event.pageX;
           var y = event.pageY;
           for (var word of spanID) {
@@ -359,8 +371,7 @@ class Transcript extends Component {
             templabelDict["Mask"].push([word, x, y]);
             var newChange = this.state.change;
             this.labelDict = templabelDict;
-
-            console.log(this.labelDict)
+            // console.log(this.labelDict)
           };
 
           this.displayMaskLabel(event);
@@ -372,10 +383,10 @@ class Transcript extends Component {
     }
 
     highlightNextText(id){
-      console.log("highlighting next text")
+    //  console.log("highlighting next text")
       this.currentPlay = id
-      console.log(this.state.IDArray.length-1);
-      console.log(this.currentPlay);
+     // console.log(this.state.IDArray.length-1);
+    //  console.log(this.currentPlay);
       if (this.currentPlay < this.state.IDArray.length-1){
         for(var i=0;i<this.state.IDArray.length;i++){
           document.getElementById(this.currentPlay).style.fontWeight = 'bold';
@@ -402,7 +413,7 @@ class Transcript extends Component {
 
     timeStampClicked = ()=>{
       this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN());
-      console.log("pressed");
+   //   console.log("pressed");
       var Stamp = document.getElementById("timeStamp");
       Stamp.style.color = 'lightgreen';
 
@@ -413,7 +424,7 @@ class Transcript extends Component {
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
             if (!('label' in word))
             {
-              console.log(word.word)
+          //    console.log(word.word)
               return (
 
                       <span id={index} key={index} className="Transcript-transcription-text"  onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}&nbsp;</span>
@@ -438,9 +449,9 @@ class Transcript extends Component {
           <div>
               <div className="Transcript-Save">
                   <form>
-                      <label onClick={this.SaveChanges.bind(this)} style={{ backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0}}>
+                      <label onClick={this.SaveChanges.bind(this)} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, bottom: 385}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
-                          Save
+                          Apply Audio Edits
                       </label>
                   </form>
                   <form>
@@ -448,8 +459,9 @@ class Transcript extends Component {
                   </form>
               </div>
 
-              <div className="column"></div>
-            <div className="transcript_container clear">
+
+            <div className="transcript_container clear" style = {{width:1300}}>
+            <div className="column" style={{marginRight:-140, overflow: "hidden"}}></div>
               <div className="transcript">
 
                 <div className="labels">

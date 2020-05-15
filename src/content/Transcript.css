@@ -1,3 +1,8 @@
+/* html,body {
+    overflow-x: hidden;
+    width: 100%;
+} */
+
 .Transcript-container {
     display: grid;
     grid-template-columns: 1fr;
@@ -8,6 +13,7 @@
       "Transcript-words";
     margin: 20px;
     row-gap: 20px;
+    overflow: hidden;
 }
 
 .Transcript-transcription {
@@ -21,7 +27,7 @@
 
 .Transcript-transcription-text {
     display:inline-block;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
     padding: 0px;
 
 }
@@ -58,7 +64,7 @@ nav img{
 }
 .column {
     float: right;
-    width: 20%;
+    /* width: 20%; */
 }
 .edit_container{
     width: 10%;
@@ -109,10 +115,10 @@ nav img{
 
 .content_container{
     background-color: white;
-    width: 100%;
+    width: 10%;
     float: center;
     margin-left: 150px;
-    margin-top: 28px;
+    margin-top: 30px;
     border-left: solid 1px #B8B9B8;
     border-right: solid 1px #B8B9B8;
     padding: 30px;
@@ -125,8 +131,9 @@ nav img{
 .label_container{
     float: left;
     width: 30%;
-    margin: 30px 0 0 20px;
+    /* margin: 30px 0 0 20px; */
     padding-left: 10px;
+    margin: 30px 0 0 20px;
     border-left: solid 4px green;
 }
 .label{

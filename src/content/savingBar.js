@@ -12,14 +12,14 @@ class Save extends Component {
         }
     }
     Saving(){
-      console.log("HELL YEA SAVING");
+      //console.log("HELL YEA SAVING");
       this.setState({
         saving: true,
         saved: false
       });
     }
     Saved(){
-      console.log("HELL YEA SAVING");
+     // console.log("HELL YEA SAVING");
       setTimeout(()=>{
         this.setState({
           saving: false,
