@@ -75,12 +75,12 @@ class Upload extends Component {
                     console.error("Error adding document: ", error);
                 });
                 this.checkDB();
-                
+
                 this.setState({audioURL: url});
           });
     };
     async checkDB(){
-      this.setState({ progress: 35, isUploading: true });
+      
       var gcpFinished = false;
       var progress = 35;
       while (gcpFinished == false)
@@ -89,18 +89,11 @@ class Upload extends Component {
           this.db.collection("transcripts").doc(this.getUsername()).collection("projects").doc(this.props.projectId)
           .collection("audios").doc(this.state.audio.slice(37,73)).get()
           .then(doc => {
-
             if (doc.data().finished != false)
             {
-              this.setState({progress: 99});
 
+              this.setState({ isUploading: false, GCDone: true });
               gcpFinished = true;
-            }
-
-            if (progress < 82)
-            {
-              progress += 17;
-              this.setState({progress: progress});
             }
           })
           .catch(function(error) {
@@ -108,7 +101,7 @@ class Upload extends Component {
           });
 
       }
-      this.setState({ progress: 100, isUploading: false, GCDone: true });
+
     }
 
     render() {

@@ -107,7 +107,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
 
   	else if (!("seconds" in start)){
      if (!("nanos" in end)){
-  		word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ 000000000.toString())});
+  		word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ "000000000")});
   	  }
       else{
         word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
@@ -115,17 +115,18 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
       }
     }
     else{
-      console.log(("nanos" in start));
-      console.log(start);
-      if (!("nanos" in start)&& !("nanos" in end) ){
-        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] ), "endTime": parseInt(end["seconds"] + 000000000.toString())});
+      if (!("nanos" in start) && !("nanos" in end) ){
+        console.log('both gone');
+        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ "000000000"), "endTime": parseInt(end["seconds"] + "000000000")});
       }
       else if (!("nanos" in start)){
-        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ 000000000.toString()), "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+        console.log('start gone');
+        word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ "000000000"), "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
       }
 
       else if (!("nanos" in end)){
-    	   word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+000000000.toString())});
+        console.log('end gone');
+    	   word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ "000000000")});
       }
       else{
         word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
@@ -134,6 +135,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     }
   });
   const finaledTranscript = JSON.stringify(word_dic);
+  console.log(word_dic);
 
   db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
   .collection("audios").doc(uuidAudioFirestoreDocId).set({

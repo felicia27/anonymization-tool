@@ -102,20 +102,24 @@ class Transcript extends Component {
          currentidTranscript[elMasked]["y"] = maskDict[i][2];
       }
       for(let i = 0 ; i < delDict.length; i++) {
-
+        let elMasked = delDict[i][0];
+        currentidTranscript[elMasked]["label"] = "DELETE";
+        currentidTranscript[elMasked]["x"] = delDict[i][1];
+        currentidTranscript[elMasked]["y"] = delDict[i][2];
       }
       this.labelDict = {"Delete": [], "Mask": [], "Edit": []};
       var nextChange = this.state.change;
      // console.log(currentidTranscript);
+     console.log(currentidTranscript);
       this.setState({
 
         IDArray: currentidTranscript,
         change: nextChange+= 1,
       });
       this.db = firebase.firestore();
-      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
-        idTranscript: JSON.stringify(currentidTranscript),
-      }, { merge: true });
+      // this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
+      //   idTranscript: JSON.stringify(currentidTranscript),
+      // }, { merge: true });
       this.refs.Save.Saved();
     }
 
@@ -249,7 +253,7 @@ class Transcript extends Component {
           console.log("MASK SELECTED")
             //var selectionContents = range.extractContents();
             for (var id in spanID){
-              
+
               var span = document.getElementById(spanID[id]);
               console.log("SPAN", span);
               span.style.backgroundColor = "lightblue";
@@ -259,22 +263,35 @@ class Transcript extends Component {
         else if (this.getLabelSelection(event) == "Delete"){
               console.log("DELETE SELECTED")
               //var selectionContents = range.extractContents();
+              var strikeALL = true;
               for (var id in spanID){
                 var span = document.getElementById(spanID[id]);
-                console.log("SPAN", span.innerText)
-                span.innerHTML='<del>' + span.innerText +'</del>';
+                if (span.style.textDecoration == "line-through"){
+                  strikeALL = false;
+                }
               }
 
-            // if (this.getLabelSelection(event) == "Mask" || this.getLabelSelection(event) == "Delete"){
-            //     var selectionContents = range.extractContents();
-            //     var span = document.createElement("span");
-            //     span.appendChild(selectionContents);
-            //     span.style.backgroundColor = "lightgray";
-            //     range.insertNode(span);
-            //  }
+              for (var id in spanID){
+                console.log(spanID[id])
+                var span = document.getElementById(spanID[id]);
+                if (strikeALL == false){
+                  var span = document.getElementById(spanID[id]);
+                  console.log("DESPAN", span.innerText)
+                  span.style.textDecoration = "none";
+                }
+                else{
+                  console.log("SPAN", span.innerText)
+                  span.style.textDecoration = "line-through";
+                }
+
+              }
+              this.displayDeleteLabel(event);
+
+
 
             }
     }
+
 
       displayMenu(event){
         if (userSelectText != ""){
@@ -293,9 +310,23 @@ class Transcript extends Component {
       }
 
       displayDeleteLabel(event){
+        console.log("PRINTING");
         var x = event.pageX;
         var y = event.pageY;
-        //y -= 100;
+
+        var label_container = document.createElement('div');
+        label_container.className = 'label_container';
+        label_container.style.float = 'left';
+        label_container.style.position = 'absolute';
+        label_container.style.top = (y).toString() + 'px'
+        label_container.innerHTML = `<span class="label delete">Delete</span>`;
+        document.getElementsByClassName('column')[0].appendChild(label_container);
+        document.getElementById("labelSelect").style.display = 'none';
+      }
+
+      updateDeleteLabel(x,y){
+
+        
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -350,20 +381,21 @@ class Transcript extends Component {
            document.getElementById("labelSelect").style.display = 'none';
         }
         if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
-          // for (var word of spanID) {
-          //   var templabelDict = this.state.labelDict;
-          //   templabelDict["Delete"].push(word);
-          //   this.setState({
-          //       labelDict: templabelDict,
-          //   })
-          // }
-          // this.displayDeleteLabel(event);
-          // userSelectText = "";
+          var x = event.pageX;
+          var y = event.pageY;
+          for (var word of spanID) {
+
+            var templabelDict = this.labelDict;
+            templabelDict["Delete"].push([word, x, y]);
+            this.labelDict = templabelDict;
+          }
+
+          spanID = [];
+          userSelectText = "";
+          this.SaveChanges();
         }
         else if (this.getLabelSelection(event) === "Mask" && userSelectText !== "") {
-       //   console.log("MASKING");
-      //    console.log(userSelectText);
-       //   console.log(spanID);
+
           var x = event.pageX;
           var y = event.pageY;
           for (var word of spanID) {
@@ -432,10 +464,18 @@ class Transcript extends Component {
               );
             }
             if (word["label"] == "MASK") {
-              this.updateMaskLabel(word["x"], word["y"]-100);
+              this.updateMaskLabel(word["x"], word["y"]);
               return (
 
                       <span id={index} key= {index} className="Transcript-transcription-text" style = {{backgroundColor: "lightblue"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}&nbsp;</span>
+
+              );
+            }
+            if (word["label"] == "DELETE") {
+              this.updateDeleteLabel(word["x"], word["y"]);
+              return (
+
+                      <span id={index} key= {index} className="Transcript-transcription-text" style = {{textDecoration: "line-through"}} onMouseUp={this.onMouseUpHandler.bind(this)}>{word["word"]}&nbsp;</span>
 
               );
             }
