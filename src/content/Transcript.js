@@ -117,9 +117,9 @@ class Transcript extends Component {
         change: nextChange+= 1,
       });
       this.db = firebase.firestore();
-      // this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
-      //   idTranscript: JSON.stringify(currentidTranscript),
-      // }, { merge: true });
+      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
+        idTranscript: JSON.stringify(currentidTranscript),
+      }, { merge: true });
       this.refs.Save.Saved();
     }
 
@@ -326,7 +326,7 @@ class Transcript extends Component {
 
       updateDeleteLabel(x,y){
 
-        
+
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
