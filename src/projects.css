@@ -1,3 +1,26 @@
+.ProjectHeader-container {
+    display: grid;
+    grid-template-areas:
+      ". ProjectHeader-logo . ProjectHeader-create .";
+    grid-template-columns: 50px auto auto auto 50px;
+    grid-template-rows: 80px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+.ProjectHeader-logo {
+    grid-area: ProjectHeader-logo;
+    justify-self: left;
+    align-self: center;
+    
+}
+.ProjectHeader-create {
+    grid-area: ProjectHeader-create;
+    justify-self: right;
+    align-self: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
 body{
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
@@ -23,7 +46,7 @@ nav img{
     border-bottom: solid 1px #B8B9B8;
     padding: 0 10px;
 }
-.button{
+.createButton{
     background-color: #5D94FF;
     border-radius: 5px;
     color: white;
@@ -34,7 +57,8 @@ nav img{
     font-size: 14px;
     margin: 5px 2px;
     cursor: pointer;
-    float: right;
+    height: 40px;
+    width: 160px;
 }
 
 .project_container{
@@ -253,13 +277,13 @@ nav img{
 
 .green_border{
     position: relative;
-    width: 223px;
+    width: 100%;
     height: 19px;
-    left: -103px;
+    left: -135px;
     top: 101px;
     overflow-y: scroll;
     /*background: #6FD171;*/
-    border-radius: 10px;
+    /*border-radius: 10px;*/
     transform: rotate(90deg);
 }
 .green_completed{

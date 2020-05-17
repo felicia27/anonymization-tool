@@ -201,8 +201,21 @@ class Projects extends Component {
 
         return (
             <div>
-                <nav><a href="#"></a>Audio Transcription Tool
+                <div className="ProjectHeader-container">
+                
+                <div className="ProjectHeader-logo">
+                    <span>Data Anonymization Tool</span>
+                </div>
+
+                <div className="ProjectHeader-create">
+                
+                <a href="#"><span className="createButton" onClick={() => this.createProject()}>+ Create new project</span></a>
+                </div>
+            </div>
+
+                {/*<nav><a href="#"></a>Audio Transcription Tool
                     <a href="#"><span className="button" onClick={() => this.createProject()}>+ Create new project</span></a></nav>
+        */}
                 <div className="projects_audio_container clear">
                     <div id="waveform" style={{position:'relative'}}></div>
                 </div>
