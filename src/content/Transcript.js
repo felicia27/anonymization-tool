@@ -80,6 +80,13 @@ class Transcript extends Component {
       menu.style.display = "none";
     }
 
+    handleMessage = () => {
+      let audioData = {projectID: "e97f6945-8dd3-4779-9f49-90efae53ccb4", UUID: "2bac7eb5-38a7-4ab9-9638-b992b7c23e2a", email: 'allen072798@gmail.com', startTime: '1000000000', endTime: '5000000000'};
+      
+      let pubMessage = firebase.functions().httpsCallable('pubMessage');
+      pubMessage({text: audioData});
+  }
+
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
        // console.log(idTranscript)
@@ -121,6 +128,7 @@ class Transcript extends Component {
         idTranscript: JSON.stringify(currentidTranscript),
       }, { merge: true });
       this.refs.Save.Saved();
+      this.handleMessage();
     }
 
      onMouseUpHandler = (e) =>{
