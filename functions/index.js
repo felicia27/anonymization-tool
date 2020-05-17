@@ -210,7 +210,7 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
         let oldFileData = doc.data();
         
         db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId+"_modified").set({
-          audioURL: audioFilename,
+          audioURL: oldFileData.audioURL,
           fileName: oldFileData.fileName.replace(".wav", "_output.wav"),
           createdAt: oldFileData.createdAt,
           finished: oldFileData.finished,

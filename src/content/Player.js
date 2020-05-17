@@ -51,7 +51,7 @@ class Player extends Component {
         wavesurfer.on('ready', function () {
             $('.waveform__duration').text(formatTime(wavesurfer.getDuration()) );
         });
-
+          console.log(this.props);
           console.log(this.props.audioUrl);
           wavesurfer.load(this.props.audioUrl);
 

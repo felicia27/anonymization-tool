@@ -39,6 +39,7 @@ class Home extends Component {
         docUser.collection("audios").get().then(function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
                 // console.log(doc.id, " => ", doc.data());
+                console.log(doc.data().audioUrl);
                 let audioObject = {
                     audioId: doc.id,
                     audioFileName: doc.data().fileName,
@@ -58,9 +59,21 @@ class Home extends Component {
     // This syntax ensures `this` is bound within handleClick.
     // Warning: this is *experimental* syntax.
     handleClick = (audioId) => {
-        this.setState({
-            activeListItem: audioId
-        });
+        if(audioId.audioUrl === undefined){
+            const currentUserEmail = app.auth().currentUser.email;
+            firebase.storage().ref("audios/" + currentUserEmail).child(audioId.audioId.slice(0,36) + "_" + audioId.audioFileName).getDownloadURL().then(url => {
+                audioId.audioUrl = url;
+                this.setState({
+                    activeListItem: audioId
+                });
+            });
+            console.log(firebase.storage().ref("audios/" + currentUserEmail).child(audioId.audioId.slice(0,36) + "_" + audioId.audioFileName));
+        }
+        else{
+            this.setState({
+                activeListItem: audioId
+            });
+        }
     }
 
     render() {
