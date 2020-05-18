@@ -46,13 +46,29 @@ class Folder extends Component {
         let storage = firebase.storage();
         let storageRef = storage.ref()
         let deleteRef = storageRef.child("audios/" + currentUser + "/" + this.props.id + "_" + audioId + "_" + audioFileName);
-        deleteRef.delete().then(() => {
-            this.db.collection("transcripts").doc(currentUser)
-            .collection("projects").doc(this.props.id).collection("audios").doc(audioId).delete().then(() => {
-                console.log("Fully deleted " + audioFileName)
-                window.location.reload();
+        
+        if(audioFileName.split('.')[1] !== "wav") {
+            let deleteConvertedRef = storageRef.child("audios/" + currentUser + "/" + this.props.id + "_" + audioId + "_" + audioFileName.split('.')[0] + ".wav");
+            
+            deleteRef.delete().then(() => {
+                deleteConvertedRef.delete().then(() => {
+                    this.db.collection("transcripts").doc(currentUser)
+                    .collection("projects").doc(this.props.id).collection("audios").doc(audioId).delete().then(() => {
+                        console.log("Fully deleted " + audioFileName)
+                        window.location.reload();
+                    });
+                });
+            })
+        }
+        else {
+            deleteRef.delete().then(() => {
+                this.db.collection("transcripts").doc(currentUser)
+                .collection("projects").doc(this.props.id).collection("audios").doc(audioId).delete().then(() => {
+                    console.log("Fully deleted " + audioFileName)
+                    window.location.reload();
+                });
             });
-        })
+        }
     }
 
     showConfirm(audioId, audioFileName) {
