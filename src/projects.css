@@ -74,6 +74,7 @@ nav img{
     margin: 35px;
     float: left;
     overflow-y: scroll;
+    overflow-x: hidden;
     
     background: #FFFFFF;
     border: 1px solid #949494;
