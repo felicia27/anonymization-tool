@@ -164,6 +164,7 @@ nav img{
     font-size: 14px;
     font-weight: bold;
     background-color: transparent;
+    cursor: pointer;
 }
 
 #deleteButton{
@@ -213,6 +214,7 @@ nav img{
     background: transparent url("./staticHTML/image/pencil-edit.png") no-repeat right;
     background-size: 20px;
     color: transparent;
+    cursor: pointer;
 }
 
 #colorBox{
@@ -230,6 +232,7 @@ nav img{
     background: transparent url("./staticHTML/image/brush.png") no-repeat right;
     background-size: 20px;
     color: transparent;
+    cursor: pointer;
 }
 
 .green_border{
