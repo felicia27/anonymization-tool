@@ -54,7 +54,9 @@
     grid-area: Form-password;
 }
 
-
+.Form-signup {
+    font-size: 70%;
+}
 
 .Form-submit {
     grid-area: Form-submit;

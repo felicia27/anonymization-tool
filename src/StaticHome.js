@@ -65,6 +65,14 @@ class Test extends Component {
 
     }
 
+    addDotToAudioPlayer = (IDArray) => {
+
+        this.refs.player.addDotToAudioPlayer(IDArray);
+        console.log("STATICHOME")
+  
+      }
+
+
     transHighlightNext = (id) => {
 
       this.refs.transcript.highlightNextText(id);
@@ -90,7 +98,7 @@ class Test extends Component {
                         </div>
 
                         <div className="Home-content-transcriptView">
-                            <Transcript {...this.state.activeListItem} ref = "transcript" play_audio={this.handle_audio_play} readyForNext={this.notifyNext} onRef={ref => (this.transcript = ref)} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
+                            <Transcript {...this.state.activeListItem} ref = "transcript" addDots = {this.addDotToAudioPlayer} play_audio={this.handle_audio_play} readyForNext={this.notifyNext} onRef={ref => (this.transcript = ref)} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
                         </div>
                     </div>
                     :

@@ -3,6 +3,7 @@ import { withRouter } from "react-router";
 import app from "./base";
 import "./SignUp.css"
 import { Input, Button, Typography } from "antd";
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -34,6 +35,9 @@ const SignUp = ({ history }) => {
         </div>
         <div className="Form-submit">
           <Button type="primary" htmlType="submit">Sign Up</Button>
+        </div>
+        <div className="Form-login">
+          <Link to={"/login"}>Already have an account?</Link>
         </div>
       </form>
     </div>
