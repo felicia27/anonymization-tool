@@ -53,12 +53,14 @@ class Transcript extends Component {
 
     componentDidMount() {
         this.processTranscript();
+
     }
 
     componentDidUpdate(prevProps) {
-
+      this.addDotToAudioPlayer();
         if(prevProps.audioId !== this.props.audioId) {
             this.processTranscript();
+
             this.setState({
                 update: this.state.update + 1,
             });
@@ -350,7 +352,7 @@ class Transcript extends Component {
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-        y -=140;
+        y -=450;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -362,7 +364,7 @@ class Transcript extends Component {
       }
 
       updateMaskLabel(x, y){
-        y -=140;
+        y -=450;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
@@ -415,6 +417,7 @@ class Transcript extends Component {
           userSelectText = "";
           spanID = [];
           this.SaveChanges();
+          this.addDotToAudioPlayer();
         }
     }
 
@@ -446,13 +449,12 @@ class Transcript extends Component {
       this.props.play_audio(this.firstWordTimeN(),this.lastWordTimeN());
       var Stamp = document.getElementById("timeStamp");
       Stamp.style.color = 'lightgreen';
-      this.addDotToAudioPlayer();
-
     };
 
     addDotToAudioPlayer = ()=>{
       console.log("TRANSCRIPT")
       this.props.addDots(this.state.IDArray);
+      console.log(this.state.IDArray)
 
     };
 
@@ -494,11 +496,13 @@ class Transcript extends Component {
               );
             }
         });
+
         let firstWordTimeSec = this.state.IDArray.map((word, index)=>{
           if (index == 0){
             return word["startTime"]/1000000000;
           }
         });
+
         return (
           <div>
               <div className="Transcript-Save">
@@ -545,8 +549,12 @@ class Transcript extends Component {
               </div>
             </div>
             </div>
+
+            
         );
+        
     }
+    
 }
 
 export default Transcript;

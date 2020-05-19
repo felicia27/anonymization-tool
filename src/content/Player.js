@@ -4,6 +4,8 @@ import WaveSurfer from 'wavesurfer.js';
 // import CursorPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.cursor.min.js';
 import $ from 'jquery';
 var wavesurfer;
+var dotArray = [];
+
 class Player extends Component {
 
 
@@ -135,11 +137,18 @@ class Player extends Component {
         var demodiv = document.getElementById('dots');
 
         for (var number in IDArray) {
-          var newSpan = document.createElement('div');
+         // var newSpan = document.createElement('div')
         //  console.log(this.state.IDArray[number]["startTime"])
           if (IDArray[number]["label"] === "MASK" && number == 0){
-           // console.log(IDARRAY[number]["label"], number)
+           // console.log(IDArray[number]["label"], number)
+           
+            if (dotArray.includes(IDArray[number]["startTime"])) {
+              console.log("IDArray", IDArray)
+              console.log("START TIME", IDArray[number]["startTime"])
+             // break;
+            }
 
+           else { 
             var newSpan = document.createElement('div');
             console.log(IDArray[number]["startTime"])
 
@@ -152,26 +161,35 @@ class Player extends Component {
              newSpan.style.borderRadius=50 + "%";
              newSpan.style.display='inline-block';
 
-            console.log(newSpan);
             demodiv.appendChild(newSpan);
+            dotArray.push(IDArray[number]["startTime"])
           }
+         }
 
           else if (IDArray[number]["label"] === "MASK" && number != 0) {
          //   console.log(IDARRAY[number]["label"], number)
             console.log(IDArray[number]["startTime"])
-            var newSpan2 = document.createElement('div');
-            newSpan2.style.marginLeft = (IDArray[number]["startTime"]/60/60/60/10 - IDArray[number-1]["startTime"]/60/60/60/10)+ "px";
-            newSpan2.style.float = "left";
-             newSpan2.style.height=10 + "px";
-             newSpan2.style.width=10 + "px";
-             newSpan2.style.backgroundColor="cornflowerblue";
-             newSpan2.style.borderRadius=50 + "%";
-             newSpan2.style.display='inline-block';
+            if (dotArray.includes(IDArray[number]["startTime"])) {
+              console.log("IDArray", IDArray)
+              console.log("START TIME", IDArray[number]["startTime"])
+              //break;
+            }
+              else {
+              var newSpan2 = document.createElement('div');
+              newSpan2.style.marginLeft = (IDArray[number]["startTime"]/60/60/60/10 - IDArray[number-1]["startTime"]/60/60/60/10)+ "px";
+              newSpan2.style.float = "left";
+              newSpan2.style.height=10 + "px";
+              newSpan2.style.width=10 + "px";
+              newSpan2.style.backgroundColor="cornflowerblue";
+              newSpan2.style.borderRadius=50 + "%";
+              newSpan2.style.display='inline-block';
 
-            console.log(newSpan2);
-            demodiv.appendChild(newSpan2);
+              demodiv.appendChild(newSpan2);
+              dotArray.push(IDArray[number]["startTime"])
+            }
           }
         }
+        console.log("DOTARRAY", dotArray)
       }
 
     render() {
