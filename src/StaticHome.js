@@ -45,14 +45,27 @@ class Test extends Component {
         //This only retrieves the audio file that was clicked. If testing is needed change the exact path of the Route in App.js
         //and change the values of currentProject and currentAudio above to prevent a redirect of wiping the error from the console.
         docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(async function(doc) {
-
-            let audioObject = {
-                audioId: doc.id,
-                audioFileName: doc.data().fileName,
-                audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
-                audioUrl: doc.data().audioUrl,
-                idTranscript: doc.data().idTranscript,
-                audioEmail: currentUserEmail,
+            
+            if(doc.data().downloadURL !== undefined ){
+                var audioObject = {
+                    audioId: doc.id,
+                    audioFileName: doc.data().fileName,
+                    audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
+                    audioUrl: doc.data().audioUrl,
+                    idTranscript: doc.data().idTranscript,
+                    audioEmail: currentUserEmail,
+                    audioDownload: doc.data().downloadURL,
+                }
+            }
+            else{
+                var audioObject = {
+                    audioId: doc.id,
+                    audioFileName: doc.data().fileName,
+                    audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
+                    audioUrl: doc.data().audioUrl,
+                    idTranscript: doc.data().idTranscript,
+                    audioEmail: currentUserEmail,
+                }
             }
     
             if(audioObject.audioUrl === undefined){
