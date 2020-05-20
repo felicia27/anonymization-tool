@@ -13,7 +13,9 @@ const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
 var userSelectText = "";
 var spanID = [];
 
-
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 class Transcript extends Component {
 
     constructor(props) {
@@ -178,39 +180,87 @@ class Transcript extends Component {
     applyAudioEdits(){
       this.handleMessage(this.currentProject, this.currentAudio, this.state);
       var currTran = this.state.IDArray;
-      var deletePositions = []
-      currTran.forEach(function(part, index){
-          if (this[index].label == "DELETE"){
-              deletePositions.push(index);
-          }
 
-      },currTran);
+      this.db = firebase.firestore();
 
 
-      for (var i in deletePositions){
-          var duration = currTran[deletePositions[i]].endTime - currTran[deletePositions[i]].startTime;
+      var sav = document.getElementById("applyAudioEdits");
+      sav.style.backgroundColor = 'grey';
+      sav.disabled = true;
+      this.checkDB()
 
-          currTran.forEach(function(part, index){
-              if (index == deletePositions[i]){
-                  this[index].startTime = 0;
-                  this[index].endTime = 0;
-              }
-              else if (index > deletePositions[i]){
-                   this[index].startTime -= duration;
-                   this[index].endTime -= duration;
-              }
+    }
 
-          }, currTran);
+    async checkDB(){
+      let previousURL = "";
+      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
+      .then(doc => {
+        console.log(doc);
+        if ('downloadURL' in doc.data()){
+          previousURL = doc.data().downloadURL;
+        }
+        var sav = document.getElementById("download");
+        sav.display = 'none';
+        var alert = document.getElementById("alert");
+        alert.style.display = 'block';
 
-      }
-      var nextChange = this.state.change;
-
-      this.setState({
-        IDArray: currTran,
-        change: nextChange+= 1,
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
       });
 
+      var ffmpegFinished = false;
 
+      while (ffmpegFinished == false)
+      {
+          await sleep(1000);
+          this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
+          .then(doc => {
+
+            if (('downloadURL' in doc.data()) && doc.data().downloadURL != previousURL)
+            {
+              var sav = document.getElementById("download");
+              sav.display = 'block';
+              var alert = document.getElementById("alert");
+              alert.innerHTML = 'Sucess! Your file is now ready to be downloaded';
+              alert.display = 'block';
+              alert.backgroundColor = 'lightgreen';
+              ffmpegFinished = true;
+              var sav = document.getElementById("applyAudioEdits");
+              sav.style.backgroundColor = 'blue';
+              sav.disabled = false;
+
+            }
+            else{
+              console.log("not updated yet");
+            }
+          })
+          .catch(function(error) {
+              console.error("Error adding document: ", error);
+          });
+
+      }
+
+    }
+    downloadLink(){
+      alert("OPENING UP LINK");
+      let currentURL = "";
+      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
+      .then(doc => {
+        currentURL = doc.data().downloadURL;
+
+
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
+      });
+      var file_path = 'currentURL';
+      var a = document.createElement('A');
+      a.href = file_path;
+      a.download = file_path.substr(file_path.lastIndexOf('/') + 1);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     SaveChanges(){
@@ -618,9 +668,13 @@ class Transcript extends Component {
 
         return (
           <div>
+          <div class="alert" id = "alert"style={{display: 'none'}}>
+              <span class="closebtn"  onclick="this.parentElement.style.display='none';">&times;</span>
+              Processing audio file, Please come back later.
+          </div>
               <div className="Transcript-Save">
                   <form>
-                      <label onClick={this.applyAudioEdits.bind(this)} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, bottom: 385}}>
+                      <label id = "applyAudioEdits" onClick={this.applyAudioEdits.bind(this)} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, bottom: 385}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
                           Apply Audio Edits
                       </label>
@@ -629,6 +683,15 @@ class Transcript extends Component {
                     <Save ref ="Save" onRef={ref => (this.Save = ref)}/>
                   </form>
               </div>
+              <div className = "Transcript-Download">
+                  <form>
+                      <label id = "download" onClick={this.downloadLink()} style={{backgroundColor: "red", display: 'none', color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize: 14, bottom: 305}}>
+                          Download
+                      </label>
+                  </form>
+              </div>
+
+
 
 
             <div className="transcript_container clear" style = {{width:1300}}>
