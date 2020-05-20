@@ -210,10 +210,16 @@ class Projects extends Component {
                 </div>
 
                 <div className="ProjectHeader-create">
-                
                 <Button type="primary" onClick={() => this.createProject()}>
                     + Create new project
                 </Button> 
+                </div>
+
+                <div className="ProjectHeader-signOut">
+                <Button type="primary" onClick={() => app.auth().signOut()}>
+                    <Icon type="logout" />
+                    Sign out
+                </Button>
                 </div>
             </div>
 
