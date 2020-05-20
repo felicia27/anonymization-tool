@@ -100,7 +100,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
       }
     };
 
-    
+
     try{
       [operation] = await client.longRunningRecognize(request);
       var [response] = await operation.promise();
@@ -195,7 +195,7 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
   console.log(object);
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
   console.log(fileBucket);
-  const filePath = object.name; // File path in the bucket. 
+  const filePath = object.name; // File path in the bucket.
   //FILEPATH:  transcripts/allen072798@gmail.com/projects/e97f6945-8dd3-4779-9f49-90efae53ccb4/audios/2bac7eb5-38a7-4ab9-9638-b992b7c23e2a_record_output.wav
 
   const filePathUserEmail = filePath.split('/')[1];
@@ -210,7 +210,7 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
   if (!contentType.startsWith('audio/')) {
     return console.log('This is not an audio.');
   }
-  
+
   if(!filePath.endsWith("_output.wav")){
     return console.log("Not a modified file");
   }
@@ -221,14 +221,14 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
     db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId).get()
       .then(doc => {
         let oldFileData = doc.data();
-        
+
         db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId+"_modified").set({
           audioURL: oldFileData.audioUrl,
           fileName: oldFileData.fileName.replace(".wav", "_output.wav"),
           createdAt: oldFileData.createdAt,
           finished: oldFileData.finished,
           idTranscript: oldFileData.idTranscript
-        }, { merge: true }); 
+        }, { merge: true });
 
         return 0;
       })
@@ -238,7 +238,7 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
 
       const bucket = gcs.bucket("gs://"+bucketName);
       const file = bucket.file(filePath);
-      
+
       file.getSignedUrl({
         action: 'read',
         expires: '03-09-2491'
@@ -247,7 +247,9 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
           downloadURL: signedUrls[0]
         }, { merge: true });
         db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId).set({
-          downloadURL: signedUrls[0]
+          downloadURL: signedUrls[0],
+          modifiedFinished: true,
+
         }, { merge: true });
         return 0;
       })
@@ -260,7 +262,7 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
 });
 
 exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(async (message, context) => {
-  
+
   console.log(Buffer.from(message.data, 'base64').toString());
   console.log(message.attributes);
   let email = message.attributes["email"];
@@ -329,7 +331,7 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
           }
 
         }
-        
+
         // Runs if more than one start/end time
         else{
           var beepLine = '';
@@ -342,24 +344,24 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
             beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[zero];"
             beepLine += "[mutedStream][zero]amix[mutedStreamzero];";
             streamName = "mutedStreamzero";
-          }	
+          }
           // Special edge case condition if startTime is 0
           else{
             beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[" + censorList["startTime1"] + "];"
             beepLine += "[mutedStream][" + censorList["startTime1"] + "]amix[mutedStream" + censorList["startTime1"] + "];";
-            streamName = "mutedStream" + censorList["startTime1"]; 
+            streamName = "mutedStream" + censorList["startTime1"];
           }
 
           for(i=2; i < censorSize; i++)
           {
             //generate silence for start/end times before last pair
             censorLine += ",volume=0:enable='between(t," + censorList["startTime" + i] + "," + censorList["endTime" + i] + ")'";
-            
+
             // generate beep for start/end times before last pair
             duration = censorList["endTime" + i] - censorList["startTime" + i];
             ADstartTime = censorList["startTime" + i] * 1000;
             beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[" + censorList["startTime"+i ] + "];";
-            
+
             // amix audio for start/end times before the last pair
             beepLine += "[" + streamName + "][" + censorList["startTime" + i] + "]amix[" + streamName + censorList["startTime" + i] + "];";
             streamName += censorList["startTime" + i];
@@ -374,7 +376,7 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
           duration = censorList["endTime" + i] - censorList["startTime" + i];
           ADstartTime = censorList["startTime" + i] * 1000;
           beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[" + censorList["startTime" + i] + "];";
-          
+
           // amix final audio stream together
           beepLine += "[" + streamName + "]" + "[" + censorList["startTime" + i] + "]amix=inputs=2";
           censorLine += beepLine;
@@ -417,7 +419,7 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
             deleteLine += "+between(t," + deleteList["endTime"+(i-1)] + "," + deleteList["startTime"+i] + ")"
           }
 
-          deleteLine += "+between(t," + deleteList["endTime" + deleteSize] + "," + "100000000000000)"; 
+          deleteLine += "+between(t," + deleteList["endTime" + deleteSize] + "," + "100000000000000)";
           deleteLine += "',asetpts=N/SR/TB";
 
         }
@@ -485,17 +487,17 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
           .output(targetTempFilePath);
       */
 
-      let modifiedFilePath = filePath.split("/")[4] + "/" + filePath.split("/")[1] + "/"+ projectName + "_" + audioFilename; 
-      
+      let modifiedFilePath = filePath.split("/")[4] + "/" + filePath.split("/")[1] + "/"+ projectName + "_" + audioFilename;
+
       // audios/email/project_UUID_filename
       let targetStorageFilePath = filePath.split("/")[4] + "/" + filePath.split("/")[1] + "/" + filePath.split("/")[3] + "_" + targetTempFileName.slice(0,36) + "_modified" +  targetTempFileName.slice(36);
-  
+
       console.log(modifiedFilePath);
       console.log(targetStorageFilePath);
       console.log("DOWNLOAD START");
       await bucket.file(modifiedFilePath).download({destination: tempFilePath});
       console.log('Audio downloaded locally to', tempFilePath);
-      
+
       await promisifyCommand(command);
       console.log('Output audio created at', targetTempFilePath);
 
@@ -506,14 +508,14 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
       fs.unlinkSync(targetTempFilePath);
 
       console.log('Temporary files removed.', targetTempFilePath);
-      
-      
+
+
       return 0;
     })
     .catch(err => {
       console.log('Error getting documents', err);
     });
-  
+
 
   return 0;
 });

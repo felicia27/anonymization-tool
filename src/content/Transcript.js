@@ -55,7 +55,7 @@ class Transcript extends Component {
 
     componentDidMount() {
         this.processTranscript();
-
+        this.checkDB()
     }
 
     componentDidUpdate(prevProps) {
@@ -188,32 +188,28 @@ class Transcript extends Component {
       var currTran = this.state.IDArray;
 
       this.db = firebase.firestore();
+      this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).set( {
+        modifiedFinished: false,
+        downloadURL: "",
+      }, { merge: true });
 
-
-      var sav = document.getElementById("applyAudioEdits");
-      sav.style.backgroundColor = 'grey';
-      sav.disabled = true;
       this.checkDB()
-
     }
-
     async checkDB(){
-      let previousURL = "";
       this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
-      .then(doc => {
-        console.log(doc);
-        if ('downloadURL' in doc.data()){
-          previousURL = doc.data().downloadURL;
+      .then(doc=> {
+        if (doc.data().modifiedFinished == false){
+          var sav = document.getElementById("applyAudioEdits");
+          sav.style.backgroundColor = 'grey';
+          sav.disabled = true;
+          var sav = document.getElementById("download");
+          sav.display = 'none';
+          var alert = document.getElementById("alert");
+          alert.style.display = 'block';
+          alert.innerHTML = 'Audio file is processing, please come back later.'
         }
-        var sav = document.getElementById("download");
-        sav.display = 'none';
-        var alert = document.getElementById("alert");
-        alert.style.display = 'block';
 
-      })
-      .catch(function(error) {
-          console.error("Error adding document: ", error);
-      });
+      }, { merge: true });
 
       var ffmpegFinished = false;
 
@@ -223,7 +219,7 @@ class Transcript extends Component {
           this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
           .then(doc => {
 
-            if (('downloadURL' in doc.data()) && doc.data().downloadURL != previousURL)
+            if (doc.data().modifiedFinished == true)
             {
               var sav = document.getElementById("download");
               sav.display = 'block';
@@ -238,7 +234,7 @@ class Transcript extends Component {
 
             }
             else{
-              console.log("not updated yet");
+              //console.log("not updated yet");
             }
           })
           .catch(function(error) {
@@ -249,8 +245,8 @@ class Transcript extends Component {
 
     }
     downloadLink(){
-      alert("OPENING UP LINK");
-      let currentURL = "";
+      console.log("OPENING UP LINK");
+      let currentURL = this.props.audioDownload;
       this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
       .then(doc => {
         currentURL = doc.data().downloadURL;
@@ -261,12 +257,7 @@ class Transcript extends Component {
           console.error("Error adding document: ", error);
       });
       var file_path = 'currentURL';
-      var a = document.createElement('A');
-      a.href = file_path;
-      a.download = file_path.substr(file_path.lastIndexOf('/') + 1);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+
     }
 
     SaveChanges(){
@@ -712,7 +703,7 @@ class Transcript extends Component {
                     <a id="Play">Play</a>
                   </div>
                 </div>
-                
+
                 <section className="clear utterance_container">
                   <div className="content_container clear">
                     <div className="speaker">
@@ -728,14 +719,10 @@ class Transcript extends Component {
                       {transcriptSnippets}
                       </div>
                     </div>
-                    
+
                   </div>
                 </section>
-                <div onClick={() => this.downloadAudio()} className="Download-button">
-                    <label style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
-                        Download Audio
-                    </label>
-                </div>
+
               </div>
             </div>
             </div>
