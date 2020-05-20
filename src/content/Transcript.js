@@ -91,7 +91,6 @@ class Transcript extends Component {
 
     applyAudioEdits(){
       var currTran = this.state.IDArray;
-      console.log(currTran);
       var deletePositions = []
       currTran.forEach(function(part, index){
           if (this[index].label == "DELETE"){
@@ -117,14 +116,13 @@ class Transcript extends Component {
           }, currTran);
 
       }
-      console.log(currTran);
       var nextChange = this.state.change;
 
       this.setState({
         IDArray: currTran,
         change: nextChange+= 1,
       });
-      
+
 
 
     }
@@ -134,21 +132,56 @@ class Transcript extends Component {
       var maskDict = this.labelDict["Mask"];
       var delDict = this.labelDict["Delete"];
       var currentidTranscript = this.state.IDArray;
-
       for(let i = 0 ; i < maskDict.length; i++) {
          let elMasked = maskDict[i][0];
-         currentidTranscript[elMasked]["label"] = "MASK";
-         currentidTranscript[elMasked]["x"] = maskDict[i][1];
-         currentidTranscript[elMasked]["y"] = maskDict[i][2];
+         let transWord = currentidTranscript[elMasked];
+         if ((!('label' in transWord)) || transWord.label != "MASK"){
+           transWord["label"] = "MASK";
+           transWord["x"] = maskDict[i][1];
+           transWord["y"] = maskDict[i][2];
+         }
+         else{
+           let hideMASK = true;
+           currentidTranscript.forEach(function(element, index)
+           {
+
+             if (element.x == transWord.x && element.y == transWord.y && element != transWord ){
+               let isInsideMaskDict = false;
+               maskDict.forEach(el=>{
+                 if (el[0] == index){
+                   isInsideMaskDict = true
+                 }
+               })
+               if (isInsideMaskDict == false){
+                 hideMASK = false;
+               }
+
+             }
+           });
+           if (hideMASK == true){
+             let id = document.getElementById(transWord.x.toString() + transWord.y.toString());
+             id.remove();
+           }
+           delete transWord.label;
+           delete transWord.x;
+           delete transWord.y;
+
+         }
       }
       for(let i = 0 ; i < delDict.length; i++) {
         let elMasked = delDict[i][0];
-        currentidTranscript[elMasked]["label"] = "DELETE";
+        let transWord = currentidTranscript[elMasked];
+        if ((!('label' in transWord)) || transWord.label != "DELETE"){
+          transWord["label"] = "DELETE";
+        }
+        else{
+          delete transWord.label;
+        }
+
       }
 
       this.labelDict = {"Delete": [], "Mask": [], "Edit": []};
       var nextChange = this.state.change;
-     console.log(currentidTranscript);
       this.setState({
         IDArray: currentidTranscript,
         change: nextChange+= 1,
@@ -161,9 +194,8 @@ class Transcript extends Component {
     }
 
      onMouseUpHandler = (e) =>{
-       console.log("on mouse up calling")
        var event = window.event;
-       this.getSelectionText(e);
+       this.getSelectionText(event);
        this.displayMenu(event);
 
        this.recordDict(event);
@@ -272,64 +304,35 @@ class Transcript extends Component {
       highlightText(event) {
         var range = window.getSelection().getRangeAt(0);
         if (this.getLabelSelection(event) == "Mask"){
-
-            //var selectionContents = range.extractContents();
+            var currentidTranscript = this.state.IDArray;
             for (var id in spanID){
               var span = document.getElementById(spanID[id]);
-              console.log("SPAN", span);
-              span.style.backgroundColor = "lightblue";
+              if (span.style.backgroundColor == "lightblue"){
+
+                span.style.backgroundColor = "transparent";
+              }
+              else{
+                span.style.backgroundColor = "lightblue";
+              }
             }
           }
         else if (this.getLabelSelection(event) == "Delete"){
-              //var selectionContents = range.extractContents();
-              var strikeALL = true;
+              var currentidTranscript = this.state.IDArray;
               for (var id in spanID){
                 var span = document.getElementById(spanID[id]);
-                if (span.style.textDecoration == "line-through"){
-                  strikeALL = false;
-                }
-              }
-              const currentidTranscript = this.state.IDArray;
-              for (var id in spanID){
-                var span = document.getElementById(spanID[id]);
-                if (strikeALL == false){
-                  this.deleteFromDB("Delete", spanID[id], currentidTranscript);
-                  console.log("DESPAN", span.innerText)
+                if (currentidTranscript[spanID[id]].label == "DELETE"){
                   span.style.textDecoration = "none";
                 }
                 else{
-                  console.log("SPAN", span.innerText)
                   span.style.textDecoration = "line-through";
                 }
               }
-              if (strikeALL == false){
-                console.log(currentidTranscript);
-                var nextChange = this.state.change;
-                this.setState({
-                  IDArray: currentidTranscript,
-                  change: nextChange+= 1,
-                });
-              }
-        }
-    }
-    deleteFromDB(type, id, trans){
-      if (type == "Delete"){
-          console.log(id)
-
-          if ("label" in trans[id] && trans[id].label == "DELETE"){
-            console.log("DELETING")
-            console.log(trans[id])
-            console.log(trans[id])
-            trans[id].label = "HOOGLY";
-            console.log(trans)
-            console.log(trans[id])
-          }
-      }
-    console.log(trans);
-    return trans;
-    }
+         }
+     }
 
       displayMenu(event){
+        console.log(event)
+        console.log("displayMenu", userSelectText)
         if (userSelectText != ""){
           var x = event.pageX;
           var y = event.pageY;
@@ -342,31 +345,32 @@ class Transcript extends Component {
 
       getLabelSelection(event){
         var label = event.target.id;
-        console.log(label.toString());
+
         return label.toString()
       }
 
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-        y -=140;
+
         var label_container = document.createElement('div');
+        label_container.id = x.toString() + y.toString();
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'absolute';
-        label_container.style.top = (y).toString() + 'px'
+        label_container.style.top = (y-140).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
       }
 
       updateMaskLabel(x, y){
-        y -=140;
         var label_container = document.createElement('div');
+        label_container.id = x.toString() + y.toString();
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'absolute';
-        label_container.style.top = (y).toString() + 'px'
+        label_container.style.top = (y-140).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
@@ -388,7 +392,6 @@ class Transcript extends Component {
         }
 
         else if (this.getLabelSelection(event) === "Delete" && userSelectText !== "") {
-          console.log("DELETING")
           var x = event.pageX;
           var y = event.pageY;
           for (var word of spanID) {
@@ -401,16 +404,42 @@ class Transcript extends Component {
           this.SaveChanges();
         }
         else if (this.getLabelSelection(event) === "Mask" && userSelectText !== "") {
-          console.log("MASKING")
           var x = event.pageX;
           var y = event.pageY;
+          var displayMASK = false;
           for (var word of spanID) {
             var templabelDict = this.labelDict;
             templabelDict["Mask"].push([word, x, y]);
             var newChange = this.state.change;
             this.labelDict = templabelDict;
+            let hideMASK = true;
+            let transWord = this.state.IDArray[word];
+            let maskDict = templabelDict["Mask"];
+            this.state.IDArray.forEach(function(element, index)
+            {
+
+              if (element.x == transWord.x && element.y == transWord.y && element != transWord ){
+                let isInsideMaskDict = false;
+                maskDict.forEach(el=>{
+                  if (el[0] == index){
+                    isInsideMaskDict = true
+                  }
+                })
+                if (isInsideMaskDict == false){
+                  hideMASK = false;
+                }
+
+              }
+            });
+            if (hideMASK == false){
+              this.displayMaskLabel(event);
+            }
           };
-          this.displayMaskLabel(event);
+          //if there are words still with the mask label of xy that arent the ones being highlighted rn , dont add another
+          //
+
+
+
           userSelectText = "";
           spanID = [];
           this.SaveChanges();
