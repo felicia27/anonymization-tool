@@ -53,12 +53,14 @@ class Transcript extends Component {
 
     componentDidMount() {
         this.processTranscript();
+
     }
 
     componentDidUpdate(prevProps) {
-
+      this.addDotToAudioPlayer();
         if(prevProps.audioId !== this.props.audioId) {
             this.processTranscript();
+
             this.setState({
                 update: this.state.update + 1,
             });
@@ -81,6 +83,90 @@ class Transcript extends Component {
       menu.style.display = "none";
     }
 
+    handleMessage = (project, audio, labels) => {
+      var deleteCounter = 1;
+      var censorCounter = 1;
+      var deleteTimeCurrent = undefined;
+      var censorTimeCurrent = undefined;
+      var currentlyOn = "none";
+      var deleteObject = {"numberOfInputs": 0};
+      var censorObject = {"numberOfInputs": 0};
+      let audioData = {};
+      audioData["projectID"] = project;
+      audioData["UUID"] = audio;
+      audioData["email"] = this.props.audioEmail;
+      console.log(audioData);
+
+
+      for(var i = 0; i < labels.IDArray.length; i++){
+
+        if(labels.IDArray[i].label == "DELETE" && deleteTimeCurrent === undefined && currentlyOn == "none"){
+          deleteObject["numberOfInputs"] += 1;
+          deleteTimeCurrent = labels.IDArray[i].startTime;
+          deleteObject["startTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+          currentlyOn = "delete";
+        }
+        else if(labels.IDArray[i].label == "DELETE" && deleteTimeCurrent !== undefined && currentlyOn == "delete"){
+          deleteTimeCurrent += labels.IDArray[i].endTime - labels.IDArray[i].startTime;
+        }
+        else if(labels.IDArray[i].label === undefined && deleteTimeCurrent !== undefined && currentlyOn == "delete"){
+          deleteObject["endTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+          deleteCounter += 1;
+          currentlyOn = "none";
+          deleteTimeCurrent = undefined;
+        }
+        else if(labels.IDArray[i].label === "MASK" && deleteTimeCurrent !== undefined && currentlyOn == "delete"){
+          deleteObject["endTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+          deleteCounter += 1;
+          currentlyOn = "mask";
+          deleteTimeCurrent = undefined;
+          censorTimeCurrent = labels.IDArray[i].startTime;
+          censorObject["startTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          censorObject["numberOfInputs"] += 1;
+        }
+        else if(labels.IDArray[i].label == "MASK" && censorTimeCurrent === undefined && currentlyOn == "none"){
+          censorObject["numberOfInputs"] += 1;
+          censorTimeCurrent = labels.IDArray[i].startTime;
+          censorObject["startTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          currentlyOn = "mask";
+        }
+        else if(labels.IDArray[i].label == "MASK" && censorTimeCurrent !== undefined && currentlyOn == "mask"){
+          censorTimeCurrent += labels.IDArray[i].endTime - labels.IDArray[i].startTime;
+        }
+        else if(labels.IDArray[i].label === undefined && censorTimeCurrent !== undefined && currentlyOn == "mask"){
+          censorObject["endTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          censorCounter += 1;
+          currentlyOn = "none";
+          censorTimeCurrent = undefined;
+        }
+        else if(labels.IDArray[i].label === "DELETE" && censorTimeCurrent !== undefined && currentlyOn == "mask"){
+          deleteObject["numberOfInputs"] += 1;
+          censorObject["endTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          censorCounter += 1;
+          currentlyOn = "delete";
+          censorTimeCurrent = undefined;
+          deleteTimeCurrent = labels.IDArray[i].startTime;
+          deleteObject["startTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+        }
+      }
+
+      if(censorTimeCurrent !== undefined){
+        censorObject["endTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+      }
+      if(deleteTimeCurrent !== undefined){
+        deleteObject["endTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+      }
+
+      deleteObject["numberOfInputs"] = deleteObject["numberOfInputs"].toString();
+      censorObject["numberOfInputs"] = censorObject["numberOfInputs"].toString();
+
+      audioData["delete"] = JSON.stringify(deleteObject);
+      audioData["censor"] = JSON.stringify(censorObject);
+
+      let pubMessage = firebase.functions().httpsCallable('pubMessage');
+      pubMessage({text: audioData});
+  }
+
     processTranscript=()=>{
         let idTranscript = JSON.parse(this.props.idTranscript);
         idTranscript = interpolate(idTranscript);
@@ -90,6 +176,7 @@ class Transcript extends Component {
     }
 
     applyAudioEdits(){
+      this.handleMessage(this.currentProject, this.currentAudio, this.state);
       var currTran = this.state.IDArray;
       var deletePositions = []
       currTran.forEach(function(part, index){
@@ -122,7 +209,6 @@ class Transcript extends Component {
         IDArray: currTran,
         change: nextChange+= 1,
       });
-
 
 
     }
@@ -199,6 +285,7 @@ class Transcript extends Component {
        this.displayMenu(event);
 
        this.recordDict(event);
+      //  this.addDotToAudioPlayer();
      }
 
      removePunctuation(string) {
@@ -357,7 +444,7 @@ class Transcript extends Component {
         label_container.id = x.toString() + y.toString();
         label_container.className = 'label_container';
         label_container.style.float = 'left';
-        label_container.style.position = 'absolute';
+        label_container.style.position = 'sticky';
         label_container.style.top = (y-140).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
@@ -369,7 +456,7 @@ class Transcript extends Component {
         label_container.id = x.toString() + y.toString();
         label_container.className = 'label_container';
         label_container.style.float = 'left';
-        label_container.style.position = 'absolute';
+        label_container.style.position = 'sticky';
         label_container.style.top = (y-140).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
@@ -443,6 +530,7 @@ class Transcript extends Component {
           userSelectText = "";
           spanID = [];
           this.SaveChanges();
+          this.addDotToAudioPlayer();
         }
     }
 
@@ -476,7 +564,29 @@ class Transcript extends Component {
       Stamp.style.color = 'lightgreen';
     };
 
+    addDotToAudioPlayer = ()=>{
+      console.log("TRANSCRIPT")
+      this.props.addDots(this.state.IDArray);
+      console.log(this.state.IDArray)
+
+    };
+
+
+    // addDotToAudioPlayer() {
+    //   console.log("clicked")
+    //   for (var number in this.state.IDArray) {
+    //     if (this.state.IDArray[number]["label"] === "MASK") {
+    //       console.log(this.state.IDArray[number]["startTime"])
+    //     }
+    //   }
+    //   console.log("IDARRAY", this.state.IDArray)
+    // }
+
+
+
     render() {
+
+      // {this.addDotToAudioPlayer()}
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
 
@@ -499,11 +609,13 @@ class Transcript extends Component {
               );
             }
         });
+
         let firstWordTimeSec = this.state.IDArray.map((word, index)=>{
           if (index == 0){
             return word["startTime"]/1000000000;
           }
         });
+
         return (
           <div>
               <div className="Transcript-Save">
@@ -533,11 +645,11 @@ class Transcript extends Component {
                 <section className="clear utterance_container">
                   <div className="content_container clear">
                     <div className="speaker">
-                      <select style={{width: '100px', position: 'absolute'}} onchange="this.nextElementSibling.value=this.value">
+                      <select style={{width: '100px', position: 'sticky'}} onchange="this.nextElementSibling.value=this.value">
                         <option>Speaker 1</option>
                         <option> Speaker 2</option>
                       </select>
-                      <input style={{width: '70px', marginTop: '1px', border: 'none', position: 'relative', left: '1px', marginRight: '25px'}} defaultValue="Speaker 1" />
+                      <input style={{width: '70px', marginTop: '1px', border: 'none', position: 'sticky', right: 124, marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
                     <div className="content">
                       <button  onClick={this.timeStampClicked.bind(this)} id = "timeStamp" style = {{color: 'blue'}} className="timecode">{firstWordTimeSec}s</button>
@@ -550,8 +662,12 @@ class Transcript extends Component {
               </div>
             </div>
             </div>
+
+
         );
+
     }
+
 }
 
 export default Transcript;

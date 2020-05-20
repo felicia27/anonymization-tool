@@ -5,7 +5,7 @@ import moment from "moment";
 import Upload from "./upload/Upload";
 import firebase from "firebase";
 import React, { Component } from "react";
-import { List, Typography, Icon , Modal } from "antd";
+import { List, Typography, Icon , Modal, Button } from "antd";
 import uploadLogo from "./staticHTML/image/plus.png";
 import Folder from "./Folder.js";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -127,7 +127,9 @@ class Projects extends Component {
                             audioCreatedAt: moment(audio.data().createdAt.toDate()).format("MMM Do YYYY"),
                             audioUrl: audio.data().audioUrl,
                             audioTranscript: audio.data().transcript,
+                            audioEmail: currentUserEmail,
                             idTranscript: audio.data().idTranscript,
+                            
                         }
                         audioObjects.push(audioObject);
                     });
@@ -209,7 +211,9 @@ class Projects extends Component {
 
                 <div className="ProjectHeader-create">
                 
-                <a href="#"><span className="createButton" onClick={() => this.createProject()}>+ Create new project</span></a>
+                <Button type="primary" onClick={() => this.createProject()}>
+                    + Create new project
+                </Button> 
                 </div>
             </div>
 

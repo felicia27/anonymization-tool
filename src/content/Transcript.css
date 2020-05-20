@@ -1,7 +1,7 @@
-/* html,body {
+html,body {
     overflow-x: hidden;
     width: 100%;
-} */
+}
 
 .Transcript-container {
     display: grid;
@@ -89,11 +89,11 @@ nav img{
 .edit_control a{
     text-decoration: none;
 
-    align: center;
+    float: center;
     color: #8a8a8a;
 }
 .edit_control img{
-  align: center;
+    float: center;
     width: 20px;
 }
 .txt_completed{

@@ -33,6 +33,7 @@ class Test extends Component {
     getAudioTranscript = () => {
         let currentComponent = this;
         const currentUserEmail = app.auth().currentUser.email;
+        console.log(app.auth());
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
         //currentProject is the projectId of the project the audio file is stored in
         let currentProject = currentComponent.props.match.params.projectId;
@@ -43,27 +44,52 @@ class Test extends Component {
 
         //This only retrieves the audio file that was clicked. If testing is needed change the exact path of the Route in App.js
         //and change the values of currentProject and currentAudio above to prevent a redirect of wiping the error from the console.
-        docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(function(doc) {
+        docUser.collection("projects").doc(currentProject).collection("audios").doc(currentAudio).get().then(async function(doc) {
 
-                let audioObject = {
-                    audioId: doc.id,
-                    audioFileName: doc.data().fileName,
-                    audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
-                    audioUrl: doc.data().audioUrl,
-                    idTranscript: doc.data().idTranscript,
-                }
-            audioObjects.push(audioObject);
+            let audioObject = {
+                audioId: doc.id,
+                audioFileName: doc.data().fileName,
+                audioCreatedAt: moment(doc.data().createdAt.toDate()).format("MMM Do YYYY"),
+                audioUrl: doc.data().audioUrl,
+                idTranscript: doc.data().idTranscript,
+                audioEmail: currentUserEmail,
+            }
+    
+            if(audioObject.audioUrl === undefined){
+                console.log("projects/currentProject/audios/"+currentAudio.slice(0,36) + "_" + doc.data().fileName);
+                firebase.storage().ref("audios/" + currentUserEmail).child(currentProject + "_"+currentAudio.slice(0,36) + "_modified_" + doc.data().fileName).getDownloadURL().then(async url => {
+                    audioObject.audioUrl = url;
+                    audioObjects.push(audioObject);
 
-            currentComponent.setState({
-                activeListItem: audioObject
-            });
+                    currentComponent.setState({
+                        activeListItem: audioObject
+                    });
+                });
+                
+            }
+            else{
+                audioObjects.push(audioObject);
+
+                currentComponent.setState({
+                    activeListItem: audioObject
+                });
+            }
         });
     }
+
     handle_audio_play = (beg, end, id) => {
 
       this.refs.player.play_specific(beg, end, id);
 
     }
+
+    addDotToAudioPlayer = (IDArray) => {
+
+        this.refs.player.addDotToAudioPlayer(IDArray);
+        console.log("STATICHOME")
+  
+      }
+
 
     transHighlightNext = (id) => {
 
@@ -90,7 +116,7 @@ class Test extends Component {
                         </div>
 
                         <div className="Home-content-transcriptView">
-                            <Transcript {...this.state.activeListItem} ref = "transcript" play_audio={this.handle_audio_play} readyForNext={this.notifyNext} onRef={ref => (this.transcript = ref)} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
+                            <Transcript {...this.state.activeListItem} ref = "transcript" addDots = {this.addDotToAudioPlayer} play_audio={this.handle_audio_play} readyForNext={this.notifyNext} onRef={ref => (this.transcript = ref)} projectID={this.props.match.params.projectId} filename={this.props.match.params.audioId} docUser = {this.db.collection("transcripts").doc(app.auth().currentUser.email)}/>
                         </div>
                     </div>
                     :
