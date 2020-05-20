@@ -5,7 +5,7 @@ html,body {
 /* The alert message box */
 .alert {
   padding: 20px;
-  background-color: #2D88F3; /* Red */
+   /* Red */
   color: white;
   margin-bottom: 15px;
 }

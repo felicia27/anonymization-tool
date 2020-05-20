@@ -1,0 +1,8 @@
+.Transcript-Download {
+    grid-area: Transcript-Save;
+    justify-self: center;
+    align-self: center;
+    text-decoration: none;
+    display: inline-block;
+
+}

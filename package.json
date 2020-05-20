@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.1.0",
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "@google-cloud/pubsub": "^1.7.3",
     "@google-cloud/speech": "^3.5.4",
     "@uppy/core": "^1.7.1",
     "@uppy/dashboard": "^1.5.2",

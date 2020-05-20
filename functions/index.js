@@ -8,7 +8,8 @@ const speech = require("@google-cloud/speech");
 const admin = require('firebase-admin');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-
+const {PubSub} = require('@google-cloud/pubsub');
+const pubSubClient = new PubSub();
 admin.initializeApp(functions.config().firebase);
 
 // Creates a Google Cloud Storage client
@@ -21,6 +22,11 @@ const client = new speech.SpeechClient();
 const bucketName = "capstone-project-uci-c87c8.appspot.com";
 
 let db = admin.firestore();
+function promisifyCommand(command) {
+  return new Promise((resolve, reject) => {
+    command.on('end', resolve).on('error', reject).run();
+  });
+}
 
 exports.pubMessage = functions.https.onCall( async (data, context) => {
   const attributes = data.text;
@@ -112,9 +118,10 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     finally{
       const jsonResponse = JSON.stringify(response);
       const objectValue = JSON.parse(jsonResponse);
-      const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
+      console.log(objectValue);
+      //const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
       var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
-      var res = rawTranscript.split(" ");
+      //var res = rawTranscript.split(" ");
 
       var word_dic = [];
       wordTimeArray.forEach(function (item, index) {

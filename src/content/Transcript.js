@@ -7,6 +7,7 @@ import "./edit.css"
 import { Icon } from "antd";
 import rangy from "rangy";
 import Save from "./savingBar.js"
+import Download from "./Download.js"
 import {alignWords, interpolate} from "./EditTrans.js"
 const { Text, Title } = Typography;
 const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
@@ -28,6 +29,7 @@ class Transcript extends Component {
             change:0,
             saving: false,
             saved: false,
+            disabled: false,
         };
         this.currentPlay=0;
         this.labelDict = {"Delete": [], "Mask": [], "Edit":[]};
@@ -177,12 +179,6 @@ class Transcript extends Component {
         })
     }
 
-    downloadAudio = () => {
-      if(this.props.audioDownload !== undefined){
-        window.open(this.props.audioDownload);
-      }
-    }
-
     applyAudioEdits(){
       this.handleMessage(this.currentProject, this.currentAudio, this.state);
       var currTran = this.state.IDArray;
@@ -201,9 +197,7 @@ class Transcript extends Component {
         if (doc.data().modifiedFinished == false){
           var sav = document.getElementById("applyAudioEdits");
           sav.style.backgroundColor = 'grey';
-          sav.disabled = true;
-          var sav = document.getElementById("download");
-          sav.display = 'none';
+          this.refs.Download.SetDisplayFalse();
           var alert = document.getElementById("alert");
           alert.style.display = 'block';
           alert.innerHTML = 'Audio file is processing, please come back later.'
@@ -221,16 +215,18 @@ class Transcript extends Component {
 
             if (doc.data().modifiedFinished == true)
             {
-              var sav = document.getElementById("download");
-              sav.display = 'block';
+
+              this.refs.Download.SetDisplayTrue();
+
               var alert = document.getElementById("alert");
+              alert.backgroundColor = 'lightgreen';
               alert.innerHTML = 'Sucess! Your file is now ready to be downloaded';
               alert.display = 'block';
-              alert.backgroundColor = 'lightgreen';
-              ffmpegFinished = true;
+
               var sav = document.getElementById("applyAudioEdits");
-              sav.style.backgroundColor = 'blue';
+              sav.style.backgroundColor = '#2D88F3';
               sav.disabled = false;
+              ffmpegFinished = true;
 
             }
             else{
@@ -244,19 +240,18 @@ class Transcript extends Component {
       }
 
     }
-    downloadLink(){
+    downloadLink = () => {
       console.log("OPENING UP LINK");
       let currentURL = this.props.audioDownload;
       this.docUser.collection("projects").doc(this.currentProject).collection("audios").doc(this.currentAudio).get()
       .then(doc => {
         currentURL = doc.data().downloadURL;
-
-
       })
       .catch(function(error) {
           console.error("Error adding document: ", error);
       });
-      var file_path = 'currentURL';
+      
+      window.open(currentURL);
 
     }
 
@@ -665,13 +660,13 @@ class Transcript extends Component {
 
         return (
           <div>
-          <div class="alert" id = "alert"style={{display: 'none'}}>
+          <div class="alert" id = "alert" style={{backgroundColor: '#2D88F3', display: 'none'}}>
               <span class="closebtn"  onclick="this.parentElement.style.display='none';">&times;</span>
               Processing audio file, Please come back later.
           </div>
               <div className="Transcript-Save">
                   <form>
-                      <label id = "applyAudioEdits" onClick={this.applyAudioEdits.bind(this)} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, bottom: 385}}>
+                      <label id = "applyAudioEdits" onClick={this.applyAudioEdits.bind(this)} disabled={this.state.disabled} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, bottom: 385}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
                           Apply Audio Edits
                       </label>
@@ -680,14 +675,11 @@ class Transcript extends Component {
                   <form>
                     <Save ref ="Save" onRef={ref => (this.Save = ref)}/>
                   </form>
-              </div>
-              <div className = "Transcript-Download">
                   <form>
-                      <label id = "download" onClick={this.downloadLink()} style={{backgroundColor: "red", display: 'none', color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize: 14, bottom: 305}}>
-                          Download
-                      </label>
+                    <Download ref="Download" onRef={ref => (this.Download = ref)} downloadLink={this.downloadLink}/>
                   </form>
               </div>
+
 
 
 
