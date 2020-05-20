@@ -177,6 +177,12 @@ class Transcript extends Component {
         })
     }
 
+    downloadAudio = () => {
+      if(this.props.audioDownload !== undefined){
+        window.open(this.props.audioDownload);
+      }
+    }
+
     applyAudioEdits(){
       this.handleMessage(this.currentProject, this.currentAudio, this.state);
       var currTran = this.state.IDArray;
@@ -679,6 +685,7 @@ class Transcript extends Component {
                           Apply Audio Edits
                       </label>
                   </form>
+
                   <form>
                     <Save ref ="Save" onRef={ref => (this.Save = ref)}/>
                   </form>
@@ -705,6 +712,7 @@ class Transcript extends Component {
                     <a id="Play">Play</a>
                   </div>
                 </div>
+                
                 <section className="clear utterance_container">
                   <div className="content_container clear">
                     <div className="speaker">
@@ -720,8 +728,14 @@ class Transcript extends Component {
                       {transcriptSnippets}
                       </div>
                     </div>
+                    
                   </div>
                 </section>
+                <div onClick={() => this.downloadAudio()} className="Download-button">
+                    <label style={{ backgroundColor: "#1890ff", color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}>
+                        Download Audio
+                    </label>
+                </div>
               </div>
             </div>
             </div>
