@@ -4,6 +4,7 @@ import app from "./base.js";
 import { AuthContext } from "./Auth.js";
 import { Input, Button, Typography } from "antd";
 import './Login.css'
+import { Link, BrowserRouter as Router, Route } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -48,6 +49,9 @@ const Login = ({ history }) => {
             Log In
           </Button>
           {/* <button type="submit">Log in</button> */}
+        </div>
+        <div className="Form-signup">
+          <Link to={"/signup"}>Don't have an account?</Link>
         </div>
       </form>
     </div>

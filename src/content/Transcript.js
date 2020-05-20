@@ -53,12 +53,14 @@ class Transcript extends Component {
 
     componentDidMount() {
         this.processTranscript();
+
     }
 
     componentDidUpdate(prevProps) {
-
+      this.addDotToAudioPlayer();
         if(prevProps.audioId !== this.props.audioId) {
             this.processTranscript();
+
             this.setState({
                 update: this.state.update + 1,
             });
@@ -248,6 +250,7 @@ class Transcript extends Component {
        this.displayMenu(event);
 
        this.recordDict(event);
+      //  this.addDotToAudioPlayer();
      }
 
      removePunctuation(string) {
@@ -430,11 +433,11 @@ class Transcript extends Component {
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-        y -=140;
+        y -=450;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
-        label_container.style.position = 'absolute';
+        label_container.style.position = 'sticky';
         label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
@@ -442,11 +445,11 @@ class Transcript extends Component {
       }
 
       updateMaskLabel(x, y){
-        y -=140;
+        y -=450;
         var label_container = document.createElement('div');
         label_container.className = 'label_container';
         label_container.style.float = 'left';
-        label_container.style.position = 'absolute';
+        label_container.style.position = 'sticky';
         label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
@@ -495,6 +498,7 @@ class Transcript extends Component {
           userSelectText = "";
           spanID = [];
           this.SaveChanges();
+          this.addDotToAudioPlayer();
         }
     }
 
@@ -528,7 +532,29 @@ class Transcript extends Component {
       Stamp.style.color = 'lightgreen';
     };
 
+    addDotToAudioPlayer = ()=>{
+      console.log("TRANSCRIPT")
+      this.props.addDots(this.state.IDArray);
+      console.log(this.state.IDArray)
+
+    };
+
+
+    // addDotToAudioPlayer() {
+    //   console.log("clicked")
+    //   for (var number in this.state.IDArray) {
+    //     if (this.state.IDArray[number]["label"] === "MASK") {
+    //       console.log(this.state.IDArray[number]["startTime"])
+    //     }
+    //   }
+    //   console.log("IDARRAY", this.state.IDArray)
+    // }
+
+
+
     render() {
+
+      // {this.addDotToAudioPlayer()}
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
 
@@ -551,11 +577,13 @@ class Transcript extends Component {
               );
             }
         });
+
         let firstWordTimeSec = this.state.IDArray.map((word, index)=>{
           if (index == 0){
             return word["startTime"]/1000000000;
           }
         });
+
         return (
           <div>
               <div className="Transcript-Save">
@@ -585,11 +613,11 @@ class Transcript extends Component {
                 <section className="clear utterance_container">
                   <div className="content_container clear">
                     <div className="speaker">
-                      <select style={{width: '100px', position: 'absolute'}} onchange="this.nextElementSibling.value=this.value">
+                      <select style={{width: '100px', position: 'sticky'}} onchange="this.nextElementSibling.value=this.value">
                         <option>Speaker 1</option>
                         <option> Speaker 2</option>
                       </select>
-                      <input style={{width: '70px', marginTop: '1px', border: 'none', position: 'relative', left: '1px', marginRight: '25px'}} defaultValue="Speaker 1" />
+                      <input style={{width: '70px', marginTop: '1px', border: 'none', position: 'sticky', right: 124, marginRight: '25px'}} defaultValue="Speaker 1" />
                     </div>
                     <div className="content">
                       <button  onClick={this.timeStampClicked.bind(this)} id = "timeStamp" style = {{color: 'blue'}} className="timecode">{firstWordTimeSec}s</button>
@@ -602,8 +630,12 @@ class Transcript extends Component {
               </div>
             </div>
             </div>
+
+            
         );
+        
     }
+    
 }
 
 export default Transcript;

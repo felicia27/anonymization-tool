@@ -42,7 +42,7 @@ class Upload extends Component {
     };
 
     handleUploadSuccess = filename => {
-      this.setState({ audio: filename, progress: 13});
+        this.setState({ audio: filename, progress: 13});
         // console.log(filename);
         firebase
             .storage()

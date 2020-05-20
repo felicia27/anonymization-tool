@@ -4,6 +4,8 @@ import WaveSurfer from 'wavesurfer.js';
 // import CursorPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.cursor.min.js';
 import $ from 'jquery';
 var wavesurfer;
+var dotArray = [];
+
 class Player extends Component {
 
 
@@ -121,35 +123,105 @@ class Player extends Component {
         }
       }
 
+    //   onMouseUpHandler = (e) =>{
+    //     // var event = window.event;
+    //     // this.getSelectionText(e);
+    //     // this.displayMenu(event);
+    //     // this.recordDict(event);
+    //  //   this.addDotToAudioPlayer();
+    //   }
+
+      addDotToAudioPlayer(IDArray) {
+
+        var demodiv = document.getElementById('dots');
+
+        for (var number in IDArray) {
+         // var newSpan = document.createElement('div')
+        //  console.log(this.state.IDArray[number]["startTime"])
+          if (IDArray[number]["label"] === "MASK" && number == 0){
+           // console.log(IDArray[number]["label"], number)
+           
+            if (dotArray.includes(IDArray[number]["startTime"])) {
+              console.log("IDArray", IDArray)
+              console.log("START TIME", IDArray[number]["startTime"])
+             // break;
+            }
+
+           else { 
+            var newSpan = document.createElement('div');
+            console.log(IDArray[number]["startTime"])
+
+           // newSpan.className = "dot";
+            newSpan.style.marginLeft = (IDArray[number]["startTime"]/60/60/60/10)+ "px";
+            newSpan.style.float = "left";
+             newSpan.style.height=10 + "px";
+             newSpan.style.width=10 + "px";
+             newSpan.style.backgroundColor="cornflowerblue";
+             newSpan.style.borderRadius=50 + "%";
+             newSpan.style.display='inline-block';
+
+            demodiv.appendChild(newSpan);
+            dotArray.push(IDArray[number]["startTime"])
+          }
+         }
+
+          else if (IDArray[number]["label"] === "MASK" && number != 0) {
+         //   console.log(IDARRAY[number]["label"], number)
+            console.log(IDArray[number]["startTime"])
+            if (dotArray.includes(IDArray[number]["startTime"])) {
+              console.log("IDArray", IDArray)
+              console.log("START TIME", IDArray[number]["startTime"])
+              //break;
+            }
+              else {
+              var newSpan2 = document.createElement('div');
+              newSpan2.style.marginLeft = (IDArray[number]["startTime"]/60/60/60/10 - IDArray[number-1]["startTime"]/60/60/60/10)+ "px";
+              newSpan2.style.float = "left";
+              newSpan2.style.height=10 + "px";
+              newSpan2.style.width=10 + "px";
+              newSpan2.style.backgroundColor="cornflowerblue";
+              newSpan2.style.borderRadius=50 + "%";
+              newSpan2.style.display='inline-block';
+
+              demodiv.appendChild(newSpan2);
+              dotArray.push(IDArray[number]["startTime"])
+            }
+          }
+        }
+        console.log("DOTARRAY", dotArray)
+      }
+
     render() {
 
 
-
+     // {this.addDotToAudioPlayer(IDArray)}
 
         return (
-          <div className="audio_container clear">
+          <div className="audio_container clear" style = {{height: 190}}>
           <div id="waveform" style={{position: 'relative'}}>
           </div>
+            <div id = "dots"></div>
           <div class="times">
-          <div class="waveform__counter" style = {{float:"left", paddingLeft:20}}>0:00</div>
-          <div class="waveform__duration" style = {{float: "right", paddingRight:20}}></div>
+            <div class="waveform__counter" style = {{float:"left", left:20, paddingTop: 20, position:"sticky"}}>0:00</div>
+            <div class="waveform__duration" style = {{float: "right", right:20, paddingTop:20, position:"sticky"}}></div>
           </div>
 
 
-              <div className="controls">
-                <button onClick = {() => this.controlHandler("back")} className="btn btn-primary" data-action="back" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
-                  <img src={require("./image/rewind.png")} width="40px" height="40px" />
-                </button>
-                <button onClick = {() => this.controlHandler("play")} className="btn btn-primary" data-action="play" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
-                  <img id="playPauseButtonImage" src={require("./image/play-button.png")} width="40px" height="40px" />
-                </button>
-                <button onClick = {() => this.controlHandler("forward")} className="btn btn-primary" data-action="forward" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
-                  <img src={require("./image/fast-forward.png")} width="40px" height="40px" />
-                </button>
-                <button onClick = {() => this.controlHandler("mute")} className="btn btn-primary" data-action="mute" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
-                  <img id="muteImage" src={require("./image/unmute.png")} width="40px" height="40px" />
-                </button>
-              </div>
+          <div className="controls" style={{position:'sticky', left:100}}>
+            <button onClick = {() => this.controlHandler("back")} className="btn btn-primary" data-action="back" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
+              <img src={require("./image/rewind.png")} width="40px" height="40px" />
+            </button>
+            <button onClick = {() => this.controlHandler("play")} className="btn btn-primary" data-action="play" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
+              <img id="playPauseButtonImage" src={require("./image/play-button.png")} width="40px" height="40px" />
+            </button>
+            <button onClick = {() => this.controlHandler("forward")} className="btn btn-primary" data-action="forward" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
+              <img src={require("./image/fast-forward.png")} width="40px" height="40px" />
+            </button>
+            <button onClick = {() => this.controlHandler("mute")} className="btn btn-primary" data-action="mute" style={{backgroundColor: 'transparent', borderColor: 'transparent'}}>
+              <img id="muteImage" src={require("./image/unmute.png")} width="40px" height="40px" />
+            </button>
+          </div>
+
           </div>
 
 
