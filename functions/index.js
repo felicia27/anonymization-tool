@@ -20,18 +20,29 @@ const bucketName = "capstone-project-uci-c87c8.appspot.com";
 
 let db = admin.firestore();
 
+exports.pubMessage = functions.https.onCall( async (data, context) => {
+  const attributes = data.text;
+  const dataBuffer = Buffer.from("Message");
+  console.log(attributes);
+  console.log(attributes["UUID"]);
+
+  await pubSubClient.topic('deleteAudio').publish(dataBuffer, attributes);
+});
+
+
 exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinalize( async (object) => {
   // [START eventAttributes]
-  console.log("HERE FROM STATIC HTML");
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
   const filePath = object.name; // File path in the bucket.
-  console.log("Filepath: ", filePath);
+  console.log(filePath);
   const filePathUserEmail = filePath.split('/')[1];
   const uuidProjectFirestoreDocId = filePath.split('/')[2].split('_')[0];
   const uuidAudioFirestoreDocId = filePath.split('/')[2].split('_')[1];
+  console.log(uuidAudioFirestoreDocId);
   const contentType = object.contentType; // File content type.
   console.log("Content Type: ", contentType);
   const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
+
   // [END eventAttributes]
 
   // [START stopConditions]
@@ -45,7 +56,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
   }
   else{
     // Get the file name.
-    const fileName = path.basename(filePath);
+    const fileName = path.basename(filePath).slice(37);
     console.log("Filename: ", fileName);
     // Exit if the image is already a thumbnail.
     if (fileName.endsWith('_transcript.json')) {
@@ -90,13 +101,14 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     
     try{
       [operation] = await client.longRunningRecognize(request);
+      var [response] = await operation.promise();
     }
     catch(e){
       [operation] = await client.longRunningRecognize(monoRequest);
+      var [response] = await operation.promise();
     }
     finally{
-      const [response] = await operation.promise();
-      jsonResponse = JSON.stringify(response);
+      const jsonResponse = JSON.stringify(response);
       const objectValue = JSON.parse(jsonResponse);
       const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
       var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
@@ -108,10 +120,10 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
         end = item["endTime"]
         console.log(start);
         console.log(end);
-        if (start === null && end === null){
+        if (start == null && end == null){
             word_dic.push({"word": item["word"]});
         }
-        else if (start === null){
+        else if (start == null){
           if (!("seconds" in start)){
             word_dic.push({"word": item["word"], "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
           }
@@ -119,7 +131,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
             word_dic.push({"word": item["word"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
           }
         }
-        else if (end === null){
+        else if (end == null){
           if (!("seconds" in start)){
             word_dic.push({"word": item["word"], "startTime": start["nanos"]});
           }
@@ -157,28 +169,27 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
           }
         }
       });
-      var finaledTranscript = JSON.stringify(word_dic);
+      const finaledTranscript = JSON.stringify(word_dic);
       console.log(word_dic);
+
+      db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
+      .collection("audios").doc(uuidAudioFirestoreDocId).set({
+        //transcript: jsonResponse,
+        finished: true,
+        idTranscript: finaledTranscript,
+        //baseTranscript: rawTranscript
+      }, { merge: true });
+
+      return null;
     }
-    
-    
-    // Get a Promise representation of the final result of the job
-    
 
-    db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
-    .collection("audios").doc(uuidAudioFirestoreDocId).set({
-      //transcript: jsonResponse,
-      finished: true,
-      idTranscript: finaledTranscript,
-      //baseTranscript: rawTranscript
-    }, { merge: true });
-
+  // Get a Promise representation of the final result of the job
   }
-  
-  return null;
+
 });
 
 exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( async (object) => {
+  // audios/email/project_UUID_filename
   console.log(object);
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
   console.log(fileBucket);
@@ -186,8 +197,8 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
   //FILEPATH:  transcripts/allen072798@gmail.com/projects/e97f6945-8dd3-4779-9f49-90efae53ccb4/audios/2bac7eb5-38a7-4ab9-9638-b992b7c23e2a_record_output.wav
 
   const filePathUserEmail = filePath.split('/')[1];
-  const uuidFirestoreDocId = filePath.split('/')[5].slice(0,36)
-  const uuidProjectFirestoreDocId = filePath.split('/')[3];
+  const uuidFirestoreDocId = filePath.split('/')[2].split('_')[1];
+  const uuidProjectFirestoreDocId = filePath.split('/')[2].split('_')[0];
   console.log(uuidFirestoreDocId);
   console.log("FILEPATH: ", filePath);
   const contentType = object.contentType; // File content type.
@@ -210,7 +221,7 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
         let oldFileData = doc.data();
         
         db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId+"_modified").set({
-          audioURL: oldFileData.audioURL,
+          audioURL: oldFileData.audioUrl,
           fileName: oldFileData.fileName.replace(".wav", "_output.wav"),
           createdAt: oldFileData.createdAt,
           finished: oldFileData.finished,
@@ -265,32 +276,214 @@ exports.deleteAudioMessage = functions.pubsub.topic('deleteAudio').onPublish(asy
       let targetTempFileName = audioFilename.replace(/\.[^/.]+$/, '') + '_output.wav';
       const targetTempFilePath = path.join(os.tmpdir(), targetTempFileName);
 
+      /*
       var startTime = message.attributes["startTime"];
       var endTime = message.attributes["endTime"];
 
       startTime = parseInt(startTime,10)/1000000000;
       endTime = parseInt(endTime,10)/1000000000;
-      
-      console.log(startTime);
-      console.log(endTime);
+      */
 
-      var atrimLine1 = "atrim=duration=";
-      atrimLine1 = atrimLine1 + startTime + '[a]';
+      var censorList = JSON.parse(message.attributes["censor"]);
+      var deleteList = JSON.parse(message.attributes["delete"]);
 
-      var atrimLine2 = '[0]atrim=start=';
-      atrimLine2 = atrimLine2 + endTime + '[b]';
-      let command = ffmpeg(tempFilePath)
+      console.log("Number of censor inputs: " + censorList["numberOfInputs"]);
+      console.log("Number of delete inputs: " + deleteList["numberOfInputs"]);
+
+      var censorSize = censorList["numberOfInputs"];
+      var deleteSize = deleteList["numberOfInputs"];
+
+      var streamName;
+      var censorLine = '';
+      var deleteLine = '';
+
+
+      // If there are any censor size requests
+      if(censorSize > 0)
+      {
+        console.log(censorSize + " messages being censored!");
+
+        var duration = censorList["endTime1"] - censorList["startTime1"];
+        var ADstartTime = censorList["startTime1"] * 1000;
+
+        // Mute first section of audio based on first start/end inputs
+        censorLine = "[0]volume=0:enable='between(t," + censorList["startTime1"] + "," + censorList["endTime1"] + ")'";
+
+        if(censorSize == 1)
+        {
+          censorLine += '[mutedStream];';
+          // Generate beep for start/end times
+          censorLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[beep];";
+          censorLine += "[mutedStream][beep]amix=inputs=2";
+
+          if(deleteSize > 0)
+          {
+            //censorLine -= "=inputs=2"
+            censorLine += "[maskedAudio]";
+            console.log("after adding/removing: " + censorLine);
+          }
+
+        }
+        
+        // Runs if more than one start/end time
+        else{
+          var beepLine = '';
+          var i;
+
+          // amix audio for first set of start/end times
+
+          // Special edge case condition if startTime is 0
+          if(censorList["startTime1"] == 0){
+            beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[zero];"
+            beepLine += "[mutedStream][zero]amix[mutedStreamzero];";
+            streamName = "mutedStreamzero";
+          }	
+          // Special edge case condition if startTime is 0
+          else{
+            beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[" + censorList["startTime1"] + "];"
+            beepLine += "[mutedStream][" + censorList["startTime1"] + "]amix[mutedStream" + censorList["startTime1"] + "];";
+            streamName = "mutedStream" + censorList["startTime1"]; 
+          }
+
+          for(i=2; i < censorSize; i++)
+          {
+            //generate silence for start/end times before last pair
+            censorLine += ",volume=0:enable='between(t," + censorList["startTime" + i] + "," + censorList["endTime" + i] + ")'";
+            
+            // generate beep for start/end times before last pair
+            duration = censorList["endTime" + i] - censorList["startTime" + i];
+            ADstartTime = censorList["startTime" + i] * 1000;
+            beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[" + censorList["startTime"+i ] + "];";
+            
+            // amix audio for start/end times before the last pair
+            beepLine += "[" + streamName + "][" + censorList["startTime" + i] + "]amix[" + streamName + censorList["startTime" + i] + "];";
+            streamName += censorList["startTime" + i];
+
+
+          }
+          // generate silence for final start/end times
+          censorLine += ",volume=0:enable='between(t," + censorList["startTime" + i] + "," + censorList["endTime" + i] + ")'";
+          censorLine += "[mutedStream];"
+
+          // generate beep for final start/end times
+          duration = censorList["endTime" + i] - censorList["startTime" + i];
+          ADstartTime = censorList["startTime" + i] * 1000;
+          beepLine += "sine=d=" + duration + ":f=1000,adelay=" + ADstartTime + ",pan=stereo|FL=c0|FR=c0[" + censorList["startTime" + i] + "];";
+          
+          // amix final audio stream together
+          beepLine += "[" + streamName + "]" + "[" + censorList["startTime" + i] + "]amix=inputs=2";
+          censorLine += beepLine;
+          if(deleteSize > 0)
+          {
+            //censorLine -= "=inputs=2"
+            censorLine += "[maskedAudio]";
+          }
+        }
+      }
+
+      if(deleteSize > 0)
+      {
+        console.log(deleteSize + " messages being deleted!");
+        if(censorSize > 0)
+        {
+          deleteLine = "[maskedAudio]";
+        }
+        else
+        {
+          deleteLine = "[0]"
+        }
+
+        // Trim section starting with first startTime
+        deleteLine += "aselect='between(t,0," + deleteList["startTime1"] + ")";
+
+
+        // Runs for only 1 start & end time
+        if(deleteSize == 1){
+          deleteLine += "+between(t," + deleteList["endTime1"] + "," + "100000000000000)";
+          deleteLine += "',asetpts=N/SR/TB";
+        }
+
+        // Runs for more than 1 start & end time
+        else{
+          var i;
+
+          for(i=2; i <= deleteSize; i++)
+          {
+            deleteLine += "+between(t," + deleteList["endTime"+(i-1)] + "," + deleteList["startTime"+i] + ")"
+          }
+
+          deleteLine += "+between(t," + deleteList["endTime" + deleteSize] + "," + "100000000000000)"; 
+          deleteLine += "',asetpts=N/SR/TB";
+
+        }
+      }
+
+      if ((censorSize > 0) && (deleteSize > 0)){
+        console.log("Both censor & delete:");
+        console.log("");
+        console.log("censorLine: " + censorLine);
+        console.log("");
+        console.log("deleteLine: " + deleteLine);
+
+        var command = ffmpeg(tempFilePath)
           .setFfmpegPath(ffmpegInstaller.path)
           .complexFilter([
-            atrimLine1,
-            atrimLine2,
-            '[a][b]concat=n=2:v=0:a=1',
+            censorLine,
+            deleteLine
           ])
           .format('wav')
           .output(targetTempFilePath);
+      }
+
+      else if ((censorSize > 0) && (deleteSize <= 0))
+      {
+        console.log("Just censor:");
+        console.log("");
+        console.log("censorLine: " + censorLine);
+        console.log("");
+        console.log("deleteLine: " + deleteLine);
+
+        var command = ffmpeg(tempFilePath)
+          .setFfmpegPath(ffmpegInstaller.path)
+          .complexFilter([
+            censorLine,
+          ])
+          .format('wav')
+          .output(targetTempFilePath);
+      }
+
+      else if ((censorSize <= 0) && (deleteSize > 0))
+      {
+        console.log("just delete:");
+        console.log("");
+        console.log("censorLine: " + censorLine);
+        console.log("");
+        console.log("deleteLine: " + deleteLine);
+
+        var command = ffmpeg(tempFilePath)
+          .setFfmpegPath(ffmpegInstaller.path)
+          .complexFilter([
+            deleteLine
+          ])
+          .format('wav')
+          .output(targetTempFilePath);
+      }
+
+      /*
+      let command = ffmpeg(tempFilePath)
+          .setFfmpegPath(ffmpegInstaller.path)
+          .complexFilter([
+            censorLine,
+            deleteLine
+          ])
+          .format('wav')
+          .output(targetTempFilePath);
+      */
 
       let modifiedFilePath = filePath.split("/")[4] + "/" + filePath.split("/")[1] + "/"+ projectName + "_" + audioFilename; 
-      let targetStorageFilePath = filePath.split("/")[0] + "/" + filePath.split("/")[1] + "/" + filePath.split("/")[2] + "/" + filePath.split("/")[3] + "/" + filePath.split("/")[4] + "/" + targetTempFileName;
+      
+      // audios/email/project_UUID_filename
+      let targetStorageFilePath = filePath.split("/")[4] + "/" + filePath.split("/")[1] + "/" + filePath.split("/")[3] + "_" + targetTempFileName.slice(0,36) + "_modified" +  targetTempFileName.slice(36);
   
       console.log(modifiedFilePath);
       console.log(targetStorageFilePath);

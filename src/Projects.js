@@ -127,7 +127,9 @@ class Projects extends Component {
                             audioCreatedAt: moment(audio.data().createdAt.toDate()).format("MMM Do YYYY"),
                             audioUrl: audio.data().audioUrl,
                             audioTranscript: audio.data().transcript,
+                            audioEmail: currentUserEmail,
                             idTranscript: audio.data().idTranscript,
+                            
                         }
                         audioObjects.push(audioObject);
                     });

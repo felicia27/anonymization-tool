@@ -81,8 +81,85 @@ class Transcript extends Component {
       menu.style.display = "none";
     }
 
-    handleMessage = () => {
-      let audioData = {projectID: "e97f6945-8dd3-4779-9f49-90efae53ccb4", UUID: "2bac7eb5-38a7-4ab9-9638-b992b7c23e2a", email: 'allen072798@gmail.com', startTime: '1000000000', endTime: '5000000000'};
+    handleMessage = (project, audio, labels) => {
+      var deleteCounter = 1;
+      var censorCounter = 1;
+      var deleteTimeCurrent = undefined;
+      var censorTimeCurrent = undefined;
+      var currentlyOn = "none";
+      var deleteObject = {"numberOfInputs": 0};
+      var censorObject = {"numberOfInputs": 0};
+      let audioData = {};
+      audioData["projectID"] = project;
+      audioData["UUID"] = audio;
+      audioData["email"] = this.props.audioEmail;
+      console.log(audioData);
+
+
+      for(var i = 0; i < labels.IDArray.length; i++){
+        
+        if(labels.IDArray[i].label == "DELETE" && deleteTimeCurrent === undefined && currentlyOn == "none"){
+          deleteObject["numberOfInputs"] += 1;
+          deleteTimeCurrent = labels.IDArray[i].startTime;
+          deleteObject["startTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+          currentlyOn = "delete";
+        }
+        else if(labels.IDArray[i].label == "DELETE" && deleteTimeCurrent !== undefined && currentlyOn == "delete"){
+          deleteTimeCurrent += labels.IDArray[i].endTime - labels.IDArray[i].startTime;
+        }
+        else if(labels.IDArray[i].label === undefined && deleteTimeCurrent !== undefined && currentlyOn == "delete"){
+          deleteObject["endTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+          deleteCounter += 1;
+          currentlyOn = "none";
+          deleteTimeCurrent = undefined;
+        }
+        else if(labels.IDArray[i].label === "MASK" && deleteTimeCurrent !== undefined && currentlyOn == "delete"){
+          deleteObject["endTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+          deleteCounter += 1;
+          currentlyOn = "mask";
+          deleteTimeCurrent = undefined;
+          censorTimeCurrent = labels.IDArray[i].startTime;
+          censorObject["startTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          censorObject["numberOfInputs"] += 1;
+        }
+        else if(labels.IDArray[i].label == "MASK" && censorTimeCurrent === undefined && currentlyOn == "none"){
+          censorObject["numberOfInputs"] += 1;
+          censorTimeCurrent = labels.IDArray[i].startTime;
+          censorObject["startTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          currentlyOn = "mask";
+        }
+        else if(labels.IDArray[i].label == "MASK" && censorTimeCurrent !== undefined && currentlyOn == "mask"){
+          censorTimeCurrent += labels.IDArray[i].endTime - labels.IDArray[i].startTime;
+        }
+        else if(labels.IDArray[i].label === undefined && censorTimeCurrent !== undefined && currentlyOn == "mask"){
+          censorObject["endTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          censorCounter += 1;
+          currentlyOn = "none";
+          censorTimeCurrent = undefined;
+        }
+        else if(labels.IDArray[i].label === "DELETE" && censorTimeCurrent !== undefined && currentlyOn == "mask"){
+          deleteObject["numberOfInputs"] += 1;
+          censorObject["endTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+          censorCounter += 1;
+          currentlyOn = "delete";
+          censorTimeCurrent = undefined;
+          deleteTimeCurrent = labels.IDArray[i].startTime;
+          deleteObject["startTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+        }
+      }
+
+      if(censorTimeCurrent !== undefined){
+        censorObject["endTime"+censorCounter] = (censorTimeCurrent/1000000000).toString();
+      }
+      if(deleteTimeCurrent !== undefined){
+        deleteObject["endTime"+deleteCounter] = (deleteTimeCurrent/1000000000).toString();
+      }
+
+      deleteObject["numberOfInputs"] = deleteObject["numberOfInputs"].toString();
+      censorObject["numberOfInputs"] = censorObject["numberOfInputs"].toString();
+
+      audioData["delete"] = JSON.stringify(deleteObject);
+      audioData["censor"] = JSON.stringify(censorObject);
       
       let pubMessage = firebase.functions().httpsCallable('pubMessage');
       pubMessage({text: audioData});
@@ -97,8 +174,8 @@ class Transcript extends Component {
     }
 
     applyAudioEdits(){
+      this.handleMessage(this.currentProject, this.currentAudio, this.state);
       var currTran = this.state.IDArray;
-      console.log(currTran);
       var deletePositions = []
       currTran.forEach(function(part, index){
           if (this[index].label == "DELETE"){
@@ -124,7 +201,6 @@ class Transcript extends Component {
           }, currTran);
 
       }
-      console.log(currTran);
       var nextChange = this.state.change;
 
       this.setState({
@@ -132,7 +208,6 @@ class Transcript extends Component {
         change: nextChange+= 1,
       });
       
-
 
     }
 
@@ -155,7 +230,6 @@ class Transcript extends Component {
 
       this.labelDict = {"Delete": [], "Mask": [], "Edit": []};
       var nextChange = this.state.change;
-     console.log(currentidTranscript);
       this.setState({
         IDArray: currentidTranscript,
         change: nextChange+= 1,
@@ -165,7 +239,6 @@ class Transcript extends Component {
         idTranscript: JSON.stringify(currentidTranscript),
       }, { merge: true });
       this.refs.Save.Saved();
-      this.handleMessage();
     }
 
      onMouseUpHandler = (e) =>{
