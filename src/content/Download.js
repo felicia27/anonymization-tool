@@ -1,5 +1,5 @@
-
 import React, { Component } from 'react';
+import { Icon } from "antd";
 import "./Download.css"
 
 class Download extends Component {
@@ -33,8 +33,9 @@ class Download extends Component {
 
         {this.state.display && <div>
             <form>
-                <label  onClick={this.props.downloadLink} style={{backgroundColor: "red", display: "block", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize: 14, bottom: 305}}>
-                    Download
+                <label  onClick={this.props.downloadLink} style={{backgroundColor: "#4CDC35", display: "block", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 10, fontSize: 14, bottom: 345}}>
+                <Icon style={{paddingRight: "10px"}} type="download"/>
+                    DOWNLOAD
                 </label>
             </form>
         </div>
