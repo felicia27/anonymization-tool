@@ -87,7 +87,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
       let targetTempFileName = audioFileName.replace(/\.[^/.]+$/, '') + '.wav';
       const targetTempFilePath = path.join(os.tmpdir(), targetTempFileName);
       let targetStorageFilePath = filePath.replace(/\.[^/.]+$/, '') + '.wav';
-      
+
       let command = ffmpeg(tempFilePath)
           .setFfmpegPath(ffmpegInstaller.path)
           .format('wav')
@@ -154,6 +154,9 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
         console.log(objectValue);
         //const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
         var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
+        if (wordTimeArray == null){
+          wordTimeArray = objectValue['results'][1]['alternatives'][0]['words']
+        }
         //var res = rawTranscript.split(" ");
         console.log(wordTimeArray);
 
