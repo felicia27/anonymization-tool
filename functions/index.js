@@ -22,6 +22,7 @@ const client = new speech.SpeechClient();
 const bucketName = "capstone-project-uci-c87c8.appspot.com";
 
 let db = admin.firestore();
+
 function promisifyCommand(command) {
   return new Promise((resolve, reject) => {
     command.on('end', resolve).on('error', reject).run();
@@ -78,117 +79,148 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
     }
     // [END stopConditions]
 
-    const audioFilename = "gs://" + fileBucket + "/" + filePath; // gcs Uri
-    const request = {
-      config: {
-        enableWordTimeOffsets: true, // get word times
-        encoding: "LINEAR16", // Encoding of audio file
-        languageCode: "en-US", // BCP-47 language code
-        audioChannelCount: 2,
-        useEnhanced: true,
-        model: "video",
-      },
-      audio: {
-        uri: audioFilename // gcs Uri
-      }
-    };
+    if(fileName.split(".")[1] !== "wav"){
+      let bucket = gcs.bucket("gs://"+bucketName);
+      console.log("Filepath: ", filePath);
+      let audioFileName = filePath.split("/")[2];
+      let tempFilePath = path.join(os.tmpdir(), audioFileName);
+      let targetTempFileName = audioFileName.replace(/\.[^/.]+$/, '') + '.wav';
+      const targetTempFilePath = path.join(os.tmpdir(), targetTempFileName);
+      let targetStorageFilePath = filePath.replace(/\.[^/.]+$/, '') + '.wav';
+      
+      let command = ffmpeg(tempFilePath)
+          .setFfmpegPath(ffmpegInstaller.path)
+          .format('wav')
+          .audioFrequency(16000)
+          .output(targetTempFilePath);
 
-    const monoRequest = {
-      config: {
-        enableWordTimeOffsets: true, // get word times
-        encoding: "LINEAR16", // Encoding of audio file
-        languageCode: "en-US", // BCP-47 language code
-        useEnhanced: true,
-        model: "video",
-      },
-      audio: {
-        uri: audioFilename // gcs Uri
-      }
-    };
+      console.log("tempPath: ", tempFilePath);
+      console.log("tempName: ", targetTempFileName);
+      console.log(targetStorageFilePath);
+      console.log("DOWNLOAD START");
+      await bucket.file(filePath).download({destination: tempFilePath});
+      console.log('Audio downloaded locally to', tempFilePath);
 
+      await promisifyCommand(command);
+      console.log('Output audio created at', targetTempFilePath);
 
-    try{
-      [operation] = await client.longRunningRecognize(request);
-      var [response] = await operation.promise();
+      await bucket.upload(targetTempFilePath, {destination: targetStorageFilePath});
+      console.log('Output audio uploaded to', targetStorageFilePath);
+
+      fs.unlinkSync(tempFilePath);
+      fs.unlinkSync(targetTempFilePath);
     }
-    catch(e){
-      [operation] = await client.longRunningRecognize(monoRequest);
-      var [response] = await operation.promise();
-    }
-    finally{
-      const jsonResponse = JSON.stringify(response);
-      const objectValue = JSON.parse(jsonResponse);
-      console.log(objectValue);
-      //const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
-      var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
-      //var res = rawTranscript.split(" ");
-
-      var word_dic = [];
-      wordTimeArray.forEach(function (item, index) {
-        start = item["startTime"]
-        end = item["endTime"]
-        console.log(start);
-        console.log(end);
-        if (start == null && end == null){
-            word_dic.push({"word": item["word"]});
+    else{
+      const audioFilename = "gs://" + fileBucket + "/" + filePath; // gcs Uri
+      const request = {
+        config: {
+          enableWordTimeOffsets: true, // get word times
+          encoding: "LINEAR16", // Encoding of audio file
+          languageCode: "en-US", // BCP-47 language code
+          audioChannelCount: 2,
+          useEnhanced: true,
+          model: "video",
+        },
+        audio: {
+          uri: audioFilename // gcs Uri
         }
-        else if (start == null){
-          if (!("seconds" in start)){
-            word_dic.push({"word": item["word"], "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+      };
+
+      const monoRequest = {
+        config: {
+          enableWordTimeOffsets: true, // get word times
+          encoding: "LINEAR16", // Encoding of audio file
+          languageCode: "en-US", // BCP-47 language code
+          useEnhanced: true,
+          model: "video",
+        },
+        audio: {
+          uri: audioFilename // gcs Uri
+        }
+      };
+
+
+      try{
+        [operation] = await client.longRunningRecognize(request);
+        var [response] = await operation.promise();
+      }
+      catch(e){
+        [operation] = await client.longRunningRecognize(monoRequest);
+        var [response] = await operation.promise();
+      }
+      finally{
+        const jsonResponse = JSON.stringify(response);
+        const objectValue = JSON.parse(jsonResponse);
+        console.log(objectValue);
+        //const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
+        var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
+        //var res = rawTranscript.split(" ");
+        console.log(wordTimeArray);
+
+        var word_dic = [];
+        wordTimeArray.forEach(function (item, index) {
+          start = item["startTime"]
+          end = item["endTime"]
+          if (start == null && end == null){
+              word_dic.push({"word": item["word"]});
+          }
+          else if (start == null){
+            if (!("seconds" in start)){
+              word_dic.push({"word": item["word"], "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+            }
+            else{
+              word_dic.push({"word": item["word"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+            }
+          }
+          else if (end == null){
+            if (!("seconds" in start)){
+              word_dic.push({"word": item["word"], "startTime": start["nanos"]});
+            }
+            else{
+              word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString())});
+            }
+          }
+
+          else if (!("seconds" in start)){
+          if (!("nanos" in end)){
+            word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ "000000000")});
+            }
+            else{
+              word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+
+            }
           }
           else{
-            word_dic.push({"word": item["word"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
-          }
-        }
-        else if (end == null){
-          if (!("seconds" in start)){
-            word_dic.push({"word": item["word"], "startTime": start["nanos"]});
-          }
-          else{
-            word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString())});
-          }
-        }
+            if (!("nanos" in start) && !("nanos" in end) ){
+              console.log('both gone');
+              word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ "000000000"), "endTime": parseInt(end["seconds"] + "000000000")});
+            }
+            else if (!("nanos" in start)){
+              console.log('start gone');
+              word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ "000000000"), "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+            }
 
-        else if (!("seconds" in start)){
-        if (!("nanos" in end)){
-          word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ "000000000")});
-          }
-          else{
-            word_dic.push({"word": item["word"], "startTime": start["nanos"],"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
+            else if (!("nanos" in end)){
+              console.log('end gone');
+              word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ "000000000")});
+            }
+            else{
+              word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
 
+            }
           }
-        }
-        else{
-          if (!("nanos" in start) && !("nanos" in end) ){
-            console.log('both gone');
-            word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ "000000000"), "endTime": parseInt(end["seconds"] + "000000000")});
-          }
-          else if (!("nanos" in start)){
-            console.log('start gone');
-            word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"]+ "000000000"), "endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
-          }
+        });
+        const finaledTranscript = JSON.stringify(word_dic);
+        console.log(word_dic);
 
-          else if (!("nanos" in end)){
-            console.log('end gone');
-            word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ "000000000")});
-          }
-          else{
-            word_dic.push({"word": item["word"], "startTime": parseInt(start["seconds"] + start["nanos"].toString()),"endTime": parseInt(end["seconds"]+ end["nanos"].toString())});
-
-          }
-        }
-      });
-      const finaledTranscript = JSON.stringify(word_dic);
-      console.log(word_dic);
-
-      db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
-      .collection("audios").doc(uuidAudioFirestoreDocId).set({
-        //transcript: jsonResponse,
-        finished: true,
-        idTranscript: finaledTranscript,
-        //baseTranscript: rawTranscript
-      }, { merge: true });
-
+        db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId)
+        .collection("audios").doc(uuidAudioFirestoreDocId).set({
+          //transcript: jsonResponse,
+          finished: true,
+          idTranscript: finaledTranscript,
+          //baseTranscript: rawTranscript
+        }, { merge: true });
+      }
       return null;
     }
 
