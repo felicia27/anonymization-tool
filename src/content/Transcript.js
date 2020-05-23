@@ -666,7 +666,7 @@ class Transcript extends Component {
           </div>
               <div className="Transcript-Save">
                   <form>
-                      <label id = "applyAudioEdits" onClick={this.applyAudioEdits.bind(this)} disabled={this.state.disabled} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, bottom: 410}}>
+                      <label id = "applyAudioEdits" onClick={this.applyAudioEdits.bind(this)} disabled={this.state.disabled} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, top: 300}}>
                           <Icon  style={{paddingRight: "10px"}} type="save" />
                           Apply Audio Edits
                       </label>
