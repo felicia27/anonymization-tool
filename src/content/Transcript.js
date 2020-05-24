@@ -7,6 +7,7 @@ import "./edit.css"
 import { Icon } from "antd";
 import rangy from "rangy";
 import Save from "./savingBar.js"
+import Alert from "./alert.js"
 import Download from "./Download.js"
 import {alignWords, interpolate} from "./EditTrans.js"
 const { Text, Title } = Typography;
@@ -198,12 +199,10 @@ class Transcript extends Component {
           var sav = document.getElementById("applyAudioEdits");
           sav.style.backgroundColor = 'grey';
           this.refs.Download.SetDisplayFalse();
-          var alert = document.getElementById("alert");
-          alert.style.display = 'block';
-          alert.innerHTML = 'Audio file is processing, please come back later.'
+          this.refs.Alert.showBannerWait();
         }
 
-      }, { merge: true });
+      });
 
       var ffmpegFinished = false;
 
@@ -217,11 +216,8 @@ class Transcript extends Component {
             {
 
               this.refs.Download.SetDisplayTrue();
+              this.refs.Alert.showBannerSuccess();
 
-              var alert = document.getElementById("alert");
-              alert.backgroundColor = 'lightgreen';
-              alert.innerHTML = 'Sucess! Your file is now ready to be downloaded';
-              alert.display = 'block';
 
               var sav = document.getElementById("applyAudioEdits");
               sav.style.backgroundColor = '#2D88F3';
@@ -229,9 +225,7 @@ class Transcript extends Component {
               ffmpegFinished = true;
 
             }
-            else{
-              //console.log("not updated yet");
-            }
+
           })
           .catch(function(error) {
               console.error("Error adding document: ", error);
@@ -250,7 +244,7 @@ class Transcript extends Component {
       .catch(function(error) {
           console.error("Error adding document: ", error);
       });
-      
+
       window.open(currentURL);
 
     }
@@ -660,10 +654,7 @@ class Transcript extends Component {
 
         return (
           <div>
-          <div class="alert" id = "alert" style={{backgroundColor: '#2D88F3', display: 'none'}}>
-              <span class="closebtn"  onclick="this.parentElement.style.display='none';">&times;</span>
-              Processing audio file, Please come back later.
-          </div>
+              <Alert ref ="Alert" onRef={ref => (this.Alert = ref)}/>
               <div className="Transcript-Save">
                   <form>
                       <label id = "applyAudioEdits" onClick={this.applyAudioEdits.bind(this)} disabled={this.state.disabled} style={{backgroundColor: "#1890ff", color: 'white', padding: 8, borderRadius: 4, cursor: 'pointer', position: "absolute", right: 0, fontSize:14, top: 300}}>
