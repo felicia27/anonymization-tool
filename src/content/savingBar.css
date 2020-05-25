@@ -5,13 +5,13 @@
     font-size: 1em;
 }
 .savingBar {
-  position: relative;
-  margin-left: 5px;
-  margin-top: 5px;
+  position: absolute;
+  left: 1100px;
+  top: 320px;
 }
 .saving-fade-animation {
   animation: FadeAnimation 5s ease-in .3s forwards;
-  position: relative;
-  margin-top: 5px;
-  margin-left: 5px;
+  position: absolute;
+  left: 1100px;
+  top: 320px;
 }

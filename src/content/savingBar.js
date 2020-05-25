@@ -33,7 +33,7 @@ class Save extends Component {
 
         <div className="saving-progress">
         {this.state.saving && <div className="savingBar"><span>Saving...</span></div>}
-        {this.state.saved && <div className="saving-fade-animation">Saved</div>}
+        {this.state.saved && <div className="saving-fade-animation">Saved!</div>}
         </div>
       )
     }
