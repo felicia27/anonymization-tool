@@ -281,3 +281,16 @@ nav img{
 .link{
     float:left;
 }
+
+.Upload-progress {
+    grid-area: Upload-progress;
+    justify-self: center;
+    align-self: center;
+    font-size: 0.7em;
+}
+
+.progressBar {
+  position: relative;
+  margin-left: 35px;
+  margin-top: 25px;
+}

@@ -25,12 +25,31 @@ class Folder extends Component {
             clicked: false,
             editTitleEnabled: false,
             editDescriptionEnabled: false,
-            backgroundcolor: '#6FD171'
+            backgroundcolor: '#6FD171',
+            notFinished: false,
         };
 
         this.title = React.createRef();
         this.projectDescription = React.createRef();
     }
+
+    componentDidMount() {
+        this.checkFinished();
+    }
+
+    checkFinished() {
+        var stillTranscribing = false;
+        for (var i = 0; i < this.props.projectAudios.length; i++){
+            if(this.props.projectAudios[i].finished === false){
+                stillTranscribing = true;
+                break;
+            }
+        }
+        this.setState({
+            notFinished: stillTranscribing
+        })
+    }
+
     
     handleClick = event => {
         event.persist();
@@ -226,6 +245,10 @@ class Folder extends Component {
                         <p id="myFiles">Files</p>
                         
                         <Upload projectId={this.props.id}/>
+                        <div className="Upload-progress">
+                            {this.state.notFinished && <div className="progressBar">
+                                <span>Progress: Pending</span></div>}
+                        </div>
                         <p id="divider">---------------------------------------------</p>
                         <div><List
                             dataSource={allProjectAudios}

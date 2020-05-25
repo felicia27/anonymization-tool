@@ -59,6 +59,7 @@ class Projects extends Component {
                             audioUrl: audio.data().audioUrl,
                             audioTranscript: audio.data().transcript,
                             idTranscript: audio.data().idTranscript,
+                            finished: audio.data().finished,
                         }
                         audioObjects.push(audioObject);
                     });
