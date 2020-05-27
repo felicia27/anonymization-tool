@@ -104,7 +104,7 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
       await promisifyCommand(command);
       console.log('Output audio created at', targetTempFilePath);
 
-      await bucket.upload(targetTempFilePath, {destination: targetStorageFilePath});
+      await bucket.upload(targetTempFilePath, {destination: targetStorageFilePath, resumable: false});
       console.log('Output audio uploaded to', targetStorageFilePath);
 
       fs.unlinkSync(tempFilePath);

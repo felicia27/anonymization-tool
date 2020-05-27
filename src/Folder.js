@@ -25,7 +25,7 @@ class Folder extends Component {
             clicked: false,
             editTitleEnabled: false,
             editDescriptionEnabled: false,
-            backgroundcolor: '#6FD171',
+            backgroundColor: this.props.backgroundColor,
             notFinished: false,
         };
 
@@ -35,6 +35,10 @@ class Folder extends Component {
 
     componentDidMount() {
         this.checkFinished();
+
+        this.setState({
+            backgroundcolor: localStorage.getItem("backgroundcolor")
+        })
     }
 
     checkFinished() {
@@ -126,24 +130,45 @@ class Folder extends Component {
     }
 
     colorChange(inputEntry) {
-        if (inputEntry == 'green') {
-            this.setState({
-                backgroundcolor: '#6FD171'
-            }) 
-        } else if (inputEntry == 'red') {
-            this.setState({
-                backgroundcolor: '#FF5E5E'
-            }) 
-        } else if (inputEntry == 'blue') {
-            this.setState({
-                backgroundcolor: '#5D94FF'
-            }) 
-        }
         const currentUserEmail = app.auth().currentUser.email;
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
-        docUser.collection("projects").doc(this.props.id).set({
-            projectColor: inputEntry}, {merge:true})
 
+        if (inputEntry == 'green') {
+            localStorage.setItem("backgroundColor", '#6FD171');
+            
+            docUser.collection("projects").doc(this.props.id).set({
+                projectColor: '#6FD171'}, {merge:true}).then(() => {
+                    
+                    console.log('green');
+                    this.setState({
+                        backgroundColor: '#6FD171'
+                    }) 
+                })
+        }
+        else if (inputEntry == 'red') {
+            localStorage.setItem("backgroundColor", '#FF5E5E');
+            
+            docUser.collection("projects").doc(this.props.id).set({
+                projectColor: '#FF5E5E'}, {merge:true}).then(() => {
+                    
+                    console.log('red');
+                    this.setState({
+                        backgroundColor: '#FF5E5E'
+                    }) 
+                })
+        }
+        else if (inputEntry == 'blue') {
+            localStorage.setItem("backgroundColor", '##5D94FF');
+            
+            docUser.collection("projects").doc(this.props.id).set({
+                projectColor: '#5D94FF'}, {merge:true}).then(() => {
+                    
+                    console.log('blue');
+                    this.setState({
+                        backgroundColor: '#5D94FF'
+                    }) 
+                })
+        }
     }
 
     updateTitle = () => {
@@ -216,7 +241,7 @@ class Folder extends Component {
             );
         });
 
-        const { backgroundcolor } = this.state
+        let backgroundcolor = this.state.backgroundColor;
         return (
             <div>
                 <div id="myDIV" className="project_container" >
