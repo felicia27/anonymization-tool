@@ -249,7 +249,7 @@ class Folder extends Component {
                             {this.state.notFinished && <div className="progressBar">
                                 <span>Progress: Pending</span></div>}
                         </div>
-                        <p id="divider">---------------------------------------------</p>
+                        <p id="divider">-----------------------------------------------------------------------------------------------------------------------------------</p>
                         <div><List
                             dataSource={allProjectAudios}
                             renderItem={item => <List.Item>{item}</List.Item>}/>
