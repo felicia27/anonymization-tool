@@ -2,8 +2,7 @@
   padding: 20px;
    /* Red */
   color: white;
-  margin-bottom: 15px;
-  margin-top: 30px;
+  
 }
 
 /* The close button */
@@ -29,5 +28,6 @@
     align-self: center;
     text-decoration: none;
     display: inline-block;
-
+    width: 97%;
+    margin-left: 1.5%
 }
