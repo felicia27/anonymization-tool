@@ -28,7 +28,7 @@ class Projects extends Component {
             title: "Project Title",
             projectDescription: "Project Description",
             projectInfo: null,
-            backgroundcolor: "green"
+            backgroundcolor: "#6FD171"
         };
 
         this.folderID = 0;
@@ -178,7 +178,7 @@ class Projects extends Component {
             id: project.projectId,
             title: project.projectName,
             projectDescription: project.projectDescription,
-            backgroundcolor: project.projectColor,
+            backgroundColor: project.projectColor,
             projectInfo: project
         }
         this.setState({
@@ -238,7 +238,7 @@ class Projects extends Component {
                             id={folder.id}
                             title={folder.title}
                             projectDescription={folder.projectDescription}
-                            backgroundcolor={folder.backgroundcolor}
+                            backgroundColor={folder.backgroundColor}
                             projectAudios={folder.projectInfo.projectAudios}
                             deleteFolder={this.deleteEvent.bind(this, index, folder.id, folder.projectInfo.projectAudios)}
                             onClick={() => this.handleClick(index)} //color button (delete)
