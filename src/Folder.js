@@ -35,6 +35,10 @@ class Folder extends Component {
 
     componentDidMount() {
         this.checkFinished();
+
+        this.setState({
+            backgroundcolor: localStorage.getItem("backgroundcolor")
+        })
     }
 
     checkFinished() {
@@ -127,14 +131,17 @@ class Folder extends Component {
 
     colorChange(inputEntry) {
         if (inputEntry == 'green') {
+            localStorage.setItem("backgroundcolor", '#6FD171')
             this.setState({
                 backgroundcolor: '#6FD171'
             }) 
         } else if (inputEntry == 'red') {
+            localStorage.setItem("backgroundcolor", '#FF5E5E')
             this.setState({
                 backgroundcolor: '#FF5E5E'
             }) 
         } else if (inputEntry == 'blue') {
+            localStorage.setItem("backgroundcolor", '#5D94FF')
             this.setState({
                 backgroundcolor: '#5D94FF'
             }) 
