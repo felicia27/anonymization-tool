@@ -150,16 +150,19 @@ exports.transcribeAudio = functions.storage.bucket(bucketName).object().onFinali
       }
       finally{
         const jsonResponse = JSON.stringify(response);
+        console.log("jsonResponse", jsonResponse);
         const objectValue = JSON.parse(jsonResponse);
-        console.log(objectValue);
+        console.log("objectVa;ue", objectValue);
         //const rawTranscript = objectValue['results'][0]['alternatives'][0]['transcript'];
-        var wordTimeArray = objectValue['results'][0]['alternatives'][0]['words']
-        if (wordTimeArray == null){
-          wordTimeArray = objectValue['results'][1]['alternatives'][0]['words']
+        var wordTimeArray = [];
+        for (var pos = 0; pos <objectValue['results'].length; pos++){
+          if  (objectValue['results'][pos]['alternatives'][0]['words'] != null){
+            for (var wordPos = 0; wordPos < objectValue['results'][pos]['alternatives'][0]['words'].length; wordPos++){
+            wordTimeArray.push(objectValue['results'][pos]['alternatives'][0]['words'][wordPos]);
+            console.log("inside while", objectValue['results'][pos]['alternatives'][0]['words'][wordPos]);
+            }
+          }
         }
-        //var res = rawTranscript.split(" ");
-        console.log(wordTimeArray);
-
         var word_dic = [];
         wordTimeArray.forEach(function (item, index) {
           start = item["startTime"]
