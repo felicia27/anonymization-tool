@@ -220,8 +220,8 @@ class Transcript extends Component {
 
 
               var sav = document.getElementById("applyAudioEdits");
-              sav.style.backgroundColor = '#2D88F3';
-              sav.disabled = false;
+              sav.style.display = 'none';
+
               ffmpegFinished = true;
 
             }
@@ -246,7 +246,7 @@ class Transcript extends Component {
           console.error("Error adding document: ", error);
       });
 
-      
+
 
     }
 
@@ -282,6 +282,7 @@ class Transcript extends Component {
              }
            });
            if (hideMASK == true){
+             console.log("removing mask");
              let id = document.getElementById(transWord.x.toString() + transWord.y.toString());
              id.remove();
            }
@@ -476,7 +477,7 @@ class Transcript extends Component {
       displayMaskLabel(event){
         var x = event.pageX;
         var y = event.pageY;
-
+        console.log(x, y);
         var label_container = document.createElement('div');
         label_container.id = x.toString() + y.toString();
         label_container.className = 'label_container';
@@ -556,6 +557,7 @@ class Transcript extends Component {
               }
             });
             if (hideMASK == false){
+              console.log("new word masking");
               this.displayMaskLabel(event);
             }
           };

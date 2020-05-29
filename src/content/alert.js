@@ -7,7 +7,7 @@ class Alert extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          display:false,
+          display: false,
           backColor: '#2D88F3',
           text: "Audio file is processing, please come back later.",
         }
@@ -31,6 +31,7 @@ class Alert extends Component {
          backColor: "lightgreen",
        })
       }
+  
 
 
     render(){
@@ -39,7 +40,7 @@ class Alert extends Component {
 
 
         {this.state.display && <div class="alert" id = "alert" style={{backgroundColor: this.state.backColor}}>
-            <span class="closebtn"  onClick="this.parentElement.style.display='none';">&times;</span>
+
             {this.state.text}
         </div>
         }
