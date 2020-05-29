@@ -158,13 +158,13 @@ class Player extends Component {
           if (IDArray[number]["label"] === "MASK"){
            // console.log(IDArray[number]["label"], number)
            
-            if (dotArray.includes(IDArray[number]["startTime"])) {
-              console.log("IDArray", IDArray)
-              console.log("START TIME", IDArray[number]["startTime"])
+           // if (dotArray.includes(IDArray[number]["startTime"])) {
+          //    console.log("IDArray", IDArray)
+           //   console.log("START TIME", IDArray[number]["startTime"])
              // break;
-            }
+         //   }
 
-           else { 
+            
             var newSpan = document.createElement('div');
             console.log(IDArray[number]["startTime"])
 
@@ -179,7 +179,7 @@ class Player extends Component {
 
             demodiv.appendChild(newSpan);
             dotArray.push(IDArray[number]["startTime"])
-          }
+          
          }
 
         //   else if (IDArray[number]["label"] === "MASK" && number != 0) {
