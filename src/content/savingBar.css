@@ -1,17 +1,14 @@
 .saving-progress {
     grid-area: Upload-progress;
+    position: static;
     justify-self: right;
     align-self: right;
     font-size: 1em;
 }
 .savingBar {
-  position: absolute;
-  left: 1100px;
-  top: 320px;
+  position: static;
 }
 .saving-fade-animation {
   animation: FadeAnimation 5s ease-in .3s forwards;
-  position: absolute;
-  left: 1100px;
-  top: 320px;
+  position: static;
 }

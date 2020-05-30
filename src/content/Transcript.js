@@ -501,7 +501,8 @@ class Transcript extends Component {
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'sticky';
-        label_container.style.top = (y-140).toString() + 'px'
+        label_container.style.display = "inline-block"
+        label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
@@ -513,7 +514,8 @@ class Transcript extends Component {
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'sticky';
-        label_container.style.top = (y-140).toString() + 'px'
+        label_container.style.display = "inline-block"
+        label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
