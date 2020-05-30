@@ -481,8 +481,8 @@ class Transcript extends Component {
           var y = event.pageY;
           var menu = document.getElementById("labelSelect");
           menu.style.display = "block";
-          menu.style.position = 'absolute';
-          menu.style.margin = (y-300)+"px 0px 0px " +(x+30)+"px";
+          menu.style.position = 'fixed';
+          menu.style.margin = (y-400)+"px 0px 0px " +(x+30)+"px";
         }
       }
 
