@@ -5,6 +5,7 @@ import WaveSurfer from 'wavesurfer.js';
 import $ from 'jquery';
 var wavesurfer;
 var dotArray = [];
+//var spacing = [];
 
 class Player extends Component {
 
@@ -44,6 +45,9 @@ class Player extends Component {
             ].join(':');
         };
 
+
+
+
         // Show current time
         wavesurfer.on('audioprocess', function () {
             $('.waveform__counter').text(formatTime(wavesurfer.getCurrentTime()) );
@@ -52,8 +56,12 @@ class Player extends Component {
         // Show clip duration
         wavesurfer.on('ready', function () {
             $('.waveform__duration').text(formatTime(wavesurfer.getDuration()));
+          //  spacing.push(1240/wavesurfer.getDuration())
+            
+           // console.log("SPACING", spacing)
+      //   //  return spacing
         });
-          console.log(this.props.audioUrl);
+        //  console.log(this.props.audioUrl);
           wavesurfer.load(this.props.audioUrl);
 
     }
@@ -62,6 +70,7 @@ class Player extends Component {
     componentWillUnmount() {
     this.props.onRef(undefined);
   }
+
     play_specific(beg, end, id){
       var playPauseButton = document.getElementById("playPauseButtonImage");
 
@@ -131,55 +140,71 @@ class Player extends Component {
     //   }
 
 
-    // calculateDotSpacing() {
-    //   wavesurfer.on('ready', function () {
-    //     var audioDuration = wavesurfer.getDuration()
-    //     //console.log('Duration after ready: ' + audioDuration)
-    //     return audioDuration
-    //     })
-    // }
+      // wavesurfer.on('ready', function () {
+      //   var audioDuration = wavesurfer.getDuration()
+      //     var spacing = 1240/audioDuration
+      //     console.log("SPACING", spacing)
+      //   //  return spacing
+      //   })
 
 
 
 
-      addDotToAudioPlayer(IDArray) {
+      addDotToAudioPlayer(IDArray, audio_duration) {
     
-        wavesurfer.on('ready', function () {
-          var audioDuration = wavesurfer.getDuration()
-          var spacing = 1240/audioDuration
- 
-          console.log('SPACING ' + spacing)
+       // console.log("ADD DOT")
+
+             
+        // wavesurfer.on('ready', function () {
+        //   var audioDuration = wavesurfer.getDuration()
+           var spacing = 1240/audio_duration
+          // console.log("AUDIODURATION", audio_duration)
+          //console.log("SPACING", spacing)
+        //   return spacing
+        // })
+   //     var spacing = this.calculateDotSpacing()
+    //    console.log("SPACING", this.calculateDotSpacing())
         
         var demodiv = document.getElementById('dots');
 
         for (var number in IDArray) {
+         // console.log("ADD DOT 2", number)
+         // console.log("NUMBER", number)
          // var newSpan = document.createElement('div')
         //  console.log(this.state.IDArray[number]["startTime"])
-          if (IDArray[number]["label"] === "MASK"){
-           // console.log(IDArray[number]["label"], number)
-           
-            if (dotArray.includes(IDArray[number]["startTime"])) {
-              console.log("IDArray", IDArray)
-              console.log("START TIME", IDArray[number]["startTime"])
-             // break;
-            }
+          if (IDArray[number]["label"] == "MASK"){
 
-           else { 
+
+           //console.log("ADD DOT 3", IDArray[number])
+            
+          //  console.log("NUMBER", number)
+           
+           // if (dotArray.includes(IDArray[number]["startTime"])) {
+          //    console.log("IDArray", IDArray)
+           //   console.log("START TIME", IDArray[number]["startTime"])
+             // break;
+         //   }
+
+            
             var newSpan = document.createElement('div');
-            console.log(IDArray[number]["startTime"])
 
            // newSpan.className = "dot";
-            newSpan.style.left = ((IDArray[number]["startTime"]/60/60/60/60/60)*spacing)+ "px";
-            newSpan.style.position = "absolute";
+             newSpan.style.left = ((IDArray[number]["startTime"]/60/60/60/60/60)*spacing) + "px";
+             newSpan.style.position = "absolute";
              newSpan.style.height=10 + "px";
              newSpan.style.width=10 + "px";
              newSpan.style.backgroundColor="cornflowerblue";
              newSpan.style.borderRadius=50 + "%";
              newSpan.style.display='inline-block';
 
-            demodiv.appendChild(newSpan);
-            dotArray.push(IDArray[number]["startTime"])
-          }
+             demodiv.appendChild(newSpan);
+             console.log(newSpan)
+
+
+          // dotArray.push(IDArray[number]["startTime"])
+        //  dotArray.push(newSpan)
+         // console.log("DOTARRAY", dotArray)
+          
          }
 
         //   else if (IDArray[number]["label"] === "MASK" && number != 0) {
@@ -205,7 +230,7 @@ class Player extends Component {
         //     }
         //   }
         }
-      })
+
        // console.log("DOTARRAY", dotArray)
       }
 
@@ -219,7 +244,7 @@ class Player extends Component {
           <div className="audio_container clear" style = {{height: 190}}>
           <div id="waveform" style={{position: 'relative'}}>
           </div>
-            <div id = "dots" style={{position: 'relative'}}></div>
+            <div id = "dots" style={{position: 'relative', width: 1240}}></div>
           <div class="times">
             <div class="waveform__counter" style = {{float:"left", left:20, paddingTop: 20, position:"sticky"}}>0:00</div>
             <div class="waveform__duration" style = {{float: "right", right:20, paddingTop:20, position:"sticky"}}></div>

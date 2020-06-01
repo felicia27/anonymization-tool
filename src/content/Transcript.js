@@ -14,6 +14,7 @@ const { Text, Title } = Typography;
 const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
 var userSelectText = "";
 var spanID = [];
+var audio_duration;
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -40,8 +41,9 @@ class Transcript extends Component {
         this.currentProject = this.props.projectID;
         this.currentAudio = this.props.filename;
         this.docUser = this.props.docUser;
+        this.addDotToAudioPlayer = this.addDotToAudioPlayer.bind(this)
     }
-
+    
     textChange(event) {
       this.setState({
         editedText: event.target.value,
@@ -50,6 +52,8 @@ class Transcript extends Component {
 
     componentWillMount() {
       document.addEventListener('mousedown', this.handleClick, false);
+
+        
     }
 
     componentWillUnmount() {
@@ -57,12 +61,23 @@ class Transcript extends Component {
     }
 
     componentDidMount() {
+        var au = document.createElement("audio");
+        au.src = this.props.audioUrl;
+
+        au.addEventListener('loadedmetadata', () => {
+         
+          audio_duration = au.duration;
+          console.log("The duration of the song is: " + audio_duration + " seconds");
+          this.addDotToAudioPlayer(audio_duration)
+        } ,false);
+ 
         this.processTranscript();
         this.checkDB()
     }
 
     componentDidUpdate(prevProps) {
-      this.addDotToAudioPlayer();
+      //console.log("TRANSCRIPT.JS COMPONENTDIDUPDATE")
+     //this.addDotToAudioPlayer(audio_duration)
         if(prevProps.audioId !== this.props.audioId) {
             this.processTranscript();
 
@@ -251,6 +266,7 @@ class Transcript extends Component {
     }
 
     SaveChanges(){
+    //  this.addDotToAudioPlayer(audio_duration)
       this.refs.Save.Saving();
       var maskDict = this.labelDict["Mask"];
       var delDict = this.labelDict["Delete"];
@@ -315,6 +331,9 @@ class Transcript extends Component {
         idTranscript: JSON.stringify(currentidTranscript),
       }, { merge: true });
       this.refs.Save.Saved();
+        console.log("ADD DOT 1")
+        this.addDotToAudioPlayer(audio_duration)
+        console.log("ADD DOT 2")
     }
 
      onMouseUpHandler = (e) =>{
@@ -323,7 +342,7 @@ class Transcript extends Component {
        this.displayMenu(event);
 
        this.recordDict(event);
-      //  this.addDotToAudioPlayer();
+       //this.addDotToAudioPlayer();
      }
 
      removePunctuation(string) {
@@ -456,15 +475,15 @@ class Transcript extends Component {
      }
 
       displayMenu(event){
-        console.log(event)
-        console.log("displayMenu", userSelectText)
+       // console.log(event)
+       // console.log("displayMenu", userSelectText)
         if (userSelectText != ""){
           var x = event.pageX;
           var y = event.pageY;
           var menu = document.getElementById("labelSelect");
           menu.style.display = "block";
-          menu.style.position = 'absolute';
-          menu.style.margin = (y-300)+"px 0px 0px " +(x+30)+"px";
+         // menu.style.position = 'fixed';
+          menu.style.margin = (y-400)+"px 0px 0px " +(x+30)+"px";
         }
       }
 
@@ -483,7 +502,8 @@ class Transcript extends Component {
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'sticky';
-        label_container.style.top = (y-140).toString() + 'px'
+        label_container.style.display = "inline-block"
+        label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
@@ -495,7 +515,8 @@ class Transcript extends Component {
         label_container.className = 'label_container';
         label_container.style.float = 'left';
         label_container.style.position = 'sticky';
-        label_container.style.top = (y-140).toString() + 'px'
+        label_container.style.display = "inline-block"
+        label_container.style.top = (y).toString() + 'px'
         label_container.innerHTML = `<span class="label mask">Mask</span>`;
         document.getElementsByClassName('column')[0].appendChild(label_container);
         document.getElementById("labelSelect").style.display = 'none';
@@ -555,12 +576,14 @@ class Transcript extends Component {
                 }
 
               }
+      
             });
             if (hideMASK == false){
               console.log("new word masking");
               this.displayMaskLabel(event);
             }
           };
+
           //if there are words still with the mask label of xy that arent the ones being highlighted rn , dont add another
           //
 
@@ -569,7 +592,7 @@ class Transcript extends Component {
           userSelectText = "";
           spanID = [];
           this.SaveChanges();
-          this.addDotToAudioPlayer();
+         // this.addDotToAudioPlayer();
         }
     }
 
@@ -603,29 +626,19 @@ class Transcript extends Component {
       Stamp.style.color = 'lightgreen';
     };
 
-    addDotToAudioPlayer = ()=>{
+  
+   addDotToAudioPlayer = (audio_duration)=> {
       console.log("TRANSCRIPT")
-      this.props.addDots(this.state.IDArray);
-      console.log(this.state.IDArray)
+      this.props.addDots(this.state.IDArray, audio_duration);
+     // console.log(this.state.IDArray)
 
     };
 
-
-    // addDotToAudioPlayer() {
-    //   console.log("clicked")
-    //   for (var number in this.state.IDArray) {
-    //     if (this.state.IDArray[number]["label"] === "MASK") {
-    //       console.log(this.state.IDArray[number]["startTime"])
-    //     }
-    //   }
-    //   console.log("IDARRAY", this.state.IDArray)
-    // }
-
-
+    
 
     render() {
 
-      // {this.addDotToAudioPlayer()}
+  
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
 

@@ -83,7 +83,7 @@ nav img{
     float: left;
     overflow-y: scroll;
     overflow-x: hidden;
-    
+   
     background: #FFFFFF;
     border: 1px solid #949494;
     box-sizing: border-box;
@@ -257,7 +257,7 @@ nav img{
 }
 .green_completed{
     position: relative;
-    width: 223px;
+    width: 0;
     height: 9px;
     left: -98px;
     top: 87px;

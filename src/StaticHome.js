@@ -33,7 +33,7 @@ class Test extends Component {
     getAudioTranscript = () => {
         let currentComponent = this;
         const currentUserEmail = app.auth().currentUser.email;
-        console.log(app.auth());
+        //console.log(app.auth());
         let docUser = this.db.collection("transcripts").doc(currentUserEmail);
         //currentProject is the projectId of the project the audio file is stored in
         let currentProject = currentComponent.props.match.params.projectId;
@@ -96,9 +96,9 @@ class Test extends Component {
 
     }
 
-    addDotToAudioPlayer = (IDArray) => {
+    addDotToAudioPlayer = (IDArray, audio_duration) => {
 
-        this.refs.player.addDotToAudioPlayer(IDArray);
+        this.refs.player.addDotToAudioPlayer(IDArray, audio_duration);
         console.log("STATICHOME")
   
       }
