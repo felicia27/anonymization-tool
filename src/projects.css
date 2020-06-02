@@ -76,12 +76,11 @@ nav img{
 
 .folder{
     width: 100vh;
-    min-height: 200px;
-    height: auto;
     margin: 35px;
     margin-left: 50px;
     float: left;
-    overflow-y: scroll;
+    overflow: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
    
     background: #FFFFFF;
