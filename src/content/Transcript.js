@@ -233,7 +233,7 @@ class Transcript extends Component {
               this.refs.Download.SetDisplayTrue();
               this.refs.Alert.showBannerSuccess();
 
-              console.log("apply taken out");
+              console.log("apply out");
               var sav = document.getElementById("applyAudioEdits");
               sav.style.display = 'none';
 
