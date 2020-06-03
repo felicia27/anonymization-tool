@@ -263,44 +263,23 @@ exports.deleteAudio = functions.storage.bucket(bucketName).object().onFinalize( 
     const fileName = path.basename(filePath);
     console.log("FILENAME ",fileName);
 
-    db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId).get()
-      .then(doc => {
-        let oldFileData = doc.data();
+    const bucket = gcs.bucket("gs://"+bucketName);
+    const file = bucket.file(filePath);
 
-        db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId+"_modified").set({
-          audioURL: oldFileData.audioUrl,
-          fileName: oldFileData.fileName.replace(".wav", "_output.wav"),
-          createdAt: oldFileData.createdAt,
-          finished: oldFileData.finished,
-          idTranscript: oldFileData.idTranscript
-        }, { merge: true });
+    file.getSignedUrl({
+      action: 'read',
+      expires: '03-09-2491'
+    }).then(signedUrls => {
+      db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId).set({
+        downloadURL: signedUrls[0],
+        modifiedFinished: true,
 
-        return 0;
-      })
-      .catch(err => {
-        console.log('Error getting documents', err);
-      });
-
-      const bucket = gcs.bucket("gs://"+bucketName);
-      const file = bucket.file(filePath);
-
-      file.getSignedUrl({
-        action: 'read',
-        expires: '03-09-2491'
-      }).then(signedUrls => {
-        db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId+"_modified").set({
-          downloadURL: signedUrls[0]
-        }, { merge: true });
-        db.collection("transcripts").doc(filePathUserEmail).collection("projects").doc(uuidProjectFirestoreDocId).collection("audios").doc(uuidFirestoreDocId).set({
-          downloadURL: signedUrls[0],
-          modifiedFinished: true,
-
-        }, { merge: true });
-        return 0;
-      })
-      .catch(err => {
-        console.log('Error getting documents', err);
-      });
+      }, { merge: true });
+      return 0;
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
 
   }
     return 0;
