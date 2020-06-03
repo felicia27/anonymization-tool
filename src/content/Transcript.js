@@ -43,7 +43,7 @@ class Transcript extends Component {
         this.docUser = this.props.docUser;
         this.addDotToAudioPlayer = this.addDotToAudioPlayer.bind(this)
     }
-    
+
     textChange(event) {
       this.setState({
         editedText: event.target.value,
@@ -53,7 +53,7 @@ class Transcript extends Component {
     componentWillMount() {
       document.addEventListener('mousedown', this.handleClick, false);
 
-        
+
     }
 
     componentWillUnmount() {
@@ -65,12 +65,12 @@ class Transcript extends Component {
         au.src = this.props.audioUrl;
 
         au.addEventListener('loadedmetadata', () => {
-         
+
           audio_duration = au.duration;
           console.log("The duration of the song is: " + audio_duration + " seconds");
           this.addDotToAudioPlayer(audio_duration)
         } ,false);
- 
+
         this.processTranscript();
         this.checkDB()
     }
@@ -233,7 +233,7 @@ class Transcript extends Component {
               this.refs.Download.SetDisplayTrue();
               this.refs.Alert.showBannerSuccess();
 
-
+              console.log("apply taken out");
               var sav = document.getElementById("applyAudioEdits");
               sav.style.display = 'none';
 
@@ -576,7 +576,7 @@ class Transcript extends Component {
                 }
 
               }
-      
+
             });
             if (hideMASK == false){
               console.log("new word masking");
@@ -626,7 +626,7 @@ class Transcript extends Component {
       Stamp.style.color = 'lightgreen';
     };
 
-  
+
    addDotToAudioPlayer = (audio_duration)=> {
       console.log("TRANSCRIPT")
       this.props.addDots(this.state.IDArray, audio_duration);
@@ -634,11 +634,11 @@ class Transcript extends Component {
 
     };
 
-    
+
 
     render() {
 
-  
+
 
         let transcriptSnippets = this.state.IDArray.map((word, index) => {
 
